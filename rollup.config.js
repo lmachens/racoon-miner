@@ -17,13 +17,25 @@ export default [
         'process.env.NODE_ENV': JSON.stringify('production')
       }),
       nodeResolve({
+        module: true,
         jsnext: true,
-        main: true
+        browser: true
+      }),
+      commonjs({
+        include: ['node_modules/**'],
+        namedExports: {
+          'node_modules/react/index.js': [
+            'Component',
+            'PureComponent',
+            'Children',
+            'createElement',
+            'Fragment'
+          ]
+        }
       }),
       babel({
         exclude: 'node_modules/**'
       }),
-      commonjs(),
       minify({
         comments: false
       })

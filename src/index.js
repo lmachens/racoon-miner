@@ -1,3 +1,4 @@
+import { App } from './ui/layouts';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import random from 'lodash/random';
@@ -10,8 +11,8 @@ const b = random(10);
 const result = sum(a, b);
 
 ReactDOM.render(
-  <div>
+  <App>
     random add example: {a} + {b} = {result}
-  </div>,
+  </App>,
   document.getElementById('root')
 );
