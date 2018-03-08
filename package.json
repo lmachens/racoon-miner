@@ -1,5 +1,6 @@
 {
   "name": "racoon-miner",
+  "private": true,
   "version": "0.0.1",
   "description": "Crypto mining app for Overwolf appstore",
   "dependencies": {
