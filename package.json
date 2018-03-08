@@ -10,6 +10,7 @@
     "react-dom": "^16.2.0"
   },
   "devDependencies": {
+    "@storybook/react": "^3.3.15",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
     "babel-jest": "^22.4.1",
@@ -45,7 +46,8 @@
     "release": "standard-version",
     "github-release": "conventional-github-releaser -p angular -r 0",
     "precommit": "lint-staged",
-    "prepush": "jest"
+    "prepush": "jest",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "lint-staged": {
     "*.{js,jsx,json,css}": [
