@@ -33,12 +33,12 @@
     "rollup-plugin-node-resolve": "^3.2.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-watch": "^4.3.1",
-    "standard-version": "^4.3.0"
+    "semantic-release": "^15.0.2"
   },
   "scripts": {
     "start": "rollup -c -w",
     "test": "jest",
-    "release": "standard-version"
+    "release": "semantic-release --branch next"
   },
   "repository": {
     "type": "git",
