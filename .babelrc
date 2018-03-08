@@ -14,6 +14,9 @@
   "env": {
     "production": {
       "presets": ["minify"]
+    },
+    "test": {
+      "presets": [["env"], "react"]
     }
   },
   "plugins": ["external-helpers"]
