@@ -1,0 +1,33 @@
+{
+  "manifest_version": "1",
+  "type": "WebApp",
+  "meta": {
+    "name": "Boilerplate",
+    "version": "1.0.0.0",
+    "minimum-overwolf-version": "0.85.0.0",
+    "author": "Leon Machens",
+    "icon": "assets/icon.png",
+    "icon_gray": "assets/icon_gray.png",
+    "description": "A boilerplate with useful dev tools"
+  },
+  "permissions": [],
+  "data": {
+    "start_window": "index",
+    "windows": {
+      "index": {
+        "file": "index.html",
+        "transparent": false,
+        "resizable": true,
+        "show_in_taskbar": true,
+        "size": {
+          "width": 400,
+          "height": 400
+        },
+        "start_position": {
+          "Top": 100,
+          "Left": 300
+        }
+      }
+    }
+  }
+}

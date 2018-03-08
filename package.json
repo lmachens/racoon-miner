@@ -1,0 +1,51 @@
+{
+  "name": "racoon-miner",
+  "version": "0.0.1",
+  "description": "Crypto mining app for Overwolf appstore",
+  "dependencies": {
+    "lodash": "^4.17.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-jest": "^22.4.1",
+    "babel-loader": "^7.1.4",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-minify": "^0.3.0",
+    "babel-preset-react": "^6.24.1",
+    "eslint": "^4.18.2",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jest": "^21.13.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "jest": "^22.4.2",
+    "prettier": "1.11.1",
+    "rollup": "^0.56.5",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-babel-minify": "^4.0.0",
+    "rollup-plugin-commonjs": "^9.0.0",
+    "rollup-plugin-node-resolve": "^3.2.0",
+    "rollup-watch": "^4.3.1"
+  },
+  "scripts": {
+    "start": "rollup -c -w",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmachens/racoon-miner.git"
+  },
+  "keywords": [
+    "overwolf",
+    "crypto",
+    "mining",
+    "cryptocurrency",
+    "ethereum"
+  ],
+  "author": "Leon Machens",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lmachens/racoon-miner/issues"
+  },
+  "homepage": "https://github.com/lmachens/racoon-miner"
+}
