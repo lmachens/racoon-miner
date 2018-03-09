@@ -6,7 +6,7 @@ import replace from 'rollup-plugin-replace';
 
 export default [
   {
-    input: 'src/startup/main.js',
+    input: 'src/startup/main/index.js',
     output: {
       file: 'dist/main.js',
       format: 'iife',

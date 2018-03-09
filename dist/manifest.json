@@ -31,12 +31,12 @@
           "Left": 300
         }
       }
-    }
-  },
-  "extra-objects": {
-    "process-manager-plugin": {
-      "file": "plugins/process_manager.dll",
-      "class": "com.overwolf.net.ProcessManager"
+    },
+    "extra-objects": {
+      "process-manager-plugin": {
+        "file": "plugins/process_manager.dll",
+        "class": "com.overwolf.net.ProcessManager"
+      }
     }
   }
 }

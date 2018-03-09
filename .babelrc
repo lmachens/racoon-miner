@@ -19,5 +19,5 @@
       "presets": [["env"], "react"]
     }
   },
-  "plugins": ["external-helpers"]
+  "plugins": ["external-helpers", "transform-class-properties"]
 }
