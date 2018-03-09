@@ -10,12 +10,15 @@
     "icon_gray": "assets/icon_gray.png",
     "description": "Crypto mining app for Overwolf appstore"
   },
+  "externally_connectable": {
+    "matches": ["http://localhost:35729"]
+  },
   "permissions": [],
   "data": {
-    "start_window": "index",
+    "start_window": "main",
     "windows": {
-      "index": {
-        "file": "index.html",
+      "main": {
+        "file": "main.html",
         "transparent": false,
         "resizable": true,
         "show_in_taskbar": true,
@@ -29,6 +32,5 @@
         }
       }
     }
-  },
-  "version": "0.1.0"
+  }
 }
