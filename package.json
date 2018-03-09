@@ -49,6 +49,11 @@
     "prepush": "jest",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
+  "standard-version": {
+    "scripts": {
+      "postbump": "node tools/syncVersion"
+    }
+  },
   "lint-staged": {
     "*.{js,jsx,json,css}": [
       "prettier --write",

@@ -2,13 +2,13 @@
   "manifest_version": "1",
   "type": "WebApp",
   "meta": {
-    "name": "Boilerplate",
-    "version": "1.0.0.0",
+    "name": "Racoon Miner",
+    "version": "0.1.0",
     "minimum-overwolf-version": "0.85.0.0",
     "author": "Leon Machens",
     "icon": "assets/icon.png",
     "icon_gray": "assets/icon_gray.png",
-    "description": "A boilerplate with useful dev tools"
+    "description": "Crypto mining app for Overwolf appstore"
   },
   "permissions": [],
   "data": {
@@ -29,5 +29,6 @@
         }
       }
     }
-  }
+  },
+  "version": "0.1.0"
 }
