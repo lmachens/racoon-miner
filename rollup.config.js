@@ -30,7 +30,8 @@ export default [
             'Children',
             'createElement',
             'Fragment'
-          ]
+          ],
+          'node_modules/material-ui/styles/index.js': ['MuiThemeProvider', 'createMuiTheme']
         }
       }),
       babel({
