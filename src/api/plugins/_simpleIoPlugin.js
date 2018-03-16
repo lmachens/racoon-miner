@@ -1,14 +1,14 @@
 import { callOverwolfWithPromise } from '../utilities';
 
-export let processManager = null;
-export const getProcessManagerPlugin = () => {
+export let simpleIoPlugin;
+export const getSimpleIoPlugin = () => {
   return new Promise(async resolve => {
-    if (processManager) return resolve(processManager);
+    if (simpleIoPlugin) return resolve(simpleIoPlugin);
     const result = await callOverwolfWithPromise(
       overwolf.extensions.current.getExtraObject,
-      'process-manager-plugin'
+      'simple-io-plugin'
     );
-    processManager = result.object;
+    simpleIoPlugin = result.object;
     resolve(result.object);
   });
 };

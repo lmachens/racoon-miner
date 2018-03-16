@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
 
-import { processManager } from '../../../api/plugins';
+getProcessManagerPlugin();
 
 const path = 'ethminer.exe';
 const args =

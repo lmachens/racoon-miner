@@ -52,7 +52,7 @@
     "standard-version": "^4.3.0"
   },
   "scripts": {
-    "start": "rollup -c -w",
+    "dev": "rollup -c -w",
     "test": "jest",
     "release": "standard-version",
     "github-release": "conventional-github-releaser -p angular -r 0",

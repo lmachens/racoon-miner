@@ -36,6 +36,10 @@
       "process-manager-plugin": {
         "file": "plugins/process_manager.dll",
         "class": "com.overwolf.net.ProcessManager"
+      },
+      "simple-io-plugin": {
+        "file": "plugins/simple-io-plugin.dll",
+        "class": "overwolf.plugins.SimpleIOPlugin"
       }
     }
   }
