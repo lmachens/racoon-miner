@@ -1,5 +1,5 @@
 {
-  "name": "racoon-miner",
+  "name": "raccoon-miner",
   "private": true,
   "version": "0.1.0",
   "description": "Crypto mining app for Overwolf appstore",
@@ -78,7 +78,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lmachens/racoon-miner.git"
+    "url": "https://github.com/lmachens/raccoon-miner.git"
   },
   "keywords": [
     "overwolf",
@@ -90,7 +90,7 @@
   "author": "Leon Machens",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/lmachens/racoon-miner/issues"
+    "url": "https://github.com/lmachens/raccoon-miner/issues"
   },
-  "homepage": "https://github.com/lmachens/racoon-miner"
+  "homepage": "https://github.com/lmachens/raccoon-miner"
 }

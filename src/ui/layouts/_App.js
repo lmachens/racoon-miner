@@ -13,7 +13,7 @@ export class AppLayout extends Component {
         <AppBar position="static" color="inherit">
           <Toolbar>
             <Typography variant="title" color="inherit">
-              Racoon Miner
+              Raccoon Miner
             </Typography>
             {links.map(link => (
               <Link key={link.title} to={link.to}>

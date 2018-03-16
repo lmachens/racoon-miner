@@ -1,4 +1,4 @@
-# racoon-miner
+# raccoon-miner
 
 Crypto mining app for Overwolf appstore
 
