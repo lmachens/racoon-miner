@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
 
+import { Button } from '../generic';
+
 getProcessManagerPlugin();
 
 const path = 'ethminer.exe';
@@ -15,20 +17,36 @@ const environmentVariables = JSON.stringify({
 });
 const hidden = true;
 
-export class Miner extends Component {
-  state = {};
-
-  componentDidMount() {
-    processManager.onDataReceivedEvent.addListener(this.handleData);
-
-    processManager.launchProcess(path, args, environmentVariables, hidden, this.handleLaunch);
-  }
+export class Mining extends Component {
+  state = {
+    isMining: false
+  };
 
   componentWillUnmount() {
+    this._stopMining();
+  }
+
+  handleMiningClick = () => {
+    const { isMining } = this.state;
+    if (isMining) this._stopMining();
+    else this._startMining();
+  };
+
+  _startMining = () => {
+    processManager.onDataReceivedEvent.addListener(this.handleData);
+    processManager.launchProcess(path, args, environmentVariables, hidden, this.handleLaunch);
+    this.setState({ isMining: true });
+  };
+
+  _stopMining = () => {
     const { processId } = this.state;
 
-    if (processId) processManager.terminateProcess(processId);
-  }
+    if (processId) {
+      processManager.onDataReceivedEvent.removeListener(this.handleData);
+      processManager.terminateProcess(processId);
+    }
+    this.setState({ isMining: false });
+  };
 
   handleLaunch = ({ error, data }) => {
     this.setState({ error, processId: data });
@@ -48,10 +66,13 @@ export class Miner extends Component {
   };
 
   render() {
-    const { error, data, processId } = this.state;
+    const { error, data, processId, isMining } = this.state;
 
     return (
       <div>
+        <Button onClick={this.handleMiningClick}>
+          {isMining ? 'Stop mining' : 'Start mining'}
+        </Button>
         Error: {error}
         <br />Data: {data}
         <br />ProcessId:{processId}

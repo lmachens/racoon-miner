@@ -1,19 +1,25 @@
 import { AppBar, Toolbar, Typography } from '../components/generic';
 import React, { Component, Fragment } from 'react';
 
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 export class AppLayout extends Component {
   render() {
-    const { children } = this.props;
+    const { children, links = [] } = this.props;
 
     return (
       <Fragment>
         <AppBar position="static" color="inherit">
           <Toolbar>
             <Typography variant="title" color="inherit">
-              Title
+              Racoon Miner
             </Typography>
+            {links.map(link => (
+              <Link key={link.title} to={link.to}>
+                <Typography>{link.title}</Typography>
+              </Link>
+            ))}
           </Toolbar>
         </AppBar>
         {children}
@@ -23,5 +29,6 @@ export class AppLayout extends Component {
 }
 
 AppLayout.propTypes = {
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
+  links: PropTypes.array
 };

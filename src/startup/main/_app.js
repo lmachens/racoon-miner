@@ -10,7 +10,7 @@ import Reboot from 'material-ui/Reboot';
 import { Router } from 'react-router';
 import createHistory from 'history/createMemoryHistory';
 import { light } from '../../ui/themes';
-import { navigation } from './_navigation';
+import { links } from './_links';
 import { routes } from './_routes';
 
 const history = createHistory();
@@ -21,10 +21,7 @@ const App = (
       <Router history={history}>
         <MuiThemeProvider theme={light}>
           <Reboot />
-          <AppLayout>
-            {navigation}
-            {routes}
-          </AppLayout>
+          <AppLayout links={links}>{routes}</AppLayout>
         </MuiThemeProvider>
       </Router>
     </PersistGate>
