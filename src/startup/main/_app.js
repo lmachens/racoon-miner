@@ -21,7 +21,9 @@ const App = (
       <Router history={history}>
         <MuiThemeProvider theme={light}>
           <Reboot />
-          <AppLayout links={links}>{routes}</AppLayout>
+          <AppLayout title="Raccoon Miner" links={links}>
+            {routes}
+          </AppLayout>
         </MuiThemeProvider>
       </Router>
     </PersistGate>

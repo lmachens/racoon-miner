@@ -6,14 +6,14 @@ import PropTypes from 'prop-types';
 
 export class AppLayout extends Component {
   render() {
-    const { children, links = [] } = this.props;
+    const { children, links, title } = this.props;
 
     return (
       <Fragment>
-        <AppBar position="static" color="inherit">
+        <AppBar position="sticky" color="inherit">
           <Toolbar>
             <Typography variant="title" color="inherit">
-              Raccoon Miner
+              {title}
             </Typography>
             {links.map(link => (
               <Link key={link.title} to={link.to}>
@@ -30,5 +30,6 @@ export class AppLayout extends Component {
 
 AppLayout.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
-  links: PropTypes.array
+  links: PropTypes.array.isRequired,
+  title: PropTypes.string.isRequired
 };

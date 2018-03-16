@@ -1,8 +1,9 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
-import minify from 'rollup-plugin-babel-minify';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
+
+//import minify from 'rollup-plugin-babel-minify';
 
 export default [
   {
@@ -21,7 +22,8 @@ export default [
       nodeResolve({
         module: true,
         jsnext: true,
-        browser: true
+        browser: true,
+        preferBuiltins: false
       }),
       commonjs({
         include: ['node_modules/**'],
@@ -31,17 +33,23 @@ export default [
             'PureComponent',
             'Children',
             'createElement',
-            'Fragment'
+            'Fragment',
+            'cloneElement',
+            'isValidElement'
           ],
-          'node_modules/material-ui/styles/index.js': ['MuiThemeProvider', 'createMuiTheme']
+          'node_modules/material-ui/styles/index.js': ['MuiThemeProvider', 'createMuiTheme'],
+          'node_modules/recharts-scale/es6/index.js': [
+            'getNiceTickValues',
+            'getTickValuesFixedDomain'
+          ]
         }
       }),
       babel({
         exclude: 'node_modules/**'
-      }),
+      }) /*,
       minify({
         comments: false
-      })
+      })*/
     ]
   }
 ];

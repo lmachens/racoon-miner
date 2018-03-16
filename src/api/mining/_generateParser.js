@@ -4,6 +4,6 @@ export const generateParser = regex => line => {
   };
   const parsed = line.match(regex);
   if (!parsed) return;
-  result.speed = parsed[1];
+  result.speed = parseFloat(parsed[1]);
   return result;
 };

@@ -1,3 +1,4 @@
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import React, { Component } from 'react';
 import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
 
@@ -6,12 +7,11 @@ import { ethereum } from '../../../api/mining';
 
 getProcessManagerPlugin();
 
-const hidden = true;
-
 export class Mining extends Component {
   state = {
     isMining: false,
-    miner: ethereum
+    miner: ethereum,
+    history: []
   };
 
   componentWillUnmount() {
@@ -28,6 +28,7 @@ export class Mining extends Component {
     const { miner: { path, args, environmentVariables } } = this.state;
 
     processManager.onDataReceivedEvent.addListener(this.handleData);
+    const hidden = true;
     processManager.launchProcess(path, args, environmentVariables, hidden, this.handleLaunch);
     this.setState({ isMining: true });
   };
@@ -49,17 +50,22 @@ export class Mining extends Component {
   handleData = ({ error, data }) => {
     const { miner: { parser } } = this.state;
 
-    const parsed = parser(error || data);
-
-    this.setState({
-      error,
-      data,
-      ...parsed
+    this.setState(state => {
+      const newState = {
+        error,
+        data
+      };
+      const parsed = parser(error || data);
+      if (parsed) {
+        newState.speed = parsed.speed;
+        newState.history = [...state.history, { name: parsed.timestamp, mhs: parsed.speed }];
+      }
+      return newState;
     });
   };
 
   render() {
-    const { error, data, processId, isMining, speed } = this.state;
+    const { error, data, processId, isMining, speed, history } = this.state;
 
     return (
       <div>
@@ -72,6 +78,14 @@ export class Mining extends Component {
           <br />Data: {data}
           <br />ProcessId:{processId}
         </div>
+        <ResponsiveContainer>
+          <AreaChart data={history}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Area type="monotone" dataKey="mhs" stroke="#8884d8" fill="#8884d8" />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
     );
   }
