@@ -17,5 +17,5 @@ import { getSimpleIoPlugin } from '../plugins';
     simpleIoPlugin.listenOnFile(fileName, path, skipToEndOfFile, () => {});
   });
 
-  console.info('Hot reload is active');
+  console.info('%cHot reload is active', 'color: blue');
 })();
