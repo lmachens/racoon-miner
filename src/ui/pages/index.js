@@ -1,2 +1,2 @@
 export * from './_Mining';
-export * from './_Welcome';
+export * from './_Support';

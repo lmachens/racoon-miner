@@ -1,10 +1,10 @@
 export const links = [
   {
-    to: '/',
-    title: 'Welcome'
-  },
-  {
     to: '/mining',
     title: 'Mining'
+  },
+  {
+    to: '/support',
+    title: 'Support'
   }
 ];

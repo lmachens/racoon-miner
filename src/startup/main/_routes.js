@@ -1,11 +1,11 @@
-import { MiningPage, WelcomePage } from '../../ui/pages';
+import { MiningPage, SupportPage } from '../../ui/pages';
 import React, { Fragment } from 'react';
-
-import { Route } from 'react-router';
+import { Redirect, Route } from 'react-router';
 
 export const routes = (
   <Fragment>
-    <Route path="/" exact component={WelcomePage} />
     <Route path="/mining" exact component={MiningPage} />
+    <Route path="/support" exact component={SupportPage} />
+    <Redirect path="/" to="/mining" />
   </Fragment>
 );
