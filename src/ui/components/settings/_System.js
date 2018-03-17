@@ -4,7 +4,7 @@ import { CardLayout } from '../../layouts';
 
 class System extends Component {
   render() {
-    return <CardLayout>Language</CardLayout>;
+    return <CardLayout title="System">Language</CardLayout>;
   }
 }
 

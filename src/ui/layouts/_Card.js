@@ -6,16 +6,15 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   card: {
-    minWidth: 275
+    minWidth: 275,
+    margin: '20 0'
   }
 };
 
 const CardLayout = ({ classes, children, title }) => (
   <Card className={classes.card}>
     <CardContent>
-      <Typography variant="headline" component="h2">
-        {title}
-      </Typography>
+      <Typography variant="subheading">{title}</Typography>
       {children}
     </CardContent>
   </Card>

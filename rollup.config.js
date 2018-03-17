@@ -44,6 +44,12 @@ export default [
             'withStyles'
           ],
           'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent'],
+          'node_modules/material-ui/Table/index.js': [
+            'TableBody',
+            'TableRow',
+            'TableCell',
+            'TableHead'
+          ],
           'node_modules/recharts-scale/es6/index.js': [
             'getNiceTickValues',
             'getTickValuesFixedDomain'
