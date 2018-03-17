@@ -44990,7 +44990,7 @@ class Mining extends react_1 {
         { style: { height: 'calc(100% - 140px)' } },
         react.createElement(
           ResponsiveContainer,
-          { minHeight: 200 },
+          { minHeight: 200, minWidth: 200 },
           react.createElement(
             AreaChart,
             { data: miningHistory },

@@ -23,8 +23,12 @@
         "resizable": true,
         "show_in_taskbar": true,
         "size": {
-          "width": 400,
-          "height": 400
+          "width": 800,
+          "height": 600
+        },
+        "min_size": {
+          "width": 700,
+          "height": 500
         },
         "start_position": {
           "Top": 100,

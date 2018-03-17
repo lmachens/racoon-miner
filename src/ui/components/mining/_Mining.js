@@ -82,7 +82,7 @@ export class Mining extends Component {
           <br />ProcessId:{processId}
         </div>
         <div style={{ height: 'calc(100% - 140px)' }}>
-          <ResponsiveContainer minHeight={200}>
+          <ResponsiveContainer minHeight={200} minWidth={200}>
             <AreaChart data={miningHistory}>
               <XAxis dataKey="name" />
               <YAxis />
