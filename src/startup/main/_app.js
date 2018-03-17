@@ -1,12 +1,12 @@
 import { persistor, store } from '../../store';
 
 import { AppLayout } from '../../ui/layouts';
+import CssBaseline from 'material-ui/CssBaseline';
 import { MuiThemeProvider } from 'material-ui/styles';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Reboot from 'material-ui/Reboot';
 import { Router } from 'react-router';
 import createHistory from 'history/createMemoryHistory';
 import { light } from '../../ui/themes';
@@ -20,7 +20,7 @@ const App = (
     <PersistGate loading={null} persistor={persistor}>
       <Router history={history}>
         <MuiThemeProvider theme={light}>
-          <Reboot />
+          <CssBaseline />
           <AppLayout title="Raccoon Miner" links={links}>
             {routes}
           </AppLayout>

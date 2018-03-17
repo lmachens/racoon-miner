@@ -1,8 +1,15 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+
+import { PageLayout } from '../layouts';
+import { System } from '../components/settings';
 
 class SettingsPage extends Component {
   render() {
-    return <Fragment>Settings</Fragment>;
+    return (
+      <PageLayout title="Settings">
+        <System />
+      </PageLayout>
+    );
   }
 }
 
