@@ -3,11 +3,19 @@ import React, { Component, Fragment } from 'react';
 import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
 
 import { Button } from '../generic';
+import PropTypes from 'prop-types';
 import { ethereum } from '../../../api/mining';
+import { withStyles } from 'material-ui/styles';
+
+const styles = {
+  chart: {
+    height: 'calc(100% - 140px)'
+  }
+};
 
 getProcessManagerPlugin();
 
-export class Mining extends Component {
+class Mining extends Component {
   state = {
     isMining: false,
     miner: ethereum,
@@ -68,6 +76,7 @@ export class Mining extends Component {
   };
 
   render() {
+    const { classes } = this.props;
     const { error, data, processId, isMining, speed, miningHistory } = this.state;
 
     return (
@@ -81,7 +90,7 @@ export class Mining extends Component {
           <br />Data: {data}
           <br />ProcessId:{processId}
         </div>
-        <div style={{ height: 'calc(100% - 140px)' }}>
+        <div className={classes.chart}>
           <ResponsiveContainer minHeight={200} minWidth={200}>
             <AreaChart data={miningHistory}>
               <XAxis dataKey="name" />
@@ -95,3 +104,10 @@ export class Mining extends Component {
     );
   }
 }
+
+Mining.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
+const MiningWithStyles = withStyles(styles)(Mining);
+export { MiningWithStyles as Mining };

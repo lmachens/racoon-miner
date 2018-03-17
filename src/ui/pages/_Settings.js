@@ -1,7 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
-export class SettingsPage extends Component {
+class SettingsPage extends Component {
   render() {
-    return <div>Settings</div>;
+    return <Fragment>Settings</Fragment>;
   }
 }
+
+export { SettingsPage };

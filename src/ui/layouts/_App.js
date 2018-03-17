@@ -3,10 +3,18 @@ import React, { Component, Fragment } from 'react';
 
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
 
-export class AppLayout extends Component {
+const styles = {
+  children: {
+    overflow: 'auto',
+    height: 'calc(100% - 64px)'
+  }
+};
+
+class AppLayout extends Component {
   render() {
-    const { children, links, title } = this.props;
+    const { classes, children, links, title } = this.props;
 
     return (
       <Fragment>
@@ -22,14 +30,18 @@ export class AppLayout extends Component {
             ))}
           </Toolbar>
         </AppBar>
-        <div style={{ overflow: 'auto', height: 'calc(100% - 64px)' }}>{children}</div>
+        <div className={classes.children}>{children}</div>
       </Fragment>
     );
   }
 }
 
 AppLayout.propTypes = {
+  classes: PropTypes.object.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
   links: PropTypes.array.isRequired,
   title: PropTypes.string.isRequired
 };
+
+const AppLayoutWithStyles = withStyles(styles)(AppLayout);
+export { AppLayoutWithStyles as AppLayout };

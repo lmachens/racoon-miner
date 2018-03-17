@@ -15699,50 +15699,6 @@ var hoistNonReactStatics$1 = createCommonjsModule(function (module, exports) {
 
 // Written in this round about way for babel-transform-imports
 
-class AppLayout extends react_1 {
-  render() {
-    const { children, links, title } = this.props;
-
-    return react.createElement(
-      react_5,
-      null,
-      react.createElement(
-        AppBar$2,
-        { position: 'sticky', color: 'inherit' },
-        react.createElement(
-          Toolbar$2,
-          null,
-          react.createElement(
-            Typography$2,
-            { variant: 'title', color: 'inherit' },
-            title
-          ),
-          links.map(link => react.createElement(
-            Link,
-            { key: link.title, to: link.to },
-            react.createElement(
-              Typography$2,
-              null,
-              link.title
-            )
-          ))
-        )
-      ),
-      react.createElement(
-        'div',
-        { style: { overflow: 'auto', height: 'calc(100% - 64px)' } },
-        children
-      )
-    );
-  }
-}
-
-AppLayout.propTypes = {
-  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]),
-  links: propTypes.array.isRequired,
-  title: propTypes.string.isRequired
-};
-
 function createBroadcast (initialState) {
   var listeners = {};
   var id = 1;
@@ -16197,6 +16153,61 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 unwrapExports(styles);
 var styles_1 = styles.MuiThemeProvider;
 var styles_2 = styles.createMuiTheme;
+var styles_3 = styles.withStyles;
+
+const styles$1 = {
+  children: {
+    overflow: 'auto',
+    height: 'calc(100% - 64px)'
+  }
+};
+
+class AppLayout extends react_1 {
+  render() {
+    const { classes, children, links, title } = this.props;
+
+    return react.createElement(
+      react_5,
+      null,
+      react.createElement(
+        AppBar$2,
+        { position: 'sticky', color: 'inherit' },
+        react.createElement(
+          Toolbar$2,
+          null,
+          react.createElement(
+            Typography$2,
+            { variant: 'title', color: 'inherit' },
+            title
+          ),
+          links.map(link => react.createElement(
+            Link,
+            { key: link.title, to: link.to },
+            react.createElement(
+              Typography$2,
+              null,
+              link.title
+            )
+          ))
+        )
+      ),
+      react.createElement(
+        'div',
+        { className: classes.children },
+        children
+      )
+    );
+  }
+}
+
+AppLayout.propTypes = {
+  classes: propTypes.object.isRequired,
+  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]),
+  links: propTypes.array.isRequired,
+  title: propTypes.string.isRequired
+};
+
+const AppLayoutWithStyles = styles_3(styles$1)(AppLayout);
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -44945,6 +44956,12 @@ const ethereum = {
   })
 };
 
+const styles$2 = {
+  chart: {
+    height: 'calc(100% - 140px)'
+  }
+};
+
 getProcessManagerPlugin();
 
 class Mining extends react_1 {
@@ -44959,6 +44976,7 @@ class Mining extends react_1 {
   }
 
   render() {
+    const { classes } = this.props;
     const { error, data, processId, isMining, speed, miningHistory } = this.state;
 
     return react.createElement(
@@ -44987,7 +45005,7 @@ class Mining extends react_1 {
       ),
       react.createElement(
         'div',
-        { style: { height: 'calc(100% - 140px)' } },
+        { className: classes.chart },
         react.createElement(
           ResponsiveContainer,
           { minHeight: 200, minWidth: 200 },
@@ -45058,6 +45076,12 @@ var _initialiseProps = function () {
   };
 };
 
+Mining.propTypes = {
+  classes: propTypes.object.isRequired
+};
+
+const MiningWithStyles = styles_3(styles$2)(Mining);
+
 class MiningPage extends react_1 {
   render() {
     return react.createElement(
@@ -45068,7 +45092,7 @@ class MiningPage extends react_1 {
         { variant: 'headline' },
         'Mining'
       ),
-      react.createElement(Mining, null)
+      react.createElement(MiningWithStyles, null)
     );
   }
 }
@@ -45076,7 +45100,7 @@ class MiningPage extends react_1 {
 class SettingsPage extends react_1 {
   render() {
     return react.createElement(
-      'div',
+      react_5,
       null,
       'Settings'
     );
@@ -45118,7 +45142,7 @@ const App = react.createElement(
         { theme: light },
         react.createElement(Reboot$2, null),
         react.createElement(
-          AppLayout,
+          AppLayoutWithStyles,
           { title: 'Raccoon Miner', links: links },
           routes
         )

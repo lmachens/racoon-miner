@@ -37,7 +37,11 @@ export default [
             'cloneElement',
             'isValidElement'
           ],
-          'node_modules/material-ui/styles/index.js': ['MuiThemeProvider', 'createMuiTheme'],
+          'node_modules/material-ui/styles/index.js': [
+            'MuiThemeProvider',
+            'createMuiTheme',
+            'withStyles'
+          ],
           'node_modules/recharts-scale/es6/index.js': [
             'getNiceTickValues',
             'getTickValuesFixedDomain'
