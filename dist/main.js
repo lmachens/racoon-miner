@@ -15728,7 +15728,11 @@ class AppLayout extends react_1 {
           ))
         )
       ),
-      children
+      react.createElement(
+        'div',
+        { style: { overflow: 'auto', height: 'calc(100% - 64px)' } },
+        children
+      )
     );
   }
 }
@@ -44955,10 +44959,10 @@ class Mining extends react_1 {
   }
 
   render() {
-    const { error, data, processId, isMining, speed, history } = this.state;
+    const { error, data, processId, isMining, speed, miningHistory } = this.state;
 
     return react.createElement(
-      'div',
+      react_5,
       null,
       react.createElement(
         Button$2,
@@ -44982,15 +44986,19 @@ class Mining extends react_1 {
         processId
       ),
       react.createElement(
-        ResponsiveContainer,
-        null,
+        'div',
+        { style: { height: 'calc(100% - 140px)' } },
         react.createElement(
-          AreaChart,
-          { data: history },
-          react.createElement(XAxis, { dataKey: 'name' }),
-          react.createElement(YAxis, null),
-          react.createElement(CartesianGrid, { strokeDasharray: '3 3' }),
-          react.createElement(Area, { type: 'monotone', dataKey: 'mhs', stroke: '#8884d8', fill: '#8884d8' })
+          ResponsiveContainer,
+          { minHeight: 200 },
+          react.createElement(
+            AreaChart,
+            { data: miningHistory },
+            react.createElement(XAxis, { dataKey: 'name' }),
+            react.createElement(YAxis, null),
+            react.createElement(CartesianGrid, { strokeDasharray: '3 3' }),
+            react.createElement(Area, { type: 'monotone', dataKey: 'mhs', stroke: '#8884d8', fill: '#8884d8' })
+          )
         )
       )
     );
@@ -45001,7 +45009,7 @@ var _initialiseProps = function () {
   this.state = {
     isMining: false,
     miner: ethereum,
-    history: []
+    miningHistory: []
   };
 
   this.handleMiningClick = () => {
@@ -45043,7 +45051,7 @@ var _initialiseProps = function () {
       const parsed = parser(error || data);
       if (parsed) {
         newState.speed = parsed.speed;
-        newState.history = [...state.history, { name: parsed.timestamp, mhs: parsed.speed }];
+        newState.miningHistory = [...state.miningHistory, { name: parsed.timestamp, mhs: parsed.speed }];
       }
       return newState;
     });
@@ -45053,7 +45061,7 @@ var _initialiseProps = function () {
 class MiningPage extends react_1 {
   render() {
     return react.createElement(
-      'div',
+      react_5,
       null,
       react.createElement(
         Typography$2,

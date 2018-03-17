@@ -1,5 +1,5 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
 
 import { Button } from '../generic';
@@ -11,7 +11,7 @@ export class Mining extends Component {
   state = {
     isMining: false,
     miner: ethereum,
-    history: []
+    miningHistory: []
   };
 
   componentWillUnmount() {
@@ -58,17 +58,20 @@ export class Mining extends Component {
       const parsed = parser(error || data);
       if (parsed) {
         newState.speed = parsed.speed;
-        newState.history = [...state.history, { name: parsed.timestamp, mhs: parsed.speed }];
+        newState.miningHistory = [
+          ...state.miningHistory,
+          { name: parsed.timestamp, mhs: parsed.speed }
+        ];
       }
       return newState;
     });
   };
 
   render() {
-    const { error, data, processId, isMining, speed, history } = this.state;
+    const { error, data, processId, isMining, speed, miningHistory } = this.state;
 
     return (
-      <div>
+      <Fragment>
         <Button onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
@@ -78,15 +81,17 @@ export class Mining extends Component {
           <br />Data: {data}
           <br />ProcessId:{processId}
         </div>
-        <ResponsiveContainer>
-          <AreaChart data={history}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Area type="monotone" dataKey="mhs" stroke="#8884d8" fill="#8884d8" />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+        <div style={{ height: 'calc(100% - 140px)' }}>
+          <ResponsiveContainer minHeight={200}>
+            <AreaChart data={miningHistory}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <CartesianGrid strokeDasharray="3 3" />
+              <Area type="monotone" dataKey="mhs" stroke="#8884d8" fill="#8884d8" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </Fragment>
     );
   }
 }

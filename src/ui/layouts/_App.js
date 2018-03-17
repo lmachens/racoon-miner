@@ -22,7 +22,7 @@ export class AppLayout extends Component {
             ))}
           </Toolbar>
         </AppBar>
-        {children}
+        <div style={{ overflow: 'auto', height: 'calc(100% - 64px)' }}>{children}</div>
       </Fragment>
     );
   }

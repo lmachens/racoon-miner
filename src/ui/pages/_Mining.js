@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 import { Mining } from '../components/mining';
 import { Typography } from '../components/generic';
@@ -6,10 +6,10 @@ import { Typography } from '../components/generic';
 export class MiningPage extends Component {
   render() {
     return (
-      <div>
+      <Fragment>
         <Typography variant="headline">Mining</Typography>
         <Mining />
-      </div>
+      </Fragment>
     );
   }
 }
