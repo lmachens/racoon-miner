@@ -1238,6 +1238,8 @@ const generateParser = regex => line => {
 const ETHEREUM_MINER = 'ETHEREUM_MINER';
 const ethereum = {
   name: 'Ethereum',
+  identifier: ETHEREUM_MINER,
+  logo: 'assets/ethereum.png',
   currency: 'Ether',
   parser: generateParser(/Speed\s+(.+)\sMh\/s/),
   path: 'ethminer.exe',
@@ -1251,10 +1253,27 @@ const ethereum = {
   })
 };
 
-const getMiner = identifier => {
-  switch (identifier) {
+//import { generateParser } from './_generateParser';
+
+const MONERO_MINER = 'MONERO_MINER';
+const monero = {
+  disabled: true,
+  name: 'Monero',
+  identifier: MONERO_MINER,
+  logo: 'assets/monero.png',
+  currency: 'XMR',
+  parser: () => {},
+  path: '',
+  args: '',
+  environmentVariables: JSON.stringify({})
+};
+
+const getMiner = minerIdentifier => {
+  switch (minerIdentifier) {
     case ETHEREUM_MINER:
       return ethereum;
+    case MONERO_MINER:
+      return monero;
   }
 };
 
@@ -4510,26 +4529,41 @@ var _extends$5 = Object.assign || function (target) {
   return target;
 };
 
+var objectWithoutProperties = function (obj, keys) {
+  var target = {};
+
+  for (var i in obj) {
+    if (keys.indexOf(i) >= 0) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+    target[i] = obj[i];
+  }
+
+  return target;
+};
+
 const mining = (state = {
-  identifier: ETHEREUM_MINER,
+  currentMinerIdentifier: ETHEREUM_MINER,
   currentAddress: '',
   addresses: {},
   isMining: false,
-  currentSpeed: null,
+  currentSpeed: 0,
   history: []
 }, { type, data }) => {
   switch (type) {
     case SET_MINING_ADDRESS:
       return _extends$5({}, state, {
         currentAddress: data,
-        addresses: _extends$5({}, state.addresses, { [state.identifier]: data })
+        addresses: _extends$5({}, state.addresses, { [state.currentMinerIdentifier]: data })
       });
     case REMOVE_MINING_ADDRESS:
-      return _extends$5({}, state, { currentAddress: '', addresses: omit_1(state.addresses, data.identifier) });
+      return _extends$5({}, state, {
+        currentAddress: '',
+        addresses: omit_1(state.addresses, data.currentMinerIdentifier)
+      });
     case SELECT_MINER:
       return _extends$5({}, state, {
-        identifier: data,
-        currentAddress: state.addresses[state.identifier] || ''
+        currentMinerIdentifier: data,
+        currentAddress: state.addresses[data] || ''
       });
     case SET_MINING_SPEED:
       return _extends$5({}, state, { currentSpeed: data.speed, history: [data, ...state.history] });
@@ -33374,7 +33408,7 @@ Object.defineProperty(exports, 'default', {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 });
 
-unwrapExports(ButtonBase$1);
+var ButtonBase$2 = unwrapExports(ButtonBase$1);
 
 var Button_1 = createCommonjsModule(function (module, exports) {
 
@@ -36999,6 +37033,21 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 unwrapExports(Form);
 var Form_1 = Form.FormControl;
 var Form_2 = Form.FormHelperText;
+
+const ImageButton = (_ref) => {
+  let { src, imgProps } = _ref,
+      other = objectWithoutProperties(_ref, ['src', 'imgProps']);
+  return react.createElement(
+    ButtonBase$2,
+    _extends$5({ focusRipple: true }, other),
+    react.createElement('img', _extends$5({ src: src }, imgProps))
+  );
+};
+
+ImageButton.propTypes = {
+  src: propTypes.string.isRequired,
+  imgProps: propTypes.object
+};
 
 var InputAdornment_1 = createCommonjsModule(function (module, exports) {
 
@@ -48497,7 +48546,7 @@ AppLayout.propTypes = {
   title: propTypes.string.isRequired
 };
 
-const AppLayoutWithStyles = styles_3(styles$1)(AppLayout);
+const enhance = styles_3(styles$1)(AppLayout);
 
 const styles$2 = {
   card: {
@@ -48527,7 +48576,7 @@ CardLayout.propTypes = {
   title: propTypes.string.isRequired
 };
 
-const CardLayoutWithStyles = styles_3(styles$2)(CardLayout);
+const enhance$1 = styles_3(styles$2)(CardLayout);
 
 const styles$3 = {
   wrapper: {
@@ -48559,7 +48608,7 @@ PageLayout.propTypes = {
   title: propTypes.string.isRequired
 };
 
-const PageLayoutWithStyles = styles_3(styles$3)(PageLayout);
+const enhance$2 = styles_3(styles$3)(PageLayout);
 
 var CssBaseline_1 = createCommonjsModule(function (module, exports) {
 
@@ -50887,20 +50936,20 @@ const setMiningAddress = address => {
   };
 };
 
-const removeMiningAddress = identifier => {
+const removeMiningAddress = minerIdentifier => {
   return dispatch => {
     dispatch({
       type: REMOVE_MINING_ADDRESS,
-      data: identifier
+      data: minerIdentifier
     });
   };
 };
 
-const selectMiner = identifier => {
+const selectMiner = minerIdentifier => {
   return dispatch => {
     dispatch({
       type: SELECT_MINER,
-      data: identifier
+      data: minerIdentifier
     });
   };
 };
@@ -50915,7 +50964,7 @@ const startMining = () => {
   return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
     const state = getState();
-    const { parser, path, args, environmentVariables } = getMiner(state.mining.identifier);
+    const { parser, path, args, environmentVariables } = getMiner(state.mining.minerIdentifier);
 
     dispatch({
       type: START_MINING
@@ -51048,7 +51097,63 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const enhance = compose$1(styles_3(styles$4), connect(mapStateToProps, mapDispatchToProps))(Address);
+const enhance$3 = compose$1(styles_3(styles$4), connect(mapStateToProps, mapDispatchToProps))(Address);
+
+const styles$5 = {
+  inactive: {
+    opacity: 0.25
+  }
+};
+
+class Miner extends react_1 {
+  constructor(...args) {
+    var _temp;
+
+    return _temp = super(...args), this.handleClick = event => {
+      const { selectMiner: selectMiner$$1 } = this.props;
+      const miningIdentifier = event.currentTarget.getAttribute('data-mining-identifier');
+      selectMiner$$1(miningIdentifier);
+    }, _temp;
+  }
+
+  render() {
+    const { classes, currentMinerIdentifier } = this.props;
+
+    return react.createElement(
+      'div',
+      null,
+      [ethereum, monero].map(miner => react.createElement(ImageButton, {
+        key: miner.name,
+        src: miner.logo,
+        onClick: this.handleClick,
+        'data-mining-identifier': miner.identifier,
+        className: classnames({
+          [classes.inactive]: currentMinerIdentifier !== miner.identifier
+        })
+      }))
+    );
+  }
+}
+
+Miner.propTypes = {
+  classes: propTypes.object.isRequired,
+  currentMinerIdentifier: propTypes.string.isRequired,
+  selectMiner: propTypes.func.isRequired
+};
+
+const mapStateToProps$1 = ({ mining: { currentMinerIdentifier } }) => {
+  return {
+    currentMinerIdentifier
+  };
+};
+
+const mapDispatchToProps$1 = dispatch => {
+  return {
+    selectMiner: bindActionCreators(selectMiner, dispatch)
+  };
+};
+
+const enhance$4 = compose$1(styles_3(styles$5), connect(mapStateToProps$1, mapDispatchToProps$1))(Miner);
 
 var _global$1 = createCommonjsModule(function (module) {
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
@@ -76253,7 +76358,7 @@ generateCategoricalChart({
   formatAxisMap: formatAxisMap$1
 });
 
-const styles$5 = {
+const styles$6 = {
   chart: {
     height: 'calc(100% - 140px)'
   }
@@ -76264,20 +76369,21 @@ class Mining extends react_1 {
     var _temp;
 
     return _temp = super(...args), this.handleMiningClick = () => {
-      const { mining: { isMining }, startMining: startMining$$1, stopMining: stopMining$$1 } = this.props;
+      const { isMining, startMining: startMining$$1, stopMining: stopMining$$1 } = this.props;
       if (isMining) stopMining$$1();else startMining$$1();
     }, _temp;
   }
 
   render() {
-    const { classes, mining: { isMining, currentSpeed, history } } = this.props;
+    const { classes, currentMinerIdentifier, isMining, currentSpeed, history } = this.props;
+    const miner = getMiner(currentMinerIdentifier);
 
     return react.createElement(
       react_5,
       null,
       react.createElement(
         Button$2,
-        { onClick: this.handleMiningClick },
+        { disabled: miner.disabled, onClick: this.handleMiningClick },
         isMining ? 'Stop mining' : 'Start mining'
       ),
       react.createElement(
@@ -76309,19 +76415,27 @@ class Mining extends react_1 {
 
 Mining.propTypes = {
   classes: propTypes.object.isRequired,
-  mining: propTypes.object.isRequired,
+  currentMinerIdentifier: propTypes.string.isRequired,
+  isMining: propTypes.bool.isRequired,
+  currentSpeed: propTypes.number.isRequired,
+  history: propTypes.array.isRequired,
   startMining: propTypes.func.isRequired,
   stopMining: propTypes.func.isRequired,
   selectMiner: propTypes.func.isRequired
 };
 
-const mapStateToProps$1 = ({ mining }) => {
+const mapStateToProps$2 = ({
+  mining: { currentMinerIdentifier, isMining, currentSpeed, history }
+}) => {
   return {
-    mining
+    currentMinerIdentifier,
+    isMining,
+    currentSpeed,
+    history
   };
 };
 
-const mapDispatchToProps$1 = dispatch => {
+const mapDispatchToProps$2 = dispatch => {
   return {
     startMining: bindActionCreators(startMining, dispatch),
     stopMining: bindActionCreators(stopMining, dispatch),
@@ -76329,13 +76443,14 @@ const mapDispatchToProps$1 = dispatch => {
   };
 };
 
-const enhance$1 = compose$1(styles_3(styles$5), connect(mapStateToProps$1, mapDispatchToProps$1))(Mining);
+const enhance$5 = compose$1(styles_3(styles$6), connect(mapStateToProps$2, mapDispatchToProps$2))(Mining);
 
 const MiningPage = () => react.createElement(
-  PageLayoutWithStyles,
+  enhance$2,
   { title: 'Mining' },
-  react.createElement(enhance, null),
-  react.createElement(enhance$1, null)
+  react.createElement(enhance$4, null),
+  react.createElement(enhance$3, null),
+  react.createElement(enhance$5, null)
 );
 
 class Hardware extends react_1 {
@@ -76354,7 +76469,7 @@ class Hardware extends react_1 {
     console.log(data, isListening);
     const gpus = get_1(data, 'Gpus.Gpus') || [];
     return react.createElement(
-      CardLayoutWithStyles,
+      enhance$1,
       { title: 'Hardware' },
       react.createElement(
         Table$2,
@@ -76388,25 +76503,25 @@ Hardware.propTypes = {
   stopTrackingHardwareInfo: propTypes.func.isRequired
 };
 
-const mapStateToProps$2 = ({ hardwareInfo }) => {
+const mapStateToProps$3 = ({ hardwareInfo }) => {
   return {
     hardwareInfo
   };
 };
 
-const mapDispatchToProps$2 = dispatch => {
+const mapDispatchToProps$3 = dispatch => {
   return {
     trackHardwareInfo: bindActionCreators(trackHardwareInfo, dispatch),
     stopTrackingHardwareInfo: bindActionCreators(stopTrackingHardwareInfo, dispatch)
   };
 };
 
-const HardwareWithStore = connect(mapStateToProps$2, mapDispatchToProps$2)(Hardware);
+const enhance$6 = connect(mapStateToProps$3, mapDispatchToProps$3)(Hardware);
 
 class System extends react_1 {
   render() {
     return react.createElement(
-      CardLayoutWithStyles,
+      enhance$1,
       { title: 'System' },
       'Language'
     );
@@ -76414,10 +76529,10 @@ class System extends react_1 {
 }
 
 const SettingsPage = () => react.createElement(
-  PageLayoutWithStyles,
+  enhance$2,
   { title: 'Settings' },
   react.createElement(System, null),
-  react.createElement(HardwareWithStore, null)
+  react.createElement(enhance$6, null)
 );
 
 const Discord = () => react.createElement("embed", {
@@ -76426,14 +76541,14 @@ const Discord = () => react.createElement("embed", {
   src: "https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/"
 });
 
-const styles$6 = {
+const styles$7 = {
   discord: {
     height: 'calc(100% - 82px)'
   }
 };
 
 const SupportPage = ({ classes }) => react.createElement(
-  PageLayoutWithStyles,
+  enhance$2,
   { title: 'Support' },
   react.createElement(
     'div',
@@ -76446,7 +76561,7 @@ SupportPage.propTypes = {
   classes: propTypes.object.isRequired
 };
 
-const SupportPageWithStyles = styles_3(styles$6)(SupportPage);
+const enhance$7 = styles_3(styles$7)(SupportPage);
 
 const routes = react.createElement(
   react_5,
@@ -76454,7 +76569,7 @@ const routes = react.createElement(
   react.createElement(Redirect, { path: '/', exact: true, to: '/mining' }),
   react.createElement(Route, { path: '/mining', exact: true, component: MiningPage }),
   react.createElement(Route, { path: '/settings', exact: true, component: SettingsPage }),
-  react.createElement(Route, { path: '/support', exact: true, component: SupportPageWithStyles })
+  react.createElement(Route, { path: '/support', exact: true, component: enhance$7 })
 );
 
 const history = createHistory$2();
@@ -76474,7 +76589,7 @@ const App = react.createElement(
         { theme: light },
         react.createElement(CssBaseline$2, null),
         react.createElement(
-          AppLayoutWithStyles,
+          enhance,
           { title: 'Raccoon Miner', links: links },
           routes
         )

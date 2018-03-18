@@ -19,20 +19,20 @@ export const setMiningAddress = address => {
   };
 };
 
-export const removeMiningAddress = identifier => {
+export const removeMiningAddress = minerIdentifier => {
   return dispatch => {
     dispatch({
       type: REMOVE_MINING_ADDRESS,
-      data: identifier
+      data: minerIdentifier
     });
   };
 };
 
-export const selectMiner = identifier => {
+export const selectMiner = minerIdentifier => {
   return dispatch => {
     dispatch({
       type: SELECT_MINER,
-      data: identifier
+      data: minerIdentifier
     });
   };
 };
@@ -47,7 +47,7 @@ export const startMining = () => {
   return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
     const state = getState();
-    const { parser, path, args, environmentVariables } = getMiner(state.mining.identifier);
+    const { parser, path, args, environmentVariables } = getMiner(state.mining.minerIdentifier);
 
     dispatch({
       type: START_MINING

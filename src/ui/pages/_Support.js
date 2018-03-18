@@ -22,5 +22,5 @@ SupportPage.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-const SupportPageWithStyles = withStyles(styles)(SupportPage);
-export { SupportPageWithStyles as SupportPage };
+const enhance = withStyles(styles)(SupportPage);
+export { enhance as SupportPage };

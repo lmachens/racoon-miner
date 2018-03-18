@@ -57,5 +57,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const HardwareWithStore = connect(mapStateToProps, mapDispatchToProps)(Hardware);
-export { HardwareWithStore as Hardware };
+const enhance = connect(mapStateToProps, mapDispatchToProps)(Hardware);
+export { enhance as Hardware };

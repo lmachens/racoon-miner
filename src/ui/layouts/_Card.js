@@ -26,5 +26,5 @@ CardLayout.propTypes = {
   title: PropTypes.string.isRequired
 };
 
-const CardLayoutWithStyles = withStyles(styles)(CardLayout);
-export { CardLayoutWithStyles as CardLayout };
+const enhance = withStyles(styles)(CardLayout);
+export { enhance as CardLayout };

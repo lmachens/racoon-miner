@@ -37,5 +37,5 @@ AppLayout.propTypes = {
   title: PropTypes.string.isRequired
 };
 
-const AppLayoutWithStyles = withStyles(styles)(AppLayout);
-export { AppLayoutWithStyles as AppLayout };
+const enhance = withStyles(styles)(AppLayout);
+export { enhance as AppLayout };

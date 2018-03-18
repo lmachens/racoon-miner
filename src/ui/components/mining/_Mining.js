@@ -7,6 +7,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
+import { getMiner } from '../../../api/mining';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -17,17 +18,18 @@ const styles = {
 
 class Mining extends Component {
   handleMiningClick = () => {
-    const { mining: { isMining }, startMining, stopMining } = this.props;
+    const { isMining, startMining, stopMining } = this.props;
     if (isMining) stopMining();
     else startMining();
   };
 
   render() {
-    const { classes, mining: { isMining, currentSpeed, history } } = this.props;
+    const { classes, currentMinerIdentifier, isMining, currentSpeed, history } = this.props;
+    const miner = getMiner(currentMinerIdentifier);
 
     return (
       <Fragment>
-        <Button onClick={this.handleMiningClick}>
+        <Button disabled={miner.disabled} onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
         <Typography>Speed: {currentSpeed} Mh/s</Typography>
@@ -48,15 +50,23 @@ class Mining extends Component {
 
 Mining.propTypes = {
   classes: PropTypes.object.isRequired,
-  mining: PropTypes.object.isRequired,
+  currentMinerIdentifier: PropTypes.string.isRequired,
+  isMining: PropTypes.bool.isRequired,
+  currentSpeed: PropTypes.number.isRequired,
+  history: PropTypes.array.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
   selectMiner: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining }) => {
+const mapStateToProps = ({
+  mining: { currentMinerIdentifier, isMining, currentSpeed, history }
+}) => {
   return {
-    mining
+    currentMinerIdentifier,
+    isMining,
+    currentSpeed,
+    history
   };
 };
 

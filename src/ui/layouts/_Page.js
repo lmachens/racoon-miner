@@ -25,5 +25,5 @@ PageLayout.propTypes = {
   title: PropTypes.string.isRequired
 };
 
-const PageLayoutWithStyles = withStyles(styles)(PageLayout);
-export { PageLayoutWithStyles as PageLayout };
+const enhance = withStyles(styles)(PageLayout);
+export { enhance as PageLayout };
