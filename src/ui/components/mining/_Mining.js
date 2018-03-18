@@ -1,8 +1,8 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Button, Typography } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
-import { Button } from '../generic';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
@@ -30,7 +30,7 @@ class Mining extends Component {
         <Button onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
-        <div>Speed: {currentSpeed} Mh/s</div>
+        <Typography>Speed: {currentSpeed} Mh/s</Typography>
         <div className={classes.chart}>
           <ResponsiveContainer minHeight={200} minWidth={200}>
             <AreaChart data={history.slice(0, 10).reverse()}>

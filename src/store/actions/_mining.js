@@ -1,7 +1,32 @@
-import { SELECT_MINER, SET_MINING_SPEED, START_MINING, STOP_MINING } from '../types';
+import {
+  REMOVE_MINING_ADDRESS,
+  SELECT_MINER,
+  SET_MINING_ADDRESS,
+  SET_MINING_SPEED,
+  START_MINING,
+  STOP_MINING
+} from '../types';
 
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
+
+export const setMiningAddress = address => {
+  return dispatch => {
+    dispatch({
+      type: SET_MINING_ADDRESS,
+      data: address
+    });
+  };
+};
+
+export const removeMiningAddress = identifier => {
+  return dispatch => {
+    dispatch({
+      type: REMOVE_MINING_ADDRESS,
+      data: identifier
+    });
+  };
+};
 
 export const selectMiner = identifier => {
   return dispatch => {
