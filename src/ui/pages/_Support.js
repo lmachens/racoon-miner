@@ -1,9 +1,26 @@
-import React, { Component } from 'react';
+import { Discord } from '../components/support';
+import { PageLayout } from '../layouts';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { withStyles } from 'material-ui/styles';
 
-class SupportPage extends Component {
-  render() {
-    return <div>Support</div>;
+const styles = {
+  discord: {
+    height: 'calc(100% - 82px)'
   }
-}
+};
 
-export { SupportPage };
+const SupportPage = ({ classes }) => (
+  <PageLayout title="Support">
+    <div className={classes.discord}>
+      <Discord />
+    </div>
+  </PageLayout>
+);
+
+SupportPage.propTypes = {
+  classes: PropTypes.object.isRequired
+};
+
+const SupportPageWithStyles = withStyles(styles)(SupportPage);
+export { SupportPageWithStyles as SupportPage };

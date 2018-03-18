@@ -1,18 +1,18 @@
 import { APP_PATH, LISTEN_TO_FILES } from '../environment';
 
-import debounce from 'lodash/debounce';
 import { getSimpleIoPlugin } from '../plugins';
+import throttle from 'lodash/throttle';
 
 (async () => {
   const simpleIoPlugin = await getSimpleIoPlugin();
 
   simpleIoPlugin.onFileListenerChanged.addListener(
-    debounce(fileIdentifier => {
+    throttle(fileIdentifier => {
       if (LISTEN_TO_FILES.includes(fileIdentifier)) {
         location.reload();
       }
     }),
-    100
+    5000
   );
 
   const skipToEndOfFile = true;

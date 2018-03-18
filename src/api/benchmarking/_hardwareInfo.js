@@ -2,6 +2,7 @@ const interval = 1000;
 
 let hardwareInfoListener = null;
 const requestHardwareInfo = () => {
+  console.log('request hardware info');
   overwolf.benchmarking.stopRequesting();
   overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
     if (reason === 'Permissions Required') {
@@ -15,7 +16,10 @@ const requestHardwareInfo = () => {
 };
 
 export const addHardwareInfoListener = listener => {
-  if (hardwareInfoListener) return;
+  if (hardwareInfoListener) {
+    console.log('already listens to hardware info');
+    return;
+  }
 
   hardwareInfoListener = listener;
   overwolf.benchmarking.onHardwareInfoReady.addListener(hardwareInfoListener);

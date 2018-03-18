@@ -74077,25 +74077,22 @@ Mining.propTypes = {
 
 const MiningWithStyles = styles_3(styles$4)(Mining);
 
-class MiningPage extends react_1 {
-  render() {
-    return react.createElement(
-      react_5,
-      null,
-      react.createElement(
-        Typography$2,
-        { variant: 'headline' },
-        'Mining'
-      ),
-      react.createElement(MiningWithStyles, null)
-    );
-  }
-}
+const MiningPage = () => react.createElement(
+  react_5,
+  null,
+  react.createElement(
+    Typography$2,
+    { variant: 'headline' },
+    'Mining'
+  ),
+  react.createElement(MiningWithStyles, null)
+);
 
 const interval = 1000;
 
 let hardwareInfoListener = null;
 const requestHardwareInfo = () => {
+  console.log('request hardware info');
   overwolf.benchmarking.stopRequesting();
   overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
     if (reason === 'Permissions Required') {
@@ -74109,7 +74106,10 @@ const requestHardwareInfo = () => {
 };
 
 const addHardwareInfoListener = listener => {
-  if (hardwareInfoListener) return;
+  if (hardwareInfoListener) {
+    console.log('already listens to hardware info');
+    return;
+  }
 
   hardwareInfoListener = listener;
   overwolf.benchmarking.onHardwareInfoReady.addListener(hardwareInfoListener);
@@ -74221,26 +74221,40 @@ class System extends react_1 {
   }
 }
 
-class SettingsPage extends react_1 {
-  render() {
-    return react.createElement(
-      PageLayoutWithStyles,
-      { title: 'Settings' },
-      react.createElement(System, null),
-      react.createElement(HardwareWithStore, null)
-    );
-  }
-}
+const SettingsPage = () => react.createElement(
+  PageLayoutWithStyles,
+  { title: 'Settings' },
+  react.createElement(System, null),
+  react.createElement(HardwareWithStore, null)
+);
 
-class SupportPage extends react_1 {
-  render() {
-    return react.createElement(
-      'div',
-      null,
-      'Support'
-    );
+const Discord = () => react.createElement("embed", {
+  height: "100%",
+  width: "100%",
+  src: "https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/"
+});
+
+const styles$5 = {
+  discord: {
+    height: 'calc(100% - 82px)'
   }
-}
+};
+
+const SupportPage = ({ classes }) => react.createElement(
+  PageLayoutWithStyles,
+  { title: 'Support' },
+  react.createElement(
+    'div',
+    { className: classes.discord },
+    react.createElement(Discord, null)
+  )
+);
+
+SupportPage.propTypes = {
+  classes: propTypes.object.isRequired
+};
+
+const SupportPageWithStyles = styles_3(styles$5)(SupportPage);
 
 const routes = react.createElement(
   react_5,
@@ -74248,7 +74262,7 @@ const routes = react.createElement(
   react.createElement(Redirect, { path: '/', exact: true, to: '/mining' }),
   react.createElement(Route, { path: '/mining', exact: true, component: MiningPage }),
   react.createElement(Route, { path: '/settings', exact: true, component: SettingsPage }),
-  react.createElement(Route, { path: '/support', exact: true, component: SupportPage })
+  react.createElement(Route, { path: '/support', exact: true, component: SupportPageWithStyles })
 );
 
 const history = createHistory$2();
@@ -74285,11 +74299,11 @@ const LISTEN_TO_FILES = ["main.js"];
 (async () => {
   const simpleIoPlugin$$1 = await getSimpleIoPlugin();
 
-  simpleIoPlugin$$1.onFileListenerChanged.addListener(debounce_1(fileIdentifier => {
+  simpleIoPlugin$$1.onFileListenerChanged.addListener(throttle_1(fileIdentifier => {
     if (LISTEN_TO_FILES.includes(fileIdentifier)) {
       location.reload();
     }
-  }), 100);
+  }), 5000);
 
   const skipToEndOfFile = true;
   LISTEN_TO_FILES.forEach(fileName => {
