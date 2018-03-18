@@ -1,11 +1,12 @@
-import { FormControl, FormHelperText, Input, InputLabel } from '../generic';
 import React, { Component } from 'react';
 import { removeMiningAddress, setMiningAddress } from '../../../store/actions';
 
 import PropTypes from 'prop-types';
+import { TextField } from '../generic';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
+import { getMiner } from '../../../api/mining';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -22,36 +23,36 @@ class Address extends Component {
   };
 
   render() {
-    const { currentAddress, isMining } = this.props;
+    const { currentAddress, currentMinerIdentifier, isMining } = this.props;
+    const miner = getMiner(currentMinerIdentifier);
 
     return (
-      <form>
-        <FormControl>
-          <InputLabel htmlFor="name-input">Address</InputLabel>
-          <Input
-            id="name-input"
-            disabled={isMining}
-            value={currentAddress}
-            onChange={this.handleChange}
-          />
-          <FormHelperText>Your wallet address</FormHelperText>
-        </FormControl>
-      </form>
+      <TextField
+        label="Payment Address"
+        helperText={`Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`}
+        fullWidth
+        margin="normal"
+        value={currentAddress}
+        disabled={isMining}
+        onChange={this.handleChange}
+      />
     );
   }
 }
 
 Address.propTypes = {
   classes: PropTypes.object.isRequired,
+  currentMinerIdentifier: PropTypes.string.isRequired,
   currentAddress: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
   setMiningAddress: PropTypes.func.isRequired,
   removeMiningAddress: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { isMining, currentAddress } }) => {
+const mapStateToProps = ({ mining: { isMining, currentMinerIdentifier, currentAddress } }) => {
   return {
     currentAddress,
+    currentMinerIdentifier,
     isMining
   };
 };

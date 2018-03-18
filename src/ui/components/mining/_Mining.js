@@ -12,7 +12,7 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   chart: {
-    height: 'calc(100% - 140px)'
+    height: 'calc(100% - 310px)'
   }
 };
 

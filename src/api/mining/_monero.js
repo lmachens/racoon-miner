@@ -7,6 +7,7 @@ export const monero = {
   identifier: MONERO_MINER,
   logo: 'assets/monero.png',
   currency: 'XMR',
+  minimumPaymentThreshold: 0.1,
   parser: () => {},
   path: '',
   args: '',

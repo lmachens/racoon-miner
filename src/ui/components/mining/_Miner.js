@@ -11,6 +11,9 @@ import { selectMiner } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
+  image: {
+    height: 80
+  },
   inactive: {
     opacity: 0.25
   }
@@ -37,6 +40,9 @@ class Miner extends Component {
             className={classNames({
               [classes.inactive]: currentMinerIdentifier !== miner.identifier
             })}
+            imgProps={{
+              className: classes.image
+            }}
           />
         ))}
       </div>

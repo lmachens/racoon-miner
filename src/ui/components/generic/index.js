@@ -6,5 +6,6 @@ export * from './_ImageButton';
 export * from './_Input';
 export * from './_Link';
 export * from './_Table';
+export * from './_TextField';
 export * from './_Toolbar';
 export * from './_Typography';

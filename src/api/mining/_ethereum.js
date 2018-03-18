@@ -6,6 +6,7 @@ export const ethereum = {
   identifier: ETHEREUM_MINER,
   logo: 'assets/ethereum.png',
   currency: 'Ether',
+  minimumPaymentThreshold: 0.05,
   parser: generateParser(/Speed\s+(.+)\sMh\/s/),
   path: 'ethminer.exe',
   args:
