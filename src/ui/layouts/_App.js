@@ -1,7 +1,6 @@
-import { AppBar, Toolbar, Typography } from '../components/generic';
+import { AppBar, Button, Link, Toolbar, Typography } from '../components/generic';
 import React, { Fragment } from 'react';
 
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
@@ -21,7 +20,7 @@ const AppLayout = ({ classes, children, links, title }) => (
         </Typography>
         {links.map(link => (
           <Link key={link.title} to={link.to}>
-            <Typography>{link.title}</Typography>
+            <Button>{link.title}</Button>
           </Link>
         ))}
       </Toolbar>
