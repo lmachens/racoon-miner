@@ -16,11 +16,6 @@ const styles = {
 };
 
 class Mining extends Component {
-  componentWillUnmount() {
-    const { stopMining } = this.props;
-    stopMining();
-  }
-
   handleMiningClick = () => {
     const { mining: { isMining }, startMining, stopMining } = this.props;
     if (isMining) stopMining();
@@ -38,11 +33,11 @@ class Mining extends Component {
         <div>Speed: {currentSpeed} Mh/s</div>
         <div className={classes.chart}>
           <ResponsiveContainer minHeight={200} minWidth={200}>
-            <AreaChart data={history}>
-              <XAxis dataKey="name" />
+            <AreaChart data={history.slice(0, 10).reverse()}>
+              <XAxis dataKey="timestamp" />
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
-              <Area type="monotone" dataKey="mhs" stroke="#8884d8" fill="#8884d8" />
+              <Area type="monotone" dataKey="speed" stroke="#8884d8" fill="#8884d8" />
             </AreaChart>
           </ResponsiveContainer>
         </div>

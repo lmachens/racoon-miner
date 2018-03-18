@@ -52850,7 +52850,7 @@ var performanceNow = createCommonjsModule(function (module) {
 
 }).call(commonjsGlobal);
 
-
+//# sourceMappingURL=performance-now.js.map
 });
 
 var root$4 = typeof window === 'undefined' ? commonjsGlobal : window
@@ -75209,11 +75209,6 @@ class Mining extends react_1 {
     }, _temp;
   }
 
-  componentWillUnmount() {
-    const { stopMining: stopMining$$1 } = this.props;
-    stopMining$$1();
-  }
-
   render() {
     const { classes, mining: { isMining, currentSpeed, history } } = this.props;
 
@@ -75240,11 +75235,11 @@ class Mining extends react_1 {
           { minHeight: 200, minWidth: 200 },
           react.createElement(
             AreaChart,
-            { data: history },
-            react.createElement(XAxis, { dataKey: 'name' }),
+            { data: history.slice(0, 10).reverse() },
+            react.createElement(XAxis, { dataKey: 'timestamp' }),
             react.createElement(YAxis, null),
             react.createElement(CartesianGrid, { strokeDasharray: '3 3' }),
-            react.createElement(Area, { type: 'monotone', dataKey: 'mhs', stroke: '#8884d8', fill: '#8884d8' })
+            react.createElement(Area, { type: 'monotone', dataKey: 'speed', stroke: '#8884d8', fill: '#8884d8' })
           )
         )
       )
