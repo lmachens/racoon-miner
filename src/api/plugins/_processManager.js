@@ -1,6 +1,6 @@
 import { callOverwolfWithPromise } from '../utilities';
 
-export let processManager = null;
+let processManager = null;
 export const getProcessManagerPlugin = () => {
   return new Promise(async resolve => {
     if (processManager) return resolve(processManager);

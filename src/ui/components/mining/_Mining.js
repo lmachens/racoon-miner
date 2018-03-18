@@ -1,10 +1,12 @@
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import React, { Component, Fragment } from 'react';
-import { getProcessManagerPlugin, processManager } from '../../../api/plugins';
+import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
 import { Button } from '../generic';
 import PropTypes from 'prop-types';
-import { ethereum } from '../../../api/mining';
+import { bindActionCreators } from 'redux';
+import compose from 'recompose/compose';
+import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -13,86 +15,30 @@ const styles = {
   }
 };
 
-getProcessManagerPlugin();
-
 class Mining extends Component {
-  state = {
-    isMining: false,
-    miner: ethereum,
-    miningHistory: []
-  };
-
   componentWillUnmount() {
-    this._stopMining();
+    const { stopMining } = this.props;
+    stopMining();
   }
 
   handleMiningClick = () => {
-    const { isMining } = this.state;
-    if (isMining) this._stopMining();
-    else this._startMining();
-  };
-
-  _startMining = () => {
-    const { miner: { path, args, environmentVariables } } = this.state;
-
-    processManager.onDataReceivedEvent.addListener(this.handleData);
-    const hidden = true;
-    processManager.launchProcess(path, args, environmentVariables, hidden, this.handleLaunch);
-    this.setState({ isMining: true });
-  };
-
-  _stopMining = () => {
-    const { processId } = this.state;
-
-    if (processId) {
-      processManager.onDataReceivedEvent.removeListener(this.handleData);
-      processManager.terminateProcess(processId);
-    }
-    this.setState({ isMining: false });
-  };
-
-  handleLaunch = ({ error, data }) => {
-    this.setState({ error, processId: data });
-  };
-
-  handleData = ({ error, data }) => {
-    const { miner: { parser } } = this.state;
-
-    this.setState(state => {
-      const newState = {
-        error,
-        data
-      };
-      const parsed = parser(error || data);
-      if (parsed) {
-        newState.speed = parsed.speed;
-        newState.miningHistory = [
-          ...state.miningHistory,
-          { name: parsed.timestamp, mhs: parsed.speed }
-        ];
-      }
-      return newState;
-    });
+    const { mining: { isMining }, startMining, stopMining } = this.props;
+    if (isMining) stopMining();
+    else startMining();
   };
 
   render() {
-    const { classes } = this.props;
-    const { error, data, processId, isMining, speed, miningHistory } = this.state;
+    const { classes, mining: { isMining, currentSpeed, history } } = this.props;
 
     return (
       <Fragment>
         <Button onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
-        <div>
-          Speed: {speed} Mh/s
-          <br />Error: {error}
-          <br />Data: {data}
-          <br />ProcessId:{processId}
-        </div>
+        <div>Speed: {currentSpeed} Mh/s</div>
         <div className={classes.chart}>
           <ResponsiveContainer minHeight={200} minWidth={200}>
-            <AreaChart data={miningHistory}>
+            <AreaChart data={history}>
               <XAxis dataKey="name" />
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
@@ -106,8 +52,26 @@ class Mining extends Component {
 }
 
 Mining.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  mining: PropTypes.object.isRequired,
+  startMining: PropTypes.func.isRequired,
+  stopMining: PropTypes.func.isRequired,
+  selectMiner: PropTypes.func.isRequired
 };
 
-const MiningWithStyles = withStyles(styles)(Mining);
-export { MiningWithStyles as Mining };
+const mapStateToProps = ({ mining }) => {
+  return {
+    mining
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    startMining: bindActionCreators(startMining, dispatch),
+    stopMining: bindActionCreators(stopMining, dispatch),
+    selectMiner: bindActionCreators(selectMiner, dispatch)
+  };
+};
+
+const enhance = compose(withStyles(styles), connect(mapStateToProps, mapDispatchToProps))(Mining);
+export { enhance as Mining };

@@ -1,6 +1,6 @@
 import { callOverwolfWithPromise } from '../utilities';
 
-export let simpleIoPlugin;
+let simpleIoPlugin;
 export const getSimpleIoPlugin = () => {
   return new Promise(async resolve => {
     if (simpleIoPlugin) return resolve(simpleIoPlugin);

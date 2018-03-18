@@ -20,8 +20,8 @@ class Hardware extends Component {
   }
 
   render() {
-    const { hardwareInfo: { data, listening } } = this.props;
-    console.log(data, listening);
+    const { hardwareInfo: { data, isListening } } = this.props;
+    console.log(data, isListening);
     const gpus = get(data, 'Gpus.Gpus') || [];
     return (
       <CardLayout title="Hardware">

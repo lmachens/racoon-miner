@@ -1,13 +1,11 @@
-import React, { Fragment } from 'react';
-
 import { Mining } from '../components/mining';
-import { Typography } from '../components/generic';
+import { PageLayout } from '../layouts';
+import React from 'react';
 
 const MiningPage = () => (
-  <Fragment>
-    <Typography variant="headline">Mining</Typography>
+  <PageLayout title="Mining">
     <Mining />
-  </Fragment>
+  </PageLayout>
 );
 
 export { MiningPage };

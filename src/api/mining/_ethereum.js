@@ -1,5 +1,6 @@
 import { generateParser } from './_generateParser';
 
+export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
   currency: 'Ether',

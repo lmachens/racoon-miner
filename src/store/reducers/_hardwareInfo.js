@@ -2,16 +2,16 @@ import { RECEIVE_HARDWARE_INFO, STOP_TRACKING_HARDWARE_INFO } from '../types';
 
 export const hardwareInfo = (
   state = {
-    listening: false,
+    isListening: false,
     data: null
   },
   { type, data }
 ) => {
   switch (type) {
     case RECEIVE_HARDWARE_INFO:
-      return { listening: true, data };
+      return { isListening: true, data };
     case STOP_TRACKING_HARDWARE_INFO:
-      return { listening: false };
+      return { isListening: false };
     default:
       return state;
   }
