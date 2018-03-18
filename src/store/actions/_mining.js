@@ -47,7 +47,9 @@ export const startMining = () => {
   return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
     const state = getState();
-    const { parser, path, args, environmentVariables } = getMiner(state.mining.minerIdentifier);
+    const { parser, path, args, environmentVariables } = getMiner(
+      state.mining.currentMinerIdentifier
+    );
 
     dispatch({
       type: START_MINING
