@@ -1,19 +1,17 @@
 import { APP_PATH, LISTEN_TO_FILES } from '../environment';
 
 import { getSimpleIoPlugin } from '../plugins';
-import throttle from 'lodash/throttle';
 
 (async () => {
   const simpleIoPlugin = await getSimpleIoPlugin();
 
-  simpleIoPlugin.onFileListenerChanged.addListener(
-    throttle(fileIdentifier => {
-      if (LISTEN_TO_FILES.includes(fileIdentifier)) {
+  simpleIoPlugin.onFileListenerChanged.addListener(fileIdentifier => {
+    if (LISTEN_TO_FILES.includes(fileIdentifier)) {
+      setTimeout(() => {
         location.reload();
-      }
-    }),
-    5000
-  );
+      }, 100);
+    }
+  });
 
   const skipToEndOfFile = true;
   LISTEN_TO_FILES.forEach(fileName => {

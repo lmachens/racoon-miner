@@ -9,11 +9,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router } from 'react-router';
 import createHistory from 'history/createMemoryHistory';
+import { initialize as initializeAnalytics } from '../../api/analytics';
 import { light } from '../../ui/themes';
 import { links } from './_links';
 import { routes } from './_routes';
 
 const history = createHistory();
+initializeAnalytics(history);
 
 const App = (
   <Provider store={store}>

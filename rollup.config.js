@@ -18,7 +18,8 @@ export default [
         //'process.env.NODE_ENV': JSON.stringify('production'), // needed by react
         'process.env.NODE_ENV': JSON.stringify('development'), // needed by react
         'process.env.__APP_PATH__': JSON.stringify(`${process.cwd()}/dist`.replace(/\\/g, '/')),
-        'process.env.__LISTEN_TO_FILES__': JSON.stringify(['main.js'])
+        'process.env.__LISTEN_TO_FILES__': JSON.stringify(['main.js']),
+        'process.env.__TRACKING_ID__': JSON.stringify('UA-115959266-2')
       }),
       nodeResolve({
         module: true,

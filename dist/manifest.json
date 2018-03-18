@@ -45,6 +45,9 @@
         "file": "plugins/simple-io-plugin.dll",
         "class": "overwolf.plugins.SimpleIOPlugin"
       }
+    },
+    "externally_connectable": {
+      "matches": ["https://*.google-analytics.com", "https://www.google-analytics.com"]
     }
   }
 }
