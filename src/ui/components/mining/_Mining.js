@@ -24,8 +24,7 @@ class Mining extends Component {
   };
 
   render() {
-    const { classes, currentMinerIdentifier, isMining, currentSpeed, history } = this.props;
-    const miner = getMiner(currentMinerIdentifier);
+    const { classes, miner, isMining, currentSpeed, logs } = this.props;
 
     return (
       <Fragment>
@@ -35,7 +34,7 @@ class Mining extends Component {
         <Typography>Speed: {currentSpeed} Mh/s</Typography>
         <div className={classes.chart}>
           <ResponsiveContainer minHeight={200} minWidth={200}>
-            <AreaChart data={history.slice(0, 10).reverse()}>
+            <AreaChart data={logs.slice(0, 10).reverse()}>
               <XAxis dataKey="timestamp" />
               <YAxis />
               <CartesianGrid strokeDasharray="3 3" />
@@ -50,23 +49,23 @@ class Mining extends Component {
 
 Mining.propTypes = {
   classes: PropTypes.object.isRequired,
-  currentMinerIdentifier: PropTypes.string.isRequired,
+  miner: PropTypes.object.isRequired,
   isMining: PropTypes.bool.isRequired,
   currentSpeed: PropTypes.number.isRequired,
-  history: PropTypes.array.isRequired,
+  logs: PropTypes.array.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
   selectMiner: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({
-  mining: { currentMinerIdentifier, isMining, currentSpeed, history }
+  mining: { currentMinerIdentifier, isMining, currentSpeed, logsByIdentifier }
 }) => {
   return {
-    currentMinerIdentifier,
     isMining,
     currentSpeed,
-    history
+    logs: logsByIdentifier[currentMinerIdentifier] || [],
+    miner: getMiner(currentMinerIdentifier)
   };
 };
 

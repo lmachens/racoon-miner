@@ -4545,30 +4545,33 @@ var objectWithoutProperties = function (obj, keys) {
 
 const mining = (state = {
   currentMinerIdentifier: ETHEREUM_MINER,
-  currentAddress: '',
-  addresses: {},
   isMining: false,
   currentSpeed: 0,
-  history: []
+  addressesByIdentifier: {},
+  logsByIdentifier: {}
 }, { type, data }) => {
   switch (type) {
     case SET_MINING_ADDRESS:
       return _extends$5({}, state, {
-        currentAddress: data,
-        addresses: _extends$5({}, state.addresses, { [state.currentMinerIdentifier]: data })
+        addressesByIdentifier: _extends$5({}, state.addressesByIdentifier, {
+          [state.currentMinerIdentifier]: data
+        })
       });
     case REMOVE_MINING_ADDRESS:
       return _extends$5({}, state, {
-        currentAddress: '',
-        addresses: omit_1(state.addresses, data.currentMinerIdentifier)
+        addressesByIdentifier: omit_1(state.addressesByIdentifier, data.currentMinerIdentifier)
       });
     case SELECT_MINER:
       return _extends$5({}, state, {
-        currentMinerIdentifier: data,
-        currentAddress: state.addresses[data] || ''
+        currentMinerIdentifier: data
       });
     case SET_MINING_SPEED:
-      return _extends$5({}, state, { currentSpeed: data.speed, history: [data, ...state.history] });
+      return _extends$5({}, state, {
+        currentSpeed: data.speed,
+        logsByIdentifier: _extends$5({}, state.logsByIdentifier, {
+          [state.currentMinerIdentifier]: [data, ...(state.logsByIdentifier[state.currentMinerIdentifier] || [])]
+        })
+      });
     case START_MINING:
       return _extends$5({}, state, { isMining: true });
     case STOP_MINING:
@@ -49985,15 +49988,14 @@ class Address extends react_1 {
   }
 
   render() {
-    const { currentAddress, currentMinerIdentifier, isMining } = this.props;
-    const miner = getMiner(currentMinerIdentifier);
+    const { address, miner, isMining } = this.props;
 
     return react.createElement(TextField$2, {
       label: 'Payment Address',
       helperText: `Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`,
       fullWidth: true,
       margin: 'normal',
-      value: currentAddress,
+      value: address,
       disabled: isMining,
       onChange: this.handleChange
     });
@@ -50002,17 +50004,19 @@ class Address extends react_1 {
 
 Address.propTypes = {
   classes: propTypes.object.isRequired,
-  currentMinerIdentifier: propTypes.string.isRequired,
-  currentAddress: propTypes.string.isRequired,
+  miner: propTypes.object.isRequired,
+  address: propTypes.string.isRequired,
   isMining: propTypes.bool.isRequired,
   setMiningAddress: propTypes.func.isRequired,
   removeMiningAddress: propTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { isMining, currentMinerIdentifier, currentAddress } }) => {
+const mapStateToProps = ({
+  mining: { isMining, currentMinerIdentifier, addressesByIdentifier }
+}) => {
   return {
-    currentAddress,
-    currentMinerIdentifier,
+    address: addressesByIdentifier[currentMinerIdentifier] || '',
+    miner: getMiner(currentMinerIdentifier),
     isMining
   };
 };
@@ -75308,8 +75312,7 @@ class Mining extends react_1 {
   }
 
   render() {
-    const { classes, currentMinerIdentifier, isMining, currentSpeed, history } = this.props;
-    const miner = getMiner(currentMinerIdentifier);
+    const { classes, miner, isMining, currentSpeed, logs } = this.props;
 
     return react.createElement(
       react_5,
@@ -75334,7 +75337,7 @@ class Mining extends react_1 {
           { minHeight: 200, minWidth: 200 },
           react.createElement(
             AreaChart,
-            { data: history.slice(0, 10).reverse() },
+            { data: logs.slice(0, 10).reverse() },
             react.createElement(XAxis, { dataKey: 'timestamp' }),
             react.createElement(YAxis, null),
             react.createElement(CartesianGrid, { strokeDasharray: '3 3' }),
@@ -75348,23 +75351,23 @@ class Mining extends react_1 {
 
 Mining.propTypes = {
   classes: propTypes.object.isRequired,
-  currentMinerIdentifier: propTypes.string.isRequired,
+  miner: propTypes.object.isRequired,
   isMining: propTypes.bool.isRequired,
   currentSpeed: propTypes.number.isRequired,
-  history: propTypes.array.isRequired,
+  logs: propTypes.array.isRequired,
   startMining: propTypes.func.isRequired,
   stopMining: propTypes.func.isRequired,
   selectMiner: propTypes.func.isRequired
 };
 
 const mapStateToProps$2 = ({
-  mining: { currentMinerIdentifier, isMining, currentSpeed, history }
+  mining: { currentMinerIdentifier, isMining, currentSpeed, logsByIdentifier }
 }) => {
   return {
-    currentMinerIdentifier,
     isMining,
     currentSpeed,
-    history
+    logs: logsByIdentifier[currentMinerIdentifier] || [],
+    miner: getMiner(currentMinerIdentifier)
   };
 };
 
@@ -75378,8 +75381,7 @@ const mapDispatchToProps$2 = dispatch => {
 
 const enhance$2 = compose$1(styles_3(styles$4), connect(mapStateToProps$2, mapDispatchToProps$2))(Mining);
 
-const Status = ({ currentMinerIdentifier, isMining, currentSpeed }) => {
-  const miner = getMiner(currentMinerIdentifier);
+const Status = ({ miner, isMining, currentSpeed }) => {
   return react.createElement(
     Typography$2,
     null,
@@ -75392,16 +75394,16 @@ const Status = ({ currentMinerIdentifier, isMining, currentSpeed }) => {
 };
 
 Status.propTypes = {
-  currentMinerIdentifier: propTypes.string.isRequired,
+  miner: propTypes.object.isRequired,
   isMining: propTypes.bool.isRequired,
   currentSpeed: propTypes.number.isRequired
 };
 
 const mapStateToProps$3 = ({ mining: { currentMinerIdentifier, isMining, currentSpeed } }) => {
   return {
-    currentMinerIdentifier,
     isMining,
-    currentSpeed
+    currentSpeed,
+    miner: getMiner(currentMinerIdentifier)
   };
 };
 

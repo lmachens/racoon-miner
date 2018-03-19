@@ -4,8 +4,7 @@ import { Typography } from '../generic';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
 
-const Status = ({ currentMinerIdentifier, isMining, currentSpeed }) => {
-  const miner = getMiner(currentMinerIdentifier);
+const Status = ({ miner, isMining, currentSpeed }) => {
   return (
     <Typography>
       {miner.name}: {currentSpeed} Mh/s {isMining ? 'running' : 'stopped'}
@@ -14,16 +13,16 @@ const Status = ({ currentMinerIdentifier, isMining, currentSpeed }) => {
 };
 
 Status.propTypes = {
-  currentMinerIdentifier: PropTypes.string.isRequired,
+  miner: PropTypes.object.isRequired,
   isMining: PropTypes.bool.isRequired,
   currentSpeed: PropTypes.number.isRequired
 };
 
 const mapStateToProps = ({ mining: { currentMinerIdentifier, isMining, currentSpeed } }) => {
   return {
-    currentMinerIdentifier,
     isMining,
-    currentSpeed
+    currentSpeed,
+    miner: getMiner(currentMinerIdentifier)
   };
 };
 

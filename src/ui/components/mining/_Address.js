@@ -23,8 +23,7 @@ class Address extends Component {
   };
 
   render() {
-    const { currentAddress, currentMinerIdentifier, isMining } = this.props;
-    const miner = getMiner(currentMinerIdentifier);
+    const { address, miner, isMining } = this.props;
 
     return (
       <TextField
@@ -32,7 +31,7 @@ class Address extends Component {
         helperText={`Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`}
         fullWidth
         margin="normal"
-        value={currentAddress}
+        value={address}
         disabled={isMining}
         onChange={this.handleChange}
       />
@@ -42,17 +41,19 @@ class Address extends Component {
 
 Address.propTypes = {
   classes: PropTypes.object.isRequired,
-  currentMinerIdentifier: PropTypes.string.isRequired,
-  currentAddress: PropTypes.string.isRequired,
+  miner: PropTypes.object.isRequired,
+  address: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
   setMiningAddress: PropTypes.func.isRequired,
   removeMiningAddress: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { isMining, currentMinerIdentifier, currentAddress } }) => {
+const mapStateToProps = ({
+  mining: { isMining, currentMinerIdentifier, addressesByIdentifier }
+}) => {
   return {
-    currentAddress,
-    currentMinerIdentifier,
+    address: addressesByIdentifier[currentMinerIdentifier] || '',
+    miner: getMiner(currentMinerIdentifier),
     isMining
   };
 };

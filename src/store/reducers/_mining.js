@@ -13,11 +13,10 @@ import omit from 'lodash/omit';
 export const mining = (
   state = {
     currentMinerIdentifier: ETHEREUM_MINER,
-    currentAddress: '',
-    addresses: {},
     isMining: false,
     currentSpeed: 0,
-    history: []
+    addressesByIdentifier: {},
+    logsByIdentifier: {}
   },
   { type, data }
 ) => {
@@ -25,23 +24,33 @@ export const mining = (
     case SET_MINING_ADDRESS:
       return {
         ...state,
-        currentAddress: data,
-        addresses: { ...state.addresses, [state.currentMinerIdentifier]: data }
+        addressesByIdentifier: {
+          ...state.addressesByIdentifier,
+          [state.currentMinerIdentifier]: data
+        }
       };
     case REMOVE_MINING_ADDRESS:
       return {
         ...state,
-        currentAddress: '',
-        addresses: omit(state.addresses, data.currentMinerIdentifier)
+        addressesByIdentifier: omit(state.addressesByIdentifier, data.currentMinerIdentifier)
       };
     case SELECT_MINER:
       return {
         ...state,
-        currentMinerIdentifier: data,
-        currentAddress: state.addresses[data] || ''
+        currentMinerIdentifier: data
       };
     case SET_MINING_SPEED:
-      return { ...state, currentSpeed: data.speed, history: [data, ...state.history] };
+      return {
+        ...state,
+        currentSpeed: data.speed,
+        logsByIdentifier: {
+          ...state.logsByIdentifier,
+          [state.currentMinerIdentifier]: [
+            data,
+            ...(state.logsByIdentifier[state.currentMinerIdentifier] || [])
+          ]
+        }
+      };
     case START_MINING:
       return { ...state, isMining: true };
     case STOP_MINING:
