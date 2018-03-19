@@ -50031,8 +50031,11 @@ const mapDispatchToProps = dispatch => {
 const enhance = compose$1(styles_3(styles$2), connect(mapStateToProps, mapDispatchToProps))(Address);
 
 const styles$3 = {
+  imageButton: {
+    margin: '0 5'
+  },
   image: {
-    height: 80
+    height: 70
   },
   inactive: {
     opacity: 0.25
@@ -50061,7 +50064,7 @@ class Miner extends react_1 {
         src: miner.logo,
         onClick: this.handleClick,
         'data-mining-identifier': miner.identifier,
-        className: classnames({
+        className: classnames(classes.imageButton, {
           [classes.inactive]: currentMinerIdentifier !== miner.identifier
         }),
         imgProps: {
@@ -75500,7 +75503,8 @@ const styles$7 = {
     margin: 20
   },
   children: {
-    marginTop: 10
+    marginTop: 10,
+    textAlign: 'center'
   }
 };
 

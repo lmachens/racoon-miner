@@ -8,7 +8,8 @@ const styles = {
     margin: 20
   },
   children: {
-    marginTop: 10
+    marginTop: 10,
+    textAlign: 'center'
   }
 };
 

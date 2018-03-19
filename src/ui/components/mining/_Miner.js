@@ -11,8 +11,11 @@ import { selectMiner } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
+  imageButton: {
+    margin: '0 5'
+  },
   image: {
-    height: 80
+    height: 70
   },
   inactive: {
     opacity: 0.25
@@ -37,7 +40,7 @@ class Miner extends Component {
             src={miner.logo}
             onClick={this.handleClick}
             data-mining-identifier={miner.identifier}
-            className={classNames({
+            className={classNames(classes.imageButton, {
               [classes.inactive]: currentMinerIdentifier !== miner.identifier
             })}
             imgProps={{
