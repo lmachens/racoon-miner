@@ -30,7 +30,7 @@ class Miner extends Component {
   };
 
   render() {
-    const { classes, currentMinerIdentifier } = this.props;
+    const { classes, selectedMinerIdentifier } = this.props;
 
     return (
       <div>
@@ -41,7 +41,7 @@ class Miner extends Component {
             onClick={this.handleClick}
             data-mining-identifier={miner.identifier}
             className={classNames(classes.imageButton, {
-              [classes.inactive]: currentMinerIdentifier !== miner.identifier
+              [classes.inactive]: selectedMinerIdentifier !== miner.identifier
             })}
             imgProps={{
               className: classes.image
@@ -55,13 +55,13 @@ class Miner extends Component {
 
 Miner.propTypes = {
   classes: PropTypes.object.isRequired,
-  currentMinerIdentifier: PropTypes.string.isRequired,
+  selectedMinerIdentifier: PropTypes.string.isRequired,
   selectMiner: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { currentMinerIdentifier } }) => {
+const mapStateToProps = ({ mining: { selectedMinerIdentifier } }) => {
   return {
-    currentMinerIdentifier
+    selectedMinerIdentifier
   };
 };
 

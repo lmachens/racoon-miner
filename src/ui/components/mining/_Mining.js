@@ -18,9 +18,9 @@ const styles = {
 
 class Mining extends Component {
   handleMiningClick = () => {
-    const { isMining, startMining, stopMining } = this.props;
-    if (isMining) stopMining();
-    else startMining();
+    const { isMining, startMining, stopMining, minerIdentifier } = this.props;
+    if (isMining) stopMining(minerIdentifier);
+    else startMining(minerIdentifier);
   };
 
   render() {
@@ -55,17 +55,17 @@ Mining.propTypes = {
   logs: PropTypes.array.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
-  selectMiner: PropTypes.func.isRequired
+  selectMiner: PropTypes.func.isRequired,
+  minerIdentifier: PropTypes.string.isRequired
 };
 
-const mapStateToProps = ({
-  mining: { currentMinerIdentifier, isMining, currentSpeed, logsByIdentifier }
-}) => {
+const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
-    isMining,
-    currentSpeed,
-    logs: logsByIdentifier[currentMinerIdentifier] || [],
-    miner: getMiner(currentMinerIdentifier)
+    isMining: miners[selectedMinerIdentifier].isMining,
+    currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
+    logs: miners[selectedMinerIdentifier].logs,
+    miner: getMiner(selectedMinerIdentifier),
+    minerIdentifier: selectedMinerIdentifier
   };
 };
 

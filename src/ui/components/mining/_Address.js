@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { removeMiningAddress, setMiningAddress } from '../../../store/actions';
 
 import PropTypes from 'prop-types';
 import { TextField } from '../generic';
@@ -7,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
+import { setMiningAddress } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -17,9 +17,9 @@ const styles = {
 
 class Address extends Component {
   handleChange = event => {
-    const { setMiningAddress } = this.props;
+    const { setMiningAddress, minerIdentifier } = this.props;
 
-    setMiningAddress(event.target.value);
+    setMiningAddress(minerIdentifier, event.target.value);
   };
 
   render() {
@@ -43,25 +43,23 @@ Address.propTypes = {
   classes: PropTypes.object.isRequired,
   miner: PropTypes.object.isRequired,
   address: PropTypes.string.isRequired,
+  minerIdentifier: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
-  setMiningAddress: PropTypes.func.isRequired,
-  removeMiningAddress: PropTypes.func.isRequired
+  setMiningAddress: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({
-  mining: { isMining, currentMinerIdentifier, addressesByIdentifier }
-}) => {
+const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier } }) => {
   return {
-    address: addressesByIdentifier[currentMinerIdentifier] || '',
-    miner: getMiner(currentMinerIdentifier),
-    isMining
+    minerIdentifier: selectedMinerIdentifier,
+    address: miners[selectedMinerIdentifier].address,
+    miner: getMiner(selectedMinerIdentifier),
+    isMining: miners[selectedMinerIdentifier].isMining
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setMiningAddress: bindActionCreators(setMiningAddress, dispatch),
-    removeMiningAddress: bindActionCreators(removeMiningAddress, dispatch)
+    setMiningAddress: bindActionCreators(setMiningAddress, dispatch)
   };
 };
 

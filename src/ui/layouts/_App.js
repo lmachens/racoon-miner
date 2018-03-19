@@ -1,4 +1,5 @@
 import { AppBar, Button, Link, Toolbar, Typography } from '../components/generic';
+import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
 import React, { Fragment } from 'react';
 
 import PropTypes from 'prop-types';
@@ -29,7 +30,11 @@ const AppLayout = ({ classes, children, links, title }) => (
             </Link>
           ))}
         </div>
-        <Status />
+        <div>
+          <Status minerIdentifier={ETHEREUM_MINER} />
+          <br />
+          <Status minerIdentifier={MONERO_MINER} />
+        </div>
       </Toolbar>
     </AppBar>
     <div className={classes.children}>{children}</div>

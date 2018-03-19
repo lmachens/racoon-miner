@@ -1,8 +1,8 @@
 import {
-  REMOVE_MINING_ADDRESS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
   SET_MINING_SPEED,
+  SET_PROCESS_ID,
   START_MINING,
   STOP_MINING
 } from '../types';
@@ -10,20 +10,11 @@ import {
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 
-export const setMiningAddress = address => {
+export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
     dispatch({
       type: SET_MINING_ADDRESS,
-      data: address
-    });
-  };
-};
-
-export const removeMiningAddress = minerIdentifier => {
-  return dispatch => {
-    dispatch({
-      type: REMOVE_MINING_ADDRESS,
-      data: minerIdentifier
+      data: { address, minerIdentifier }
     });
   };
 };
@@ -37,49 +28,57 @@ export const selectMiner = minerIdentifier => {
   };
 };
 
-let processId;
-const handleLaunch = ({ data }) => {
-  processId = data;
-};
-
-let handleData;
-export const startMining = () => {
-  return async (dispatch, getState) => {
+const handleDataByIdenfier = {};
+export const startMining = minerIdentifier => {
+  return async dispatch => {
+    if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
-    const state = getState();
-    const { parser, path, args, environmentVariables } = getMiner(
-      state.mining.currentMinerIdentifier
-    );
+    const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
 
     dispatch({
-      type: START_MINING
+      type: START_MINING,
+      data: { minerIdentifier }
     });
 
-    handleData = ({ error, data }) => {
+    handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
       const parsed = parser(error || data);
       if (parsed) {
         dispatch({
           type: SET_MINING_SPEED,
-          data: parsed
+          data: {
+            minerIdentifier,
+            parsed
+          }
         });
       }
     };
-    processManager.onDataReceivedEvent.addListener(handleData);
-    processManager.launchProcess(path, args, environmentVariables, true, handleLaunch);
+    processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
+    processManager.launchProcess(path, args, environmentVariables, true, ({ data }) => {
+      dispatch({
+        type: SET_PROCESS_ID,
+        data: {
+          minerIdentifier,
+          processId: data
+        }
+      });
+    });
   };
 };
 
-export const stopMining = () => {
-  return async dispatch => {
+export const stopMining = minerIdentifier => {
+  return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
+    const state = getState();
 
     dispatch({
-      type: STOP_MINING
+      type: STOP_MINING,
+      data: { minerIdentifier }
     });
-
-    if (processId) {
-      processManager.onDataReceivedEvent.removeListener(handleData);
+    const processId = state.mining.miners[minerIdentifier].processId;
+    if (processId || handleDataByIdenfier[minerIdentifier]) {
+      processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
       processManager.terminateProcess(processId);
+      delete handleDataByIdenfier[minerIdentifier];
     }
   };
 };
