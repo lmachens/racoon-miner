@@ -1,4 +1,11 @@
-import { ChartContainer, ChartRow, Charts, ScatterChart, YAxis } from 'react-timeseries-charts';
+import {
+  ChartContainer,
+  ChartRow,
+  Charts,
+  Resizable,
+  ScatterChart,
+  YAxis
+} from 'react-timeseries-charts';
 import React, { Component } from 'react';
 import { TimeRange, TimeSeries } from 'pondjs';
 
@@ -17,11 +24,25 @@ const styles = {
 
 class Metrics extends Component {
   state = {
+    height: document.body.clientHeight,
     timeRange: new TimeRange([Date.now() - 600000, Date.now()])
   };
 
   componentWillMount() {
     this.refreshMetrics();
+    this.updateDimensions();
+  }
+
+  updateDimensions = () => {
+    this.setState({ height: document.body.clientHeight });
+  };
+
+  componentDidMount() {
+    window.addEventListener('resize', this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
   }
 
   refreshMetrics = () => {
@@ -38,7 +59,7 @@ class Metrics extends Component {
 
   render() {
     const { classes, metrics, isFetchingMetrics } = this.props;
-    const { timeRange } = this.state;
+    const { height, timeRange } = this.state;
 
     console.log(isFetchingMetrics, metrics);
     const data = {
@@ -49,26 +70,28 @@ class Metrics extends Component {
     const series = new TimeSeries(data);
 
     return (
-      <div className={classes.chart} onClick={this.handleClick}>
-        <ChartContainer
-          timeRange={timeRange}
-          enablePanZoom={true}
-          onTimeRangeChanged={this.handleTimeRangeChanged}
-        >
-          <ChartRow height="150">
-            <YAxis
-              id="speed"
-              label="Speed (Mh/s)"
-              min={0}
-              max={(series.max('speed') || 0) + 1}
-              width="60"
-              format=".2f"
-            />
-            <Charts>
-              <ScatterChart axis="speed" series={series} columns={['speed']} />
-            </Charts>
-          </ChartRow>
-        </ChartContainer>
+      <div className={classes.chart}>
+        <Resizable>
+          <ChartContainer
+            timeRange={timeRange}
+            enablePanZoom={true}
+            onTimeRangeChanged={this.handleTimeRangeChanged}
+          >
+            <ChartRow height={height - 400}>
+              <YAxis
+                id="speed"
+                label="Speed (Mh/s)"
+                min={0}
+                max={(series.max('speed') || 0) + 1}
+                width="60"
+                format=".2f"
+              />
+              <Charts>
+                <ScatterChart axis="speed" series={series} columns={['speed']} />
+              </Charts>
+            </ChartRow>
+          </ChartContainer>
+        </Resizable>
       </div>
     );
   }

@@ -98409,7 +98409,10 @@
 	    var _temp;
 
 	    return _temp = super(...args), this.state = {
+	      height: document.body.clientHeight,
 	      timeRange: new entry_22([Date.now() - 600000, Date.now()])
+	    }, this.updateDimensions = () => {
+	      this.setState({ height: document.body.clientHeight });
 	    }, this.refreshMetrics = () => {
 	      const { fetchMetrics: fetchMetrics$$1, minerIdentifier } = this.props;
 	      const { timeRange } = this.state;
@@ -98423,11 +98426,20 @@
 
 	  componentWillMount() {
 	    this.refreshMetrics();
+	    this.updateDimensions();
+	  }
+
+	  componentDidMount() {
+	    window.addEventListener('resize', this.updateDimensions);
+	  }
+
+	  componentWillUnmount() {
+	    window.removeEventListener('resize', this.updateDimensions);
 	  }
 
 	  render() {
 	    const { classes, metrics, isFetchingMetrics } = this.props;
-	    const { timeRange } = this.state;
+	    const { height, timeRange } = this.state;
 
 	    console.log(isFetchingMetrics, metrics);
 	    const data = {
@@ -98439,29 +98451,33 @@
 
 	    return react.createElement(
 	      'div',
-	      { className: classes.chart, onClick: this.handleClick },
+	      { className: classes.chart },
 	      react.createElement(
-	        entry_17$1,
-	        {
-	          timeRange: timeRange,
-	          enablePanZoom: true,
-	          onTimeRangeChanged: this.handleTimeRangeChanged
-	        },
+	        entry_9$1,
+	        null,
 	        react.createElement(
-	          entry_16$1,
-	          { height: '150' },
-	          react.createElement(entry_1$1, {
-	            id: 'speed',
-	            label: 'Speed (Mh/s)',
-	            min: 0,
-	            max: (series.max('speed') || 0) + 1,
-	            width: '60',
-	            format: '.2f'
-	          }),
+	          entry_17$1,
+	          {
+	            timeRange: timeRange,
+	            enablePanZoom: true,
+	            onTimeRangeChanged: this.handleTimeRangeChanged
+	          },
 	          react.createElement(
-	            entry_15$1,
-	            null,
-	            react.createElement(entry_8$1, { axis: 'speed', series: series, columns: ['speed'] })
+	            entry_16$1,
+	            { height: height - 400 },
+	            react.createElement(entry_1$1, {
+	              id: 'speed',
+	              label: 'Speed (Mh/s)',
+	              min: 0,
+	              max: (series.max('speed') || 0) + 1,
+	              width: '60',
+	              format: '.2f'
+	            }),
+	            react.createElement(
+	              entry_15$1,
+	              null,
+	              react.createElement(entry_8$1, { axis: 'speed', series: series, columns: ['speed'] })
+	            )
 	          )
 	        )
 	      )
