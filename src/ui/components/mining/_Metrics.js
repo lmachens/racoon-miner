@@ -60,7 +60,7 @@ class Metrics extends Component {
               id="speed"
               label="Speed (Mh/s)"
               min={0}
-              max={series.max('speed') + 1}
+              max={(series.max('speed') || 0) + 1}
               width="60"
               format=".2f"
             />
