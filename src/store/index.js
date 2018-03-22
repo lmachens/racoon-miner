@@ -1,3 +1,5 @@
+import 'localforage-getitems';
+
 import { applyMiddleware, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 

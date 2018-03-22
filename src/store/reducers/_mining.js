@@ -1,5 +1,7 @@
 import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
 import {
+  RECEIVE_MINING_METRICS,
+  REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
   SET_MINING_SPEED,
@@ -14,7 +16,9 @@ const defaultMinerProps = {
   processId: null,
   isMining: false,
   currentSpeed: 0,
-  address: ''
+  address: '',
+  isFetchingMetrics: false,
+  metrics: []
 };
 
 export const mining = (
@@ -46,6 +50,13 @@ export const mining = (
       break;
     case STOP_MINING:
       set(newState, `miners.${data.minerIdentifier}.isMining`, false);
+      break;
+    case REQUEST_MINING_METRICS:
+      set(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, true);
+      break;
+    case RECEIVE_MINING_METRICS:
+      set(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, false);
+      set(newState, `miners.${data.minerIdentifier}.metrics`, data.metrics);
       break;
   }
   return newState;

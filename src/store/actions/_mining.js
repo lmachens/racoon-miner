@@ -1,4 +1,6 @@
 import {
+  RECEIVE_MINING_METRICS,
+  REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
   SET_MINING_SPEED,
@@ -84,5 +86,30 @@ export const stopMining = minerIdentifier => {
       processManager.terminateProcess(processId);
       delete handleDataByIdenfier[minerIdentifier];
     }
+  };
+};
+
+export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE, steps = 1 }) => {
+  return async dispatch => {
+    const { storage } = getMiner(minerIdentifier);
+
+    dispatch({
+      type: REQUEST_MINING_METRICS,
+      data: { minerIdentifier, from, to, steps }
+    });
+
+    storage.keys().then(timestamps => {
+      const timestampsInRange = timestamps.filter(timestamp => timestamp > 0 && timestamp < to);
+      storage.getItems(timestampsInRange).then(results => {
+        const itemsInRange = Object.entries(results).map(([timestamp, speed]) => ({
+          timestamp,
+          speed
+        }));
+        dispatch({
+          type: RECEIVE_MINING_METRICS,
+          data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+        });
+      });
+    });
   };
 };

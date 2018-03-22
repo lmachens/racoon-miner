@@ -1,20 +1,12 @@
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 import { Button, Typography } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
+import { Metrics } from './_Metrics';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
-import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
-import { withStyles } from 'material-ui/styles';
-
-const styles = {
-  chart: {
-    height: 'calc(100% - 310px)'
-  }
-};
 
 class Mining extends Component {
   handleMiningClick = () => {
@@ -24,7 +16,7 @@ class Mining extends Component {
   };
 
   render() {
-    const { classes, miner, isMining, currentSpeed, logs } = this.props;
+    const { miner, isMining, currentSpeed } = this.props;
 
     return (
       <Fragment>
@@ -32,27 +24,16 @@ class Mining extends Component {
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
         <Typography>Speed: {currentSpeed} Mh/s</Typography>
-        <div className={classes.chart}>
-          <ResponsiveContainer minHeight={200} minWidth={200}>
-            <AreaChart data={logs.slice(0, 10).reverse()}>
-              <XAxis dataKey="timestamp" />
-              <YAxis />
-              <CartesianGrid strokeDasharray="3 3" />
-              <Area type="monotone" dataKey="speed" stroke="#8884d8" fill="#8884d8" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+        <Metrics />
       </Fragment>
     );
   }
 }
 
 Mining.propTypes = {
-  classes: PropTypes.object.isRequired,
   miner: PropTypes.object.isRequired,
   isMining: PropTypes.bool.isRequired,
   currentSpeed: PropTypes.number.isRequired,
-  logs: PropTypes.array.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
   selectMiner: PropTypes.func.isRequired,
@@ -63,7 +44,6 @@ const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     isMining: miners[selectedMinerIdentifier].isMining,
     currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
-    logs: [],
     miner: getMiner(selectedMinerIdentifier),
     minerIdentifier: selectedMinerIdentifier
   };
@@ -77,5 +57,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const enhance = compose(withStyles(styles), connect(mapStateToProps, mapDispatchToProps))(Mining);
+const enhance = connect(mapStateToProps, mapDispatchToProps)(Mining);
 export { enhance as Mining };
