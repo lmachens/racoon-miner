@@ -51015,15 +51015,22 @@
 	    });
 
 	    storage.keys().then(timestamps => {
-	      const timestampsInRange = timestamps.filter(timestamp => timestamp > 0 && timestamp < to);
-	      storage.getItems(timestampsInRange).then(results => {
-	        const itemsInRange = Object.entries(results);
+	      const timestampsInRange = timestamps.filter(timestamp => timestamp > from && timestamp < to);
+	      if (timestampsInRange.length) {
+	        storage.getItems(timestampsInRange).then(results => {
+	          const itemsInRange = Object.entries(results);
 
+	          dispatch({
+	            type: RECEIVE_MINING_METRICS,
+	            data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+	          });
+	        });
+	      } else {
 	        dispatch({
 	          type: RECEIVE_MINING_METRICS,
-	          data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+	          data: { minerIdentifier, from, to, steps, metrics: [] }
 	        });
-	      });
+	      }
 	    });
 	  };
 	};
@@ -98402,16 +98409,26 @@
 	    var _temp;
 
 	    return _temp = super(...args), this.state = {
-	      range: {}
-	    }, this.handleClick = () => {
+	      timeRange: new entry_22([Date.now() - 600000, Date.now()])
+	    }, this.refreshMetrics = () => {
 	      const { fetchMetrics: fetchMetrics$$1, minerIdentifier } = this.props;
-	      const { range } = this.state;
-	      fetchMetrics$$1(minerIdentifier, range);
+	      const { timeRange } = this.state;
+	      const from = timeRange.begin().getTime();
+	      const to = timeRange.end().getTime();
+	      fetchMetrics$$1(minerIdentifier, { from, to });
+	    }, this.handleTimeRangeChanged = timeRange => {
+	      this.setState({ timeRange }, this.refreshMetrics);
 	    }, _temp;
+	  }
+
+	  componentWillMount() {
+	    this.refreshMetrics();
 	  }
 
 	  render() {
 	    const { classes, metrics, isFetchingMetrics } = this.props;
+	    const { timeRange } = this.state;
+
 	    console.log(isFetchingMetrics, metrics);
 	    const data = {
 	      name: 'metrics',
@@ -98420,19 +98437,16 @@
 	    };
 	    const series = new entry_20(data);
 
-	    let timeRange;
-	    if (metrics.length) {
-	      timeRange = new entry_22([series.begin(), series.end()]);
-	    } else {
-	      timeRange = new entry_22([Date.now() - 600000, Date.now()]);
-	    }
-
 	    return react.createElement(
 	      'div',
 	      { className: classes.chart, onClick: this.handleClick },
 	      react.createElement(
 	        entry_17$1,
-	        { timeRange: timeRange },
+	        {
+	          timeRange: timeRange,
+	          enablePanZoom: true,
+	          onTimeRangeChanged: this.handleTimeRangeChanged
+	        },
 	        react.createElement(
 	          entry_16$1,
 	          { height: '150' },

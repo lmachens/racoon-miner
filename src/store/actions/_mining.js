@@ -99,15 +99,22 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE,
     });
 
     storage.keys().then(timestamps => {
-      const timestampsInRange = timestamps.filter(timestamp => timestamp > 0 && timestamp < to);
-      storage.getItems(timestampsInRange).then(results => {
-        const itemsInRange = Object.entries(results);
+      const timestampsInRange = timestamps.filter(timestamp => timestamp > from && timestamp < to);
+      if (timestampsInRange.length) {
+        storage.getItems(timestampsInRange).then(results => {
+          const itemsInRange = Object.entries(results);
 
+          dispatch({
+            type: RECEIVE_MINING_METRICS,
+            data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+          });
+        });
+      } else {
         dispatch({
           type: RECEIVE_MINING_METRICS,
-          data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+          data: { minerIdentifier, from, to, steps, metrics: [] }
         });
-      });
+      }
     });
   };
 };

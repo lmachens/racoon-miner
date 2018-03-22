@@ -17,17 +17,29 @@ const styles = {
 
 class Metrics extends Component {
   state = {
-    range: {}
+    timeRange: new TimeRange([Date.now() - 600000, Date.now()])
   };
 
-  handleClick = () => {
+  componentWillMount() {
+    this.refreshMetrics();
+  }
+
+  refreshMetrics = () => {
     const { fetchMetrics, minerIdentifier } = this.props;
-    const { range } = this.state;
-    fetchMetrics(minerIdentifier, range);
+    const { timeRange } = this.state;
+    const from = timeRange.begin().getTime();
+    const to = timeRange.end().getTime();
+    fetchMetrics(minerIdentifier, { from, to });
+  };
+
+  handleTimeRangeChanged = timeRange => {
+    this.setState({ timeRange }, this.refreshMetrics);
   };
 
   render() {
     const { classes, metrics, isFetchingMetrics } = this.props;
+    const { timeRange } = this.state;
+
     console.log(isFetchingMetrics, metrics);
     const data = {
       name: 'metrics',
@@ -36,16 +48,13 @@ class Metrics extends Component {
     };
     const series = new TimeSeries(data);
 
-    let timeRange;
-    if (metrics.length) {
-      timeRange = new TimeRange([series.begin(), series.end()]);
-    } else {
-      timeRange = new TimeRange([Date.now() - 600000, Date.now()]);
-    }
-
     return (
       <div className={classes.chart} onClick={this.handleClick}>
-        <ChartContainer timeRange={timeRange}>
+        <ChartContainer
+          timeRange={timeRange}
+          enablePanZoom={true}
+          onTimeRangeChanged={this.handleTimeRangeChanged}
+        >
           <ChartRow height="150">
             <YAxis
               id="speed"
