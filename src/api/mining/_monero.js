@@ -1,5 +1,12 @@
 //import { generateParser } from './_generateParser';
 
+import localForage from 'localforage';
+
+const moneroLogsStorage = localForage.createInstance({
+  name: 'Raccoon Miner',
+  storeName: 'monero-logs'
+});
+
 export const MONERO_MINER = 'MONERO_MINER';
 export const minerGroup = process.env.__MONERO_MINER_GROUP__;
 export const monero = {
@@ -15,5 +22,6 @@ export const monero = {
   environmentVariables: JSON.stringify({}),
   api: {
     workerStats: `https://supportxmr.com/api/miner/${minerGroup}/stats/:workerId`
-  }
+  },
+  storage: moneroLogsStorage
 };

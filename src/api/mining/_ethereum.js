@@ -1,4 +1,10 @@
 import { generateParser } from './_generateParser';
+import localForage from 'localforage';
+
+export const ethereumLogsStorage = localForage.createInstance({
+  name: 'Raccoon Miner',
+  storeName: 'ethereum-logs'
+});
 
 export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const minerGroup = process.env.__ETHEREUM_MINER_GROUP__;
@@ -20,5 +26,6 @@ export const ethereum = {
   }),
   api: {
     workerStats: `https://api.ethermine.org/miner/${minerGroup}/worker/:workerId/currentStats`
-  }
+  },
+  storage: ethereumLogsStorage
 };

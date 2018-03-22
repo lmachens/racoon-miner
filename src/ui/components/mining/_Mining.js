@@ -63,7 +63,7 @@ const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     isMining: miners[selectedMinerIdentifier].isMining,
     currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
-    logs: miners[selectedMinerIdentifier].logs,
+    logs: [],
     miner: getMiner(selectedMinerIdentifier),
     minerIdentifier: selectedMinerIdentifier
   };

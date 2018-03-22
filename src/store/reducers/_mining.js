@@ -8,15 +8,13 @@ import {
   STOP_MINING
 } from '../types';
 
-import get from 'lodash/get';
 import set from 'lodash/set';
 
 const defaultMinerProps = {
   processId: null,
   isMining: false,
   currentSpeed: 0,
-  address: '',
-  logs: []
+  address: ''
 };
 
 export const mining = (
@@ -38,12 +36,7 @@ export const mining = (
       set(newState, `selectedMinerIdentifier`, data);
       break;
     case SET_MINING_SPEED:
-      set(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.parsed.speed);
-      set(
-        newState,
-        `miners.${data.minerIdentifier}.logs`,
-        [data.parsed, ...get(newState, `miners.${data.minerIdentifier}.logs`)].slice(0, 10)
-      );
+      set(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.speed);
       break;
     case SET_PROCESS_ID:
       set(newState, `miners.${data.minerIdentifier}.processId`, data.processId);

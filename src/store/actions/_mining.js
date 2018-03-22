@@ -33,7 +33,7 @@ export const startMining = minerIdentifier => {
   return async dispatch => {
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
-    const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
+    const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
 
     dispatch({
       type: START_MINING,
@@ -43,13 +43,17 @@ export const startMining = minerIdentifier => {
     handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
       const parsed = parser(error || data);
       if (parsed) {
+        const { timestamp, speed } = parsed;
         dispatch({
           type: SET_MINING_SPEED,
           data: {
             minerIdentifier,
-            parsed
+            speed
           }
         });
+        if (speed) {
+          storage.setItem(timestamp, speed);
+        }
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
