@@ -7,7 +7,7 @@ export const ethereumLogsStorage = localForage.createInstance({
 });
 
 export const ETHEREUM_MINER = 'ETHEREUM_MINER';
-export const minerGroup = process.env.__ETHEREUM_MINER_GROUP__;
+const minerGroup = process.env.__ETHEREUM_MINER_GROUP__;
 export const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,

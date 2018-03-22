@@ -58,11 +58,7 @@ export default [
             'TableHead'
           ],
           'node_modules/material-ui/Form/index.js': ['FormControl', 'FormHelperText'],
-          'node_modules/material-ui/Input/index.js': ['InputLabel'],
-          'node_modules/recharts-scale/es6/index.js': [
-            'getNiceTickValues',
-            'getTickValuesFixedDomain'
-          ]
+          'node_modules/material-ui/Input/index.js': ['InputLabel']
         }
       }),
       babel({

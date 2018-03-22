@@ -1,5 +1,6 @@
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { ChartContainer, ChartRow, Charts, ScatterChart, YAxis } from 'react-timeseries-charts';
 import React, { Component } from 'react';
+import { TimeRange, TimeSeries } from 'pondjs';
 
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -28,16 +29,37 @@ class Metrics extends Component {
   render() {
     const { classes, metrics, isFetchingMetrics } = this.props;
     console.log(isFetchingMetrics, metrics);
+    const data = {
+      name: 'metrics',
+      columns: ['time', 'speed'],
+      points: metrics
+    };
+    const series = new TimeSeries(data);
+
+    let timeRange;
+    if (metrics.length) {
+      timeRange = new TimeRange([series.begin(), series.end()]);
+    } else {
+      timeRange = new TimeRange([Date.now() - 600000, Date.now()]);
+    }
+
     return (
       <div className={classes.chart} onClick={this.handleClick}>
-        <ResponsiveContainer minHeight={200} minWidth={200}>
-          <AreaChart data={metrics}>
-            <XAxis dataKey="timestamp" />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Area type="monotone" dataKey="speed" stroke="#8884d8" fill="#8884d8" />
-          </AreaChart>
-        </ResponsiveContainer>
+        <ChartContainer timeRange={timeRange}>
+          <ChartRow height="150">
+            <YAxis
+              id="speed"
+              label="Speed (Mh/s)"
+              min={0}
+              max={series.max('speed') + 1}
+              width="60"
+              format=".2f"
+            />
+            <Charts>
+              <ScatterChart axis="speed" series={series} columns={['speed']} />
+            </Charts>
+          </ChartRow>
+        </ChartContainer>
       </div>
     );
   }
