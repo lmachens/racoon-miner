@@ -19,7 +19,13 @@ export default [
         'process.env.NODE_ENV': JSON.stringify('development'), // needed by react
         'process.env.__APP_PATH__': JSON.stringify(`${process.cwd()}/dist`.replace(/\\/g, '/')),
         'process.env.__LISTEN_TO_FILES__': JSON.stringify(['main.js']),
-        'process.env.__TRACKING_ID__': JSON.stringify('UA-115959266-2')
+        'process.env.__TRACKING_ID__': JSON.stringify('UA-115959266-2'),
+        'process.env.__ETHEREUM_MINER_GROUP__': JSON.stringify(
+          '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
+        ),
+        'process.env.__MONERO_MINER_GROUP__': JSON.stringify(
+          '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
+        )
       }),
       nodeResolve({
         module: true,

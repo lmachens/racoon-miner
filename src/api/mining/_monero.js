@@ -1,6 +1,7 @@
 //import { generateParser } from './_generateParser';
 
 export const MONERO_MINER = 'MONERO_MINER';
+export const minerGroup = process.env.__MONERO_MINER_GROUP__;
 export const monero = {
   disabled: true,
   name: 'Monero',
@@ -11,5 +12,8 @@ export const monero = {
   parser: () => {},
   path: '',
   args: '',
-  environmentVariables: JSON.stringify({})
+  environmentVariables: JSON.stringify({}),
+  api: {
+    workerStats: `https://supportxmr.com/api/miner/${minerGroup}/stats/:workerId`
+  }
 };

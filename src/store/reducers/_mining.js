@@ -39,10 +39,11 @@ export const mining = (
       break;
     case SET_MINING_SPEED:
       set(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.parsed.speed);
-      set(newState, `miners.${data.minerIdentifier}.logs`, [
-        data.parsed,
-        ...get(newState, `miners.${data.minerIdentifier}.logs`)
-      ]);
+      set(
+        newState,
+        `miners.${data.minerIdentifier}.logs`,
+        [data.parsed, ...get(newState, `miners.${data.minerIdentifier}.logs`)].slice(0, 10)
+      );
       break;
     case SET_PROCESS_ID:
       set(newState, `miners.${data.minerIdentifier}.processId`, data.processId);

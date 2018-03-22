@@ -1229,6 +1229,7 @@ const generateParser = regex => line => {
   const result = {
     timestamp: Date.now()
   };
+  console.info(line);
   const parsed = line.match(regex);
   if (!parsed) return;
   result.speed = parseFloat(parsed[1]);
@@ -1236,6 +1237,7 @@ const generateParser = regex => line => {
 };
 
 const ETHEREUM_MINER = 'ETHEREUM_MINER';
+const minerGroup = "0x799db2f010a5a9934eca801c5d702a7d96373b9d";
 const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,
@@ -1244,19 +1246,23 @@ const ethereum = {
   minimumPaymentThreshold: 0.05,
   parser: generateParser(/Speed\s+(.+)\sMh\/s/),
   path: 'ethminer.exe',
-  args: '--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O 0x799db2f010a5a9934eca801c5d702a7d96373b9d.XIGMA',
+  args: `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.XIGMA`,
   environmentVariables: JSON.stringify({
     GPU_FORCE_64BIT_PTR: '0',
     GPU_MAX_HEAP_SIZE: '100',
     GPU_USE_SYNC_OBJECTS: '1',
     GPU_MAX_ALLOC_PERCENT: '100',
     GPU_SINGLE_ALLOC_PERCENT: '100'
-  })
+  }),
+  api: {
+    workerStats: `https://api.ethermine.org/miner/${minerGroup}/worker/:workerId/currentStats`
+  }
 };
 
 //import { generateParser } from './_generateParser';
 
 const MONERO_MINER = 'MONERO_MINER';
+const minerGroup$1 = "47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr";
 const monero = {
   disabled: true,
   name: 'Monero',
@@ -1267,7 +1273,10 @@ const monero = {
   parser: () => {},
   path: '',
   args: '',
-  environmentVariables: JSON.stringify({})
+  environmentVariables: JSON.stringify({}),
+  api: {
+    workerStats: `https://supportxmr.com/api/miner/${minerGroup$1}/stats/:workerId`
+  }
 };
 
 const getMiner = minerIdentifier => {
@@ -2679,7 +2688,7 @@ const mining = (state = {
       break;
     case SET_MINING_SPEED:
       set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.parsed.speed);
-      set_1(newState, `miners.${data.minerIdentifier}.logs`, [data.parsed, ...get_1(newState, `miners.${data.minerIdentifier}.logs`)]);
+      set_1(newState, `miners.${data.minerIdentifier}.logs`, [data.parsed, ...get_1(newState, `miners.${data.minerIdentifier}.logs`)].slice(0, 10));
       break;
     case SET_PROCESS_ID:
       set_1(newState, `miners.${data.minerIdentifier}.processId`, data.processId);
