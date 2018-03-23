@@ -17,6 +17,8 @@ const defaultMinerProps = {
   isMining: false,
   currentSpeed: 0,
   address: '',
+  shards: 0,
+  coins: 0,
   isFetchingMetrics: false,
   metrics: []
 };

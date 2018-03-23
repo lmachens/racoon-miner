@@ -1,8 +1,9 @@
-import { Button, Typography } from '../generic';
+import { Button } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
 import { Metrics } from './_Metrics';
+import { Stats } from './_Stats';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -16,14 +17,14 @@ class Mining extends Component {
   };
 
   render() {
-    const { miner, isMining, currentSpeed } = this.props;
+    const { miner, isMining } = this.props;
 
     return (
       <Fragment>
         <Button disabled={miner.disabled} onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
-        <Typography>Speed: {currentSpeed} Mh/s</Typography>
+        <Stats />
         <Metrics />
       </Fragment>
     );
@@ -33,7 +34,6 @@ class Mining extends Component {
 Mining.propTypes = {
   miner: PropTypes.object.isRequired,
   isMining: PropTypes.bool.isRequired,
-  currentSpeed: PropTypes.number.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
   selectMiner: PropTypes.func.isRequired,
@@ -43,7 +43,6 @@ Mining.propTypes = {
 const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     isMining: miners[selectedMinerIdentifier].isMining,
-    currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
     miner: getMiner(selectedMinerIdentifier),
     minerIdentifier: selectedMinerIdentifier
   };

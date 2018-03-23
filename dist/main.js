@@ -5664,6 +5664,8 @@
 	  isMining: false,
 	  currentSpeed: 0,
 	  address: '',
+	  shards: 0,
+	  coins: 0,
 	  isFetchingMetrics: false,
 	  metrics: []
 	};
@@ -98399,8 +98401,9 @@
 	var entry_23$1 = entry$2.AreaChart;
 
 	const styles$3 = {
-	  chart: {
-	    height: 'calc(100% - 290px)'
+	  buttons: {
+	    display: 'flex',
+	    flexFlow: 'row-reverse'
 	  }
 	};
 
@@ -98477,12 +98480,16 @@
 	    const series = new entry_20(data);
 
 	    return react.createElement(
-	      'div',
-	      { className: classes.chart },
+	      react_5,
+	      null,
 	      react.createElement(
-	        Button$2,
-	        { disabled: liveMode, onClick: this.handleLiveModeClick },
-	        'Live Mode'
+	        'div',
+	        { className: classes.buttons },
+	        react.createElement(
+	          Button$2,
+	          { disabled: liveMode, onClick: this.handleLiveModeClick },
+	          'Live Mode'
+	        )
 	      ),
 	      react.createElement(
 	        entry_9$1,
@@ -98496,7 +98503,7 @@
 	          },
 	          react.createElement(
 	            entry_16$1,
-	            { height: height - 400 },
+	            { height: height - 430 },
 	            react.createElement(entry_1$1, {
 	              id: 'speed',
 	              label: 'Speed (Mh/s)',
@@ -98608,6 +98615,63 @@
 
 	const enhance$2 = compose$1(styles_3(styles$4), connect(mapStateToProps$2, mapDispatchToProps$2))(Miner);
 
+	const styles$5 = {
+	  stats: {
+	    display: 'flex',
+	    textAlign: 'center'
+	  },
+	  item: {
+	    flex: 1
+	  }
+	};
+
+	class Stats extends react_1 {
+	  render() {
+	    const { classes, currentSpeed, shards, coins } = this.props;
+
+	    return react.createElement(
+	      'div',
+	      { className: classes.stats },
+	      react.createElement(
+	        Typography$2,
+	        { className: classes.item },
+	        'Speed: ',
+	        currentSpeed,
+	        ' Mh/s'
+	      ),
+	      react.createElement(
+	        Typography$2,
+	        { className: classes.item },
+	        'Shards: ',
+	        shards
+	      ),
+	      react.createElement(
+	        Typography$2,
+	        { className: classes.item },
+	        'Coins: ',
+	        coins
+	      )
+	    );
+	  }
+	}
+
+	Stats.propTypes = {
+	  classes: propTypes.object.isRequired,
+	  currentSpeed: propTypes.number.isRequired,
+	  shards: propTypes.number.isRequired,
+	  coins: propTypes.number.isRequired
+	};
+
+	const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+	  return {
+	    currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
+	    shards: miners[selectedMinerIdentifier].shards,
+	    coins: miners[selectedMinerIdentifier].coins
+	  };
+	};
+
+	const enhance$3 = compose$1(styles_3(styles$5), connect(mapStateToProps$3))(Stats);
+
 	class Mining extends react_1 {
 	  constructor(...args) {
 	    var _temp;
@@ -98619,7 +98683,7 @@
 	  }
 
 	  render() {
-	    const { miner, isMining, currentSpeed } = this.props;
+	    const { miner, isMining } = this.props;
 
 	    return react.createElement(
 	      react_5,
@@ -98629,13 +98693,7 @@
 	        { disabled: miner.disabled, onClick: this.handleMiningClick },
 	        isMining ? 'Stop mining' : 'Start mining'
 	      ),
-	      react.createElement(
-	        Typography$2,
-	        null,
-	        'Speed: ',
-	        currentSpeed,
-	        ' Mh/s'
-	      ),
+	      react.createElement(enhance$3, null),
 	      react.createElement(enhance$1, null)
 	    );
 	  }
@@ -98644,17 +98702,15 @@
 	Mining.propTypes = {
 	  miner: propTypes.object.isRequired,
 	  isMining: propTypes.bool.isRequired,
-	  currentSpeed: propTypes.number.isRequired,
 	  startMining: propTypes.func.isRequired,
 	  stopMining: propTypes.func.isRequired,
 	  selectMiner: propTypes.func.isRequired,
 	  minerIdentifier: propTypes.string.isRequired
 	};
 
-	const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+	const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier, miners } }) => {
 	  return {
 	    isMining: miners[selectedMinerIdentifier].isMining,
-	    currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
 	    miner: getMiner(selectedMinerIdentifier),
 	    minerIdentifier: selectedMinerIdentifier
 	  };
@@ -98668,7 +98724,7 @@
 	  };
 	};
 
-	const enhance$3 = connect(mapStateToProps$3, mapDispatchToProps$3)(Mining);
+	const enhance$4 = connect(mapStateToProps$4, mapDispatchToProps$3)(Mining);
 
 	const Status = ({ name, isMining, currentSpeed }) => {
 	  return react.createElement(
@@ -98689,7 +98745,7 @@
 	  currentSpeed: propTypes.number.isRequired
 	};
 
-	const mapStateToProps$4 = ({ mining: { miners } }, { minerIdentifier }) => {
+	const mapStateToProps$5 = ({ mining: { miners } }, { minerIdentifier }) => {
 	  return {
 	    isMining: miners[minerIdentifier].isMining,
 	    currentSpeed: miners[minerIdentifier].currentSpeed,
@@ -98697,9 +98753,9 @@
 	  };
 	};
 
-	const enhance$4 = connect(mapStateToProps$4)(Status);
+	const enhance$5 = connect(mapStateToProps$5)(Status);
 
-	const styles$5 = {
+	const styles$6 = {
 	  children: {
 	    overflow: 'auto',
 	    height: 'calc(100% - 64px)'
@@ -98739,9 +98795,9 @@
 	      react.createElement(
 	        'div',
 	        null,
-	        react.createElement(enhance$4, { minerIdentifier: ETHEREUM_MINER }),
+	        react.createElement(enhance$5, { minerIdentifier: ETHEREUM_MINER }),
 	        react.createElement('br', null),
-	        react.createElement(enhance$4, { minerIdentifier: MONERO_MINER })
+	        react.createElement(enhance$5, { minerIdentifier: MONERO_MINER })
 	      )
 	    )
 	  ),
@@ -98759,9 +98815,9 @@
 	  title: propTypes.string.isRequired
 	};
 
-	const enhance$5 = styles_3(styles$5)(AppLayout);
+	const enhance$6 = styles_3(styles$6)(AppLayout);
 
-	const styles$6 = {
+	const styles$7 = {
 	  card: {
 	    minWidth: 275,
 	    margin: '20 0'
@@ -98789,9 +98845,9 @@
 	  title: propTypes.string.isRequired
 	};
 
-	const enhance$6 = styles_3(styles$6)(CardLayout);
+	const enhance$7 = styles_3(styles$7)(CardLayout);
 
-	const styles$7 = {
+	const styles$8 = {
 	  wrapper: {
 	    margin: 20
 	  },
@@ -98822,7 +98878,7 @@
 	  title: propTypes.string.isRequired
 	};
 
-	const enhance$7 = styles_3(styles$7)(PageLayout);
+	const enhance$8 = styles_3(styles$8)(PageLayout);
 
 	var CssBaseline_1 = createCommonjsModule(function (module, exports) {
 
@@ -100066,7 +100122,7 @@
 	var ReactGA = unwrapExports(reactGa);
 
 	// These envs will be replaced by rollup
-	const APP_PATH = "C:/RaccoonMiner/raccoon-miner/dist";
+	const APP_PATH = "C:/source/raccoon-miner/dist";
 	const LISTEN_TO_FILES = ["main.js"];
 	const TRACKING_ID = "UA-115959266-2";
 
@@ -100108,11 +100164,11 @@
 	}];
 
 	const MiningPage = () => react.createElement(
-	  enhance$7,
+	  enhance$8,
 	  { title: 'Mining' },
 	  react.createElement(enhance$2, null),
 	  react.createElement(enhance, null),
-	  react.createElement(enhance$3, null)
+	  react.createElement(enhance$4, null)
 	);
 
 	/**
@@ -100185,7 +100241,7 @@
 	    console.log(data, isListening);
 	    const gpus = get_1(data, 'Gpus.Gpus') || [];
 	    return react.createElement(
-	      enhance$6,
+	      enhance$7,
 	      { title: 'Hardware' },
 	      react.createElement(
 	        Table$2,
@@ -100219,7 +100275,7 @@
 	  stopTrackingHardwareInfo: propTypes.func.isRequired
 	};
 
-	const mapStateToProps$5 = ({ hardwareInfo }) => {
+	const mapStateToProps$6 = ({ hardwareInfo }) => {
 	  return {
 	    hardwareInfo
 	  };
@@ -100232,12 +100288,12 @@
 	  };
 	};
 
-	const enhance$8 = connect(mapStateToProps$5, mapDispatchToProps$4)(Hardware);
+	const enhance$9 = connect(mapStateToProps$6, mapDispatchToProps$4)(Hardware);
 
 	class System extends react_1 {
 	  render() {
 	    return react.createElement(
-	      enhance$6,
+	      enhance$7,
 	      { title: 'System' },
 	      'Language'
 	    );
@@ -100245,10 +100301,10 @@
 	}
 
 	const SettingsPage = () => react.createElement(
-	  enhance$7,
+	  enhance$8,
 	  { title: 'Settings' },
 	  react.createElement(System, null),
-	  react.createElement(enhance$8, null)
+	  react.createElement(enhance$9, null)
 	);
 
 	const Discord = () => react.createElement("embed", {
@@ -100257,14 +100313,14 @@
 	  src: "https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/"
 	});
 
-	const styles$8 = {
+	const styles$9 = {
 	  discord: {
 	    height: 'calc(100% - 82px)'
 	  }
 	};
 
 	const SupportPage = ({ classes }) => react.createElement(
-	  enhance$7,
+	  enhance$8,
 	  { title: 'Support' },
 	  react.createElement(
 	    'div',
@@ -100277,7 +100333,7 @@
 	  classes: propTypes.object.isRequired
 	};
 
-	const enhance$9 = styles_3(styles$8)(SupportPage);
+	const enhance$10 = styles_3(styles$9)(SupportPage);
 
 	const routes = react.createElement(
 	  react_5,
@@ -100285,7 +100341,7 @@
 	  react.createElement(Redirect, { path: '/', exact: true, to: '/mining' }),
 	  react.createElement(Route, { path: '/mining', exact: true, component: MiningPage }),
 	  react.createElement(Route, { path: '/settings', exact: true, component: SettingsPage }),
-	  react.createElement(Route, { path: '/support', exact: true, component: enhance$9 })
+	  react.createElement(Route, { path: '/support', exact: true, component: enhance$10 })
 	);
 
 	const history = createHistory$2();
@@ -100305,7 +100361,7 @@
 	        { theme: light },
 	        react.createElement(CssBaseline$2, null),
 	        react.createElement(
-	          enhance$5,
+	          enhance$6,
 	          { title: 'Raccoon Miner', links: links },
 	          routes
 	        )

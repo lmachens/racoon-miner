@@ -6,7 +6,7 @@ import {
   ScatterChart,
   YAxis
 } from 'react-timeseries-charts';
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { TimeRange, TimeSeries } from 'pondjs';
 
 import { Button } from '../generic';
@@ -18,8 +18,9 @@ import { fetchMetrics } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
-  chart: {
-    height: 'calc(100% - 290px)'
+  buttons: {
+    display: 'flex',
+    flexFlow: 'row-reverse'
   }
 };
 
@@ -110,17 +111,19 @@ class Metrics extends Component {
     const series = new TimeSeries(data);
 
     return (
-      <div className={classes.chart}>
-        <Button disabled={liveMode} onClick={this.handleLiveModeClick}>
-          Live Mode
-        </Button>
+      <Fragment>
+        <div className={classes.buttons}>
+          <Button disabled={liveMode} onClick={this.handleLiveModeClick}>
+            Live Mode
+          </Button>
+        </div>
         <Resizable>
           <ChartContainer
             timeRange={timeRange}
             enablePanZoom={true}
             onTimeRangeChanged={this.handleTimeRangeChanged}
           >
-            <ChartRow height={height - 400}>
+            <ChartRow height={height - 430}>
               <YAxis
                 id="speed"
                 label="Speed (Mh/s)"
@@ -135,7 +138,7 @@ class Metrics extends Component {
             </ChartRow>
           </ChartContainer>
         </Resizable>
-      </div>
+      </Fragment>
     );
   }
 }
