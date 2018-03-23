@@ -4277,8 +4277,9 @@
 	  storeName: 'ethereum-logs'
 	});
 
-	const ETHEREUM_MINER = 'ETHEREUM_MINER';
 	const minerGroup = "0x799db2f010a5a9934eca801c5d702a7d96373b9d";
+
+	const ETHEREUM_MINER = 'ETHEREUM_MINER';
 	const ethereum = {
 	  name: 'Ethereum',
 	  identifier: ETHEREUM_MINER,
@@ -4308,8 +4309,9 @@
 	  storeName: 'monero-logs'
 	});
 
-	const MONERO_MINER = 'MONERO_MINER';
 	const minerGroup$1 = "47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr";
+
+	const MONERO_MINER = 'MONERO_MINER';
 	const monero = {
 	  disabled: true,
 	  name: 'Monero',
@@ -50969,9 +50971,7 @@
 	            speed
 	          }
 	        });
-	        if (speed) {
-	          storage.setItem(timestamp, speed);
-	        }
+	        storage.setItem(timestamp, speed);
 	      }
 	    };
 	    processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -98400,7 +98400,7 @@
 
 	const styles$3 = {
 	  chart: {
-	    height: 'calc(100% - 310px)'
+	    height: 'calc(100% - 290px)'
 	  }
 	};
 
@@ -98410,9 +98410,27 @@
 
 	    return _temp = super(...args), this.state = {
 	      height: document.body.clientHeight,
-	      timeRange: new entry_22([Date.now() - 600000, Date.now()])
+	      timeRange: new entry_22([Date.now() - 600000, Date.now()]),
+	      liveMode: true
 	    }, this.updateDimensions = () => {
 	      this.setState({ height: document.body.clientHeight });
+	    }, this.startLiveModeInterval = () => {
+	      this.stopLiveModeInterval();
+
+	      this.liveModeInterval = setInterval(() => {
+	        this.setState(({ liveMode, timeRange }) => {
+	          if (!liveMode) return {};
+	          const newTimeRange = new entry_22([timeRange.begin().getTime() + 1000, timeRange.end().getTime() + 1000]);
+	          return {
+	            timeRange: newTimeRange
+	          };
+	        }, () => {
+	          const { isMining } = this.props;
+	          isMining && this.refreshMetrics();
+	        });
+	      }, 1000);
+	    }, this.stopLiveModeInterval = () => {
+	      this.liveModeInterval && clearInterval(this.liveModeInterval);
 	    }, this.refreshMetrics = () => {
 	      const { fetchMetrics: fetchMetrics$$1, minerIdentifier } = this.props;
 	      const { timeRange } = this.state;
@@ -98420,7 +98438,15 @@
 	      const to = timeRange.end().getTime();
 	      fetchMetrics$$1(minerIdentifier, { from, to });
 	    }, this.handleTimeRangeChanged = timeRange => {
-	      this.setState({ timeRange }, this.refreshMetrics);
+	      this.setState({ timeRange, liveMode: false }, this.refreshMetrics);
+	    }, this.handleLiveModeClick = () => {
+	      this.setState(({ timeRange }) => {
+	        const newTimeRange = new entry_22([timeRange.begin(), Date.now()]);
+	        return {
+	          liveMode: true,
+	          timeRange: newTimeRange
+	        };
+	      });
 	    }, _temp;
 	  }
 
@@ -98431,17 +98457,18 @@
 
 	  componentDidMount() {
 	    window.addEventListener('resize', this.updateDimensions);
+	    this.startLiveModeInterval();
 	  }
 
 	  componentWillUnmount() {
 	    window.removeEventListener('resize', this.updateDimensions);
+	    this.stopLiveModeInterval();
 	  }
 
 	  render() {
-	    const { classes, metrics, isFetchingMetrics } = this.props;
-	    const { height, timeRange } = this.state;
+	    const { classes, metrics } = this.props;
+	    const { height, timeRange, liveMode } = this.state;
 
-	    console.log(isFetchingMetrics, metrics);
 	    const data = {
 	      name: 'metrics',
 	      columns: ['time', 'speed'],
@@ -98452,6 +98479,11 @@
 	    return react.createElement(
 	      'div',
 	      { className: classes.chart },
+	      react.createElement(
+	        Button$2,
+	        { disabled: liveMode, onClick: this.handleLiveModeClick },
+	        'Live Mode'
+	      ),
 	      react.createElement(
 	        entry_9$1,
 	        null,
@@ -98488,6 +98520,7 @@
 	Metrics.propTypes = {
 	  classes: propTypes.object.isRequired,
 	  metrics: propTypes.array.isRequired,
+	  isMining: propTypes.bool.isRequired,
 	  minerIdentifier: propTypes.string.isRequired,
 	  fetchMetrics: propTypes.func.isRequired,
 	  isFetchingMetrics: propTypes.bool.isRequired
@@ -98495,6 +98528,7 @@
 
 	const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners } }) => {
 	  return {
+	    isMining: miners[selectedMinerIdentifier].isMining,
 	    metrics: miners[selectedMinerIdentifier].metrics,
 	    minerIdentifier: selectedMinerIdentifier,
 	    isFetchingMetrics: miners[selectedMinerIdentifier].isFetchingMetrics
@@ -100287,9 +100321,11 @@
 
 	  simpleIoPlugin.onFileListenerChanged.addListener(fileIdentifier => {
 	    if (LISTEN_TO_FILES.includes(fileIdentifier)) {
+	      console.log('about to reload');
 	      setTimeout(() => {
+	        console.log('reload');
 	        location.reload();
-	      }, 100);
+	      }, 1000);
 	    }
 	  });
 

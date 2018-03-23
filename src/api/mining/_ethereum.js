@@ -1,13 +1,14 @@
 import { generateParser } from './_generateParser';
 import localForage from 'localforage';
 
-export const ethereumLogsStorage = localForage.createInstance({
+const ethereumLogsStorage = localForage.createInstance({
   name: 'Raccoon Miner',
   storeName: 'ethereum-logs'
 });
 
-export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 const minerGroup = process.env.__ETHEREUM_MINER_GROUP__;
+
+export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,

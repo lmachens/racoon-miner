@@ -7,8 +7,9 @@ const moneroLogsStorage = localForage.createInstance({
   storeName: 'monero-logs'
 });
 
-export const MONERO_MINER = 'MONERO_MINER';
 const minerGroup = process.env.__MONERO_MINER_GROUP__;
+
+export const MONERO_MINER = 'MONERO_MINER';
 export const monero = {
   disabled: true,
   name: 'Monero',

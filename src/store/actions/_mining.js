@@ -53,9 +53,7 @@ export const startMining = minerIdentifier => {
             speed
           }
         });
-        if (speed) {
-          storage.setItem(timestamp, speed);
-        }
+        storage.setItem(timestamp, speed);
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
