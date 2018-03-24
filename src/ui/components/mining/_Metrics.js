@@ -100,15 +100,22 @@ class Metrics extends Component {
   };
 
   render() {
-    const { classes, metrics } = this.props;
+    const { classes, metrics: { speed, errorMsg } } = this.props;
     const { height, timeRange, liveMode } = this.state;
 
-    const data = {
+    const speedData = {
       name: 'metrics',
       columns: ['time', 'speed'],
-      points: metrics
+      points: speed
     };
-    const series = new TimeSeries(data);
+    const speedSeries = new TimeSeries(speedData);
+
+    const errorMsgData = {
+      name: 'metrics',
+      columns: ['time', 'speed', 'errorMsg'],
+      points: errorMsg
+    };
+    const errorMsgSeries = new TimeSeries(errorMsgData);
 
     return (
       <Fragment>
@@ -128,12 +135,13 @@ class Metrics extends Component {
                 id="speed"
                 label="Speed (Mh/s)"
                 min={0}
-                max={(series.max('speed') || 0) + 1}
+                max={(speedSeries.max('speed') || 0) + 1}
                 width="60"
                 format=".2f"
               />
               <Charts>
-                <ScatterChart axis="speed" series={series} columns={['speed']} />
+                <ScatterChart axis="speed" series={speedSeries} columns={['speed']} />
+                <ScatterChart axis="speed" series={errorMsgSeries} columns={['speed']} />
               </Charts>
             </ChartRow>
           </ChartContainer>
@@ -145,7 +153,7 @@ class Metrics extends Component {
 
 Metrics.propTypes = {
   classes: PropTypes.object.isRequired,
-  metrics: PropTypes.array.isRequired,
+  metrics: PropTypes.object.isRequired,
   isMining: PropTypes.bool.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   fetchMetrics: PropTypes.func.isRequired,

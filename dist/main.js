@@ -4240,6 +4240,7 @@
 
 	const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
 	const SELECT_MINER = 'SELECT_MINER';
+	const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
 	const SET_MINING_SPEED = 'SET_MINING_SPEED';
 	const SET_PROCESS_ID = 'SET_PROCESS_ID';
 	const START_MINING = 'START_MINING';
@@ -4261,14 +4262,22 @@
 	  }
 	};
 
+	const SPEED_REGEX = 'SPEED_REGEX';
+	const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
+
 	const generateParser = regex => line => {
 	  const result = {
 	    timestamp: Date.now()
 	  };
 	  console.info(line);
-	  const parsed = line.match(regex);
-	  if (!parsed) return;
-	  result.speed = parseFloat(parsed[1]);
+	  if (regex.SPEED_REGEX) {
+	    const parsed = line.match(regex);
+	    if (parsed) result.speed = parseFloat(parsed[1]);
+	  }
+	  if (regex.CONNECTION_FAILED_REGEX) {
+	    const parsed = line.match(regex);
+	    if (parsed) result.errorMsg = 'Connection failed';
+	  }
 	  return result;
 	};
 
@@ -4286,7 +4295,10 @@
 	  logo: 'assets/ethereum.png',
 	  currency: 'Ether',
 	  minimumPaymentThreshold: 0.05,
-	  parser: generateParser(/Speed\s+(.+)\sMh\/s/),
+	  parser: generateParser({
+	    [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
+	    [CONNECTION_FAILED_REGEX]: /Could not resolve host/
+	  }),
 	  path: 'ethminer.exe',
 	  args: `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.XIGMA`,
 	  environmentVariables: JSON.stringify({
@@ -5667,7 +5679,11 @@
 	  shards: 0,
 	  coins: 0,
 	  isFetchingMetrics: false,
-	  metrics: []
+	  metrics: {
+	    speed: [],
+	    errorMsg: []
+	  },
+	  errorMsg: null
 	};
 
 	const mining = (state = {
@@ -5687,6 +5703,10 @@
 	      break;
 	    case SET_MINING_SPEED:
 	      set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.speed);
+	      set_1(newState, `miners.${data.minerIdentifier}.errorMsg`, null);
+	      break;
+	    case SET_MINING_ERROR_MESSAGE:
+	      set_1(newState, `miners.${data.minerIdentifier}.errorMsg`, data.errorMsg);
 	      break;
 	    case SET_PROCESS_ID:
 	      set_1(newState, `miners.${data.minerIdentifier}.processId`, data.processId);
@@ -50963,9 +50983,8 @@
 	    });
 
 	    handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
-	      const parsed = parser(error || data);
-	      if (parsed) {
-	        const { timestamp, speed } = parsed;
+	      const { timestamp, errorMsg, speed } = parser(error || data);
+	      if (speed) {
 	        dispatch({
 	          type: SET_MINING_SPEED,
 	          data: {
@@ -50973,7 +50992,16 @@
 	            speed
 	          }
 	        });
-	        storage.setItem(timestamp, speed);
+	        storage.setItem(timestamp, { speed });
+	      } else if (errorMsg) {
+	        dispatch({
+	          type: SET_MINING_ERROR_MESSAGE,
+	          data: {
+	            minerIdentifier,
+	            errorMsg
+	          }
+	        });
+	        storage.setItem(timestamp, { speed: 0, errorMsg });
 	      }
 	    };
 	    processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -51020,7 +51048,16 @@
 	      const timestampsInRange = timestamps.filter(timestamp => timestamp > from && timestamp < to);
 	      if (timestampsInRange.length) {
 	        storage.getItems(timestampsInRange).then(results => {
-	          const itemsInRange = Object.entries(results);
+	          const entries = Object.entries(results);
+	          const { speed, errorMsg } = entries.reduce(({ speed, errorMsg }, [timestamp, result]) => {
+	            if (result.speed) speed.push([parseInt(timestamp), result.speed]);else if (result.errorMsg) speed.push([parseInt(timestamp), 0, result.errorMsg]);
+	            return { speed, errorMsg };
+	          }, { speed: [], errorMsg: [] });
+
+	          const itemsInRange = {
+	            speed,
+	            errorMsg
+	          };
 
 	          dispatch({
 	            type: RECEIVE_MINING_METRICS,
@@ -51030,7 +51067,16 @@
 	      } else {
 	        dispatch({
 	          type: RECEIVE_MINING_METRICS,
-	          data: { minerIdentifier, from, to, steps, metrics: [] }
+	          data: {
+	            minerIdentifier,
+	            from,
+	            to,
+	            steps,
+	            metrics: {
+	              speed: [],
+	              errorMsg: []
+	            }
+	          }
 	        });
 	      }
 	    });
@@ -98469,15 +98515,22 @@
 	  }
 
 	  render() {
-	    const { classes, metrics } = this.props;
+	    const { classes, metrics: { speed, errorMsg } } = this.props;
 	    const { height, timeRange, liveMode } = this.state;
 
-	    const data = {
+	    const speedData = {
 	      name: 'metrics',
 	      columns: ['time', 'speed'],
-	      points: metrics
+	      points: speed
 	    };
-	    const series = new entry_20(data);
+	    const speedSeries = new entry_20(speedData);
+
+	    const errorMsgData = {
+	      name: 'metrics',
+	      columns: ['time', 'speed', 'errorMsg'],
+	      points: errorMsg
+	    };
+	    const errorMsgSeries = new entry_20(errorMsgData);
 
 	    return react.createElement(
 	      react_5,
@@ -98508,14 +98561,15 @@
 	              id: 'speed',
 	              label: 'Speed (Mh/s)',
 	              min: 0,
-	              max: (series.max('speed') || 0) + 1,
+	              max: (speedSeries.max('speed') || 0) + 1,
 	              width: '60',
 	              format: '.2f'
 	            }),
 	            react.createElement(
 	              entry_15$1,
 	              null,
-	              react.createElement(entry_8$1, { axis: 'speed', series: series, columns: ['speed'] })
+	              react.createElement(entry_8$1, { axis: 'speed', series: speedSeries, columns: ['speed'] }),
+	              react.createElement(entry_8$1, { axis: 'speed', series: errorMsgSeries, columns: ['speed'] })
 	            )
 	          )
 	        )
@@ -98526,7 +98580,7 @@
 
 	Metrics.propTypes = {
 	  classes: propTypes.object.isRequired,
-	  metrics: propTypes.array.isRequired,
+	  metrics: propTypes.object.isRequired,
 	  isMining: propTypes.bool.isRequired,
 	  minerIdentifier: propTypes.string.isRequired,
 	  fetchMetrics: propTypes.func.isRequired,
@@ -98683,7 +98737,7 @@
 	  }
 
 	  render() {
-	    const { miner, isMining } = this.props;
+	    const { errorMsg, miner, isMining } = this.props;
 
 	    return react.createElement(
 	      react_5,
@@ -98693,6 +98747,12 @@
 	        { disabled: miner.disabled, onClick: this.handleMiningClick },
 	        isMining ? 'Stop mining' : 'Start mining'
 	      ),
+	      errorMsg && react.createElement(
+	        Typography$2,
+	        { color: 'error', variant: 'caption' },
+	        'Error: ',
+	        errorMsg
+	      ),
 	      react.createElement(enhance$3, null),
 	      react.createElement(enhance$1, null)
 	    );
@@ -98701,6 +98761,7 @@
 
 	Mining.propTypes = {
 	  miner: propTypes.object.isRequired,
+	  errorMsg: propTypes.string,
 	  isMining: propTypes.bool.isRequired,
 	  startMining: propTypes.func.isRequired,
 	  stopMining: propTypes.func.isRequired,
@@ -98711,6 +98772,7 @@
 	const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier, miners } }) => {
 	  return {
 	    isMining: miners[selectedMinerIdentifier].isMining,
+	    errorMsg: miners[selectedMinerIdentifier].errorMsg,
 	    miner: getMiner(selectedMinerIdentifier),
 	    minerIdentifier: selectedMinerIdentifier
 	  };

@@ -3,6 +3,7 @@ import {
   REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
+  SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
   SET_PROCESS_ID,
   START_MINING,
@@ -43,9 +44,8 @@ export const startMining = minerIdentifier => {
     });
 
     handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
-      const parsed = parser(error || data);
-      if (parsed) {
-        const { timestamp, speed } = parsed;
+      const { timestamp, errorMsg, speed } = parser(error || data);
+      if (speed) {
         dispatch({
           type: SET_MINING_SPEED,
           data: {
@@ -53,7 +53,16 @@ export const startMining = minerIdentifier => {
             speed
           }
         });
-        storage.setItem(timestamp, speed);
+        storage.setItem(timestamp, { speed });
+      } else if (errorMsg) {
+        dispatch({
+          type: SET_MINING_ERROR_MESSAGE,
+          data: {
+            minerIdentifier,
+            errorMsg
+          }
+        });
+        storage.setItem(timestamp, { speed: 0, errorMsg });
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -100,7 +109,20 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE,
       const timestampsInRange = timestamps.filter(timestamp => timestamp > from && timestamp < to);
       if (timestampsInRange.length) {
         storage.getItems(timestampsInRange).then(results => {
-          const itemsInRange = Object.entries(results);
+          const entries = Object.entries(results);
+          const { speed, errorMsg } = entries.reduce(
+            ({ speed, errorMsg }, [timestamp, result]) => {
+              if (result.speed) speed.push([parseInt(timestamp), result.speed]);
+              else if (result.errorMsg) speed.push([parseInt(timestamp), 0, result.errorMsg]);
+              return { speed, errorMsg };
+            },
+            { speed: [], errorMsg: [] }
+          );
+
+          const itemsInRange = {
+            speed,
+            errorMsg
+          };
 
           dispatch({
             type: RECEIVE_MINING_METRICS,
@@ -110,7 +132,16 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE,
       } else {
         dispatch({
           type: RECEIVE_MINING_METRICS,
-          data: { minerIdentifier, from, to, steps, metrics: [] }
+          data: {
+            minerIdentifier,
+            from,
+            to,
+            steps,
+            metrics: {
+              speed: [],
+              errorMsg: []
+            }
+          }
         });
       }
     });

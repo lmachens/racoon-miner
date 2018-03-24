@@ -1,4 +1,4 @@
-import { Button } from '../generic';
+import { Button, Typography } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
@@ -17,13 +17,18 @@ class Mining extends Component {
   };
 
   render() {
-    const { miner, isMining } = this.props;
+    const { errorMsg, miner, isMining } = this.props;
 
     return (
       <Fragment>
         <Button disabled={miner.disabled} onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
+        {errorMsg && (
+          <Typography color="error" variant="caption">
+            Error: {errorMsg}
+          </Typography>
+        )}
         <Stats />
         <Metrics />
       </Fragment>
@@ -33,6 +38,7 @@ class Mining extends Component {
 
 Mining.propTypes = {
   miner: PropTypes.object.isRequired,
+  errorMsg: PropTypes.string,
   isMining: PropTypes.bool.isRequired,
   startMining: PropTypes.func.isRequired,
   stopMining: PropTypes.func.isRequired,
@@ -43,6 +49,7 @@ Mining.propTypes = {
 const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     isMining: miners[selectedMinerIdentifier].isMining,
+    errorMsg: miners[selectedMinerIdentifier].errorMsg,
     miner: getMiner(selectedMinerIdentifier),
     minerIdentifier: selectedMinerIdentifier
   };

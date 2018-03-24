@@ -4,6 +4,7 @@ import {
   REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
+  SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
   SET_PROCESS_ID,
   START_MINING,
@@ -20,7 +21,11 @@ const defaultMinerProps = {
   shards: 0,
   coins: 0,
   isFetchingMetrics: false,
-  metrics: []
+  metrics: {
+    speed: [],
+    errorMsg: []
+  },
+  errorMsg: null
 };
 
 export const mining = (
@@ -43,6 +48,10 @@ export const mining = (
       break;
     case SET_MINING_SPEED:
       set(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.speed);
+      set(newState, `miners.${data.minerIdentifier}.errorMsg`, null);
+      break;
+    case SET_MINING_ERROR_MESSAGE:
+      set(newState, `miners.${data.minerIdentifier}.errorMsg`, data.errorMsg);
       break;
     case SET_PROCESS_ID:
       set(newState, `miners.${data.minerIdentifier}.processId`, data.processId);
