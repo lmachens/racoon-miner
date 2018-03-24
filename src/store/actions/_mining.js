@@ -62,7 +62,7 @@ export const startMining = minerIdentifier => {
             errorMsg
           }
         });
-        storage.setItem(timestamp, { speed: 0, errorMsg });
+        storage.setItem(timestamp, { errorMsg });
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -113,7 +113,7 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE,
           const { speed, errorMsg } = entries.reduce(
             ({ speed, errorMsg }, [timestamp, result]) => {
               if (result.speed) speed.push([parseInt(timestamp), result.speed]);
-              else if (result.errorMsg) speed.push([parseInt(timestamp), 0, result.errorMsg]);
+              else if (result.errorMsg) errorMsg.push([parseInt(timestamp), 0, result.errorMsg]);
               return { speed, errorMsg };
             },
             { speed: [], errorMsg: [] }

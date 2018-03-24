@@ -51001,7 +51001,7 @@
 	            errorMsg
 	          }
 	        });
-	        storage.setItem(timestamp, { speed: 0, errorMsg });
+	        storage.setItem(timestamp, { errorMsg });
 	      }
 	    };
 	    processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -51050,7 +51050,7 @@
 	        storage.getItems(timestampsInRange).then(results => {
 	          const entries = Object.entries(results);
 	          const { speed, errorMsg } = entries.reduce(({ speed, errorMsg }, [timestamp, result]) => {
-	            if (result.speed) speed.push([parseInt(timestamp), result.speed]);else if (result.errorMsg) speed.push([parseInt(timestamp), 0, result.errorMsg]);
+	            if (result.speed) speed.push([parseInt(timestamp), result.speed]);else if (result.errorMsg) errorMsg.push([parseInt(timestamp), 0, result.errorMsg]);
 	            return { speed, errorMsg };
 	          }, { speed: [], errorMsg: [] });
 
@@ -98460,7 +98460,8 @@
 	    return _temp = super(...args), this.state = {
 	      height: document.body.clientHeight,
 	      timeRange: new entry_22([Date.now() - 600000, Date.now()]),
-	      liveMode: true
+	      liveMode: true,
+	      highlight: null
 	    }, this.updateDimensions = () => {
 	      this.setState({ height: document.body.clientHeight });
 	    }, this.startLiveModeInterval = () => {
@@ -98496,6 +98497,10 @@
 	          timeRange: newTimeRange
 	        };
 	      });
+	    }, this.handleMouseNear = point => {
+	      this.setState({
+	        highlight: point
+	      });
 	    }, _temp;
 	  }
 
@@ -98516,7 +98521,7 @@
 
 	  render() {
 	    const { classes, metrics: { speed, errorMsg } } = this.props;
-	    const { height, timeRange, liveMode } = this.state;
+	    const { height, timeRange, liveMode, highlight } = this.state;
 
 	    const speedData = {
 	      name: 'metrics',
@@ -98532,6 +98537,18 @@
 	    };
 	    const errorMsgSeries = new entry_20(errorMsgData);
 
+	    let text = `Speed: - mph, time: -:--`;
+	    let infoValues = [];
+	    if (highlight) {
+	      const speedText = `${highlight.event.get(highlight.column)} Mh/s`;
+	      const errorMsg = highlight.event.get('errorMsg');
+	      text = `
+                Speed: ${speedText},
+                time: ${highlight.event.timestamp().toLocaleTimeString()}
+            `;
+	      infoValues = [{ label: 'Speed', value: speedText }, { label: 'Error', value: errorMsg }];
+	    }
+
 	    return react.createElement(
 	      react_5,
 	      null,
@@ -98545,12 +98562,18 @@
 	        )
 	      ),
 	      react.createElement(
+	        Typography$2,
+	        null,
+	        text
+	      ),
+	      react.createElement(
 	        entry_9$1,
 	        null,
 	        react.createElement(
 	          entry_17$1,
 	          {
 	            timeRange: timeRange,
+	            onBackgroundClick: this.handleUnsetSelection,
 	            enablePanZoom: true,
 	            onTimeRangeChanged: this.handleTimeRangeChanged
 	          },
@@ -98568,8 +98591,35 @@
 	            react.createElement(
 	              entry_15$1,
 	              null,
-	              react.createElement(entry_8$1, { axis: 'speed', series: speedSeries, columns: ['speed'] }),
-	              react.createElement(entry_8$1, { axis: 'speed', series: errorMsgSeries, columns: ['speed'] })
+	              react.createElement(entry_8$1, {
+	                axis: 'speed',
+	                series: speedSeries,
+	                columns: ['speed'],
+	                highlight: highlight,
+	                info: infoValues,
+	                infoHeight: 28,
+	                infoWidth: 110,
+	                infoStyle: {
+	                  fill: 'black',
+	                  color: '#DDD'
+	                },
+	                onMouseNear: this.handleMouseNear
+	              }),
+	              react.createElement(entry_8$1, {
+	                onMouseNear: this.handleMouseNear,
+	                highlight: highlight,
+	                info: infoValues,
+	                infoHeight: 28,
+	                infoWidth: 110,
+	                infoStyle: {
+	                  fill: 'black',
+	                  color: '#DDD'
+	                },
+	                style: { speed: { normal: { fill: 'red' } } },
+	                axis: 'speed',
+	                series: errorMsgSeries,
+	                columns: ['speed']
+	              })
 	            )
 	          )
 	        )

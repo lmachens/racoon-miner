@@ -9,7 +9,7 @@ import {
 import React, { Component, Fragment } from 'react';
 import { TimeRange, TimeSeries } from 'pondjs';
 
-import { Button } from '../generic';
+import { Button, Typography } from '../generic';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
@@ -28,7 +28,8 @@ class Metrics extends Component {
   state = {
     height: document.body.clientHeight,
     timeRange: new TimeRange([Date.now() - 600000, Date.now()]),
-    liveMode: true
+    liveMode: true,
+    highlight: null
   };
 
   componentWillMount() {
@@ -99,9 +100,15 @@ class Metrics extends Component {
     });
   };
 
+  handleMouseNear = point => {
+    this.setState({
+      highlight: point
+    });
+  };
+
   render() {
     const { classes, metrics: { speed, errorMsg } } = this.props;
-    const { height, timeRange, liveMode } = this.state;
+    const { height, timeRange, liveMode, highlight } = this.state;
 
     const speedData = {
       name: 'metrics',
@@ -117,6 +124,18 @@ class Metrics extends Component {
     };
     const errorMsgSeries = new TimeSeries(errorMsgData);
 
+    let text = `Speed: - mph, time: -:--`;
+    let infoValues = [];
+    if (highlight) {
+      const speedText = `${highlight.event.get(highlight.column)} Mh/s`;
+      const errorMsg = highlight.event.get('errorMsg');
+      text = `
+                Speed: ${speedText},
+                time: ${highlight.event.timestamp().toLocaleTimeString()}
+            `;
+      infoValues = [{ label: 'Speed', value: speedText }, { label: 'Error', value: errorMsg }];
+    }
+
     return (
       <Fragment>
         <div className={classes.buttons}>
@@ -124,9 +143,11 @@ class Metrics extends Component {
             Live Mode
           </Button>
         </div>
+        <Typography>{text}</Typography>
         <Resizable>
           <ChartContainer
             timeRange={timeRange}
+            onBackgroundClick={this.handleUnsetSelection}
             enablePanZoom={true}
             onTimeRangeChanged={this.handleTimeRangeChanged}
           >
@@ -140,8 +161,35 @@ class Metrics extends Component {
                 format=".2f"
               />
               <Charts>
-                <ScatterChart axis="speed" series={speedSeries} columns={['speed']} />
-                <ScatterChart axis="speed" series={errorMsgSeries} columns={['speed']} />
+                <ScatterChart
+                  axis="speed"
+                  series={speedSeries}
+                  columns={['speed']}
+                  highlight={highlight}
+                  info={infoValues}
+                  infoHeight={28}
+                  infoWidth={110}
+                  infoStyle={{
+                    fill: 'black',
+                    color: '#DDD'
+                  }}
+                  onMouseNear={this.handleMouseNear}
+                />
+                <ScatterChart
+                  onMouseNear={this.handleMouseNear}
+                  highlight={highlight}
+                  info={infoValues}
+                  infoHeight={28}
+                  infoWidth={110}
+                  infoStyle={{
+                    fill: 'black',
+                    color: '#DDD'
+                  }}
+                  style={{ speed: { normal: { fill: 'red' } } }}
+                  axis="speed"
+                  series={errorMsgSeries}
+                  columns={['speed']}
+                />
               </Charts>
             </ChartRow>
           </ChartContainer>
