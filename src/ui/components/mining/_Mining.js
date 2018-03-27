@@ -3,8 +3,8 @@ import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
 import { Metrics } from './_Metrics';
-import { Stats } from './_Stats';
 import PropTypes from 'prop-types';
+import { Stats } from './_Stats';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';

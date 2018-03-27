@@ -1,4 +1,5 @@
-import { generateParser, SPEED_REGEX, CONNECTION_FAILED_REGEX } from './_generateParser';
+import { CONNECTION_FAILED_REGEX, SPEED_REGEX, generateParser } from './_generateParser';
+
 import localForage from 'localforage';
 
 const ethereumLogsStorage = localForage.createInstance({
@@ -20,7 +21,8 @@ export const ethereum = {
     [CONNECTION_FAILED_REGEX]: /Could not resolve host/
   }),
   path: 'ethminer.exe',
-  args: `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.XIGMA`,
+  args: address =>
+    `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.${address}`,
   environmentVariables: JSON.stringify({
     GPU_FORCE_64BIT_PTR: '0',
     GPU_MAX_HEAP_SIZE: '100',
@@ -29,7 +31,8 @@ export const ethereum = {
     GPU_SINGLE_ALLOC_PERCENT: '100'
   }),
   api: {
-    workerStats: `https://api.ethermine.org/miner/${minerGroup}/worker/:workerId/currentStats`
+    workerStats: workerId =>
+      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`
   },
   storage: ethereumLogsStorage
 };

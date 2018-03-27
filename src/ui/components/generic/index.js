@@ -2,6 +2,7 @@ export * from './_AppBar';
 export * from './_Button';
 export * from './_Card';
 export * from './_Form';
+export * from './_Grid';
 export * from './_ImageButton';
 export * from './_Input';
 export * from './_Link';

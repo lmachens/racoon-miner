@@ -18,9 +18,9 @@ const styles = {
 
 const AppLayout = ({ classes, children, links, title }) => (
   <Fragment>
-    <AppBar position="sticky" color="inherit">
+    <AppBar color="inherit" position="sticky">
       <Toolbar>
-        <Typography variant="title" color="inherit">
+        <Typography color="inherit" variant="title">
           {title}
         </Typography>
         <div className={classes.flex}>

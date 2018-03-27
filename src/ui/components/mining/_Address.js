@@ -27,13 +27,13 @@ class Address extends Component {
 
     return (
       <TextField
-        label="Payment Address"
-        helperText={`Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`}
-        fullWidth
-        margin="normal"
-        value={address}
         disabled={isMining}
+        fullWidth
+        helperText={`Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`}
+        label="Payment Address"
+        margin="normal"
         onChange={this.handleChange}
+        value={address}
       />
     );
   }

@@ -1,5 +1,6 @@
 import {
   RECEIVE_MINING_METRICS,
+  RECEIVE_WORKER_STATS,
   REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
@@ -20,6 +21,7 @@ export const setMiningAddress = (minerIdentifier, address) => {
       type: SET_MINING_ADDRESS,
       data: { address, minerIdentifier }
     });
+    dispatch(fetchWorkerStats(minerIdentifier));
   };
 };
 
@@ -29,12 +31,45 @@ export const selectMiner = minerIdentifier => {
       type: SELECT_MINER,
       data: minerIdentifier
     });
+    dispatch(fetchWorkerStats(minerIdentifier));
+  };
+};
+
+export const fetchWorkerStats = minerIdentifier => {
+  return (dispatch, getState) => {
+    const { mining: { miners } } = getState();
+    const workerId = miners[minerIdentifier].address;
+    if (!workerId) return;
+
+    const { api: { workerStats } } = getMiner(minerIdentifier);
+
+    fetch(workerStats(workerId))
+      .then(res => res.json())
+      .catch(error => {
+        dispatch({
+          type: SET_MINING_ERROR_MESSAGE,
+          data: {
+            minerIdentifier,
+            errorMsg: error
+          }
+        });
+      })
+      .then(response => {
+        dispatch({
+          type: RECEIVE_WORKER_STATS,
+          data: {
+            minerIdentifier,
+            workerStats: response
+          }
+        });
+      });
   };
 };
 
 const handleDataByIdenfier = {};
 export const startMining = minerIdentifier => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const { mining: { address = 'default' } } = getState();
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
     const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
@@ -67,7 +102,7 @@ export const startMining = minerIdentifier => {
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-    processManager.launchProcess(path, args, environmentVariables, true, ({ data }) => {
+    processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
       dispatch({
         type: SET_PROCESS_ID,
         data: {
@@ -82,13 +117,13 @@ export const startMining = minerIdentifier => {
 export const stopMining = minerIdentifier => {
   return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
-    const state = getState();
+    const { mining: { miners } } = getState();
 
     dispatch({
       type: STOP_MINING,
       data: { minerIdentifier }
     });
-    const processId = state.mining.miners[minerIdentifier].processId;
+    const processId = miners[minerIdentifier].processId;
     if (processId || handleDataByIdenfier[minerIdentifier]) {
       processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
       processManager.terminateProcess(processId);
@@ -97,50 +132,59 @@ export const stopMining = minerIdentifier => {
   };
 };
 
-export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE, steps = 1 }) => {
-  return async dispatch => {
+export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE }) => {
+  return async (dispatch, getState) => {
+    const { mining: { miners } } = getState();
+    const oldMetrics = miners[minerIdentifier].metrics;
     const { storage } = getMiner(minerIdentifier);
 
     dispatch({
       type: REQUEST_MINING_METRICS,
-      data: { minerIdentifier, from, to, steps }
+      data: { minerIdentifier }
     });
+    const oldMetricsInRange = oldMetrics.data.filter(
+      ([timestamp]) => timestamp > from && timestamp < to
+    );
 
-    storage.find(timestamp => timestamp > from && timestamp < to).then(results => {
-      if (results.length) {
-        const { speedEntries, errorMsgEntries } = results.reduce(
-          ({ speedEntries, errorMsgEntries }, { timestamp, speed, errorMsg }) => {
-            if (!isNil(speed)) speedEntries.push([timestamp, speed]);
-            else if (!isNil(errorMsg)) errorMsgEntries.push([timestamp, 0, errorMsg]);
-            return { speedEntries, errorMsgEntries };
-          },
-          { speedEntries: [], errorMsgEntries: [] }
-        );
-
-        const itemsInRange = {
-          speed: speedEntries,
-          errorMsg: errorMsgEntries
-        };
-
-        dispatch({
-          type: RECEIVE_MINING_METRICS,
-          data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
-        });
-      } else {
-        dispatch({
-          type: RECEIVE_MINING_METRICS,
-          data: {
-            minerIdentifier,
+    storage
+      .find(
+        timestamp =>
+          timestamp > from &&
+          timestamp < to &&
+          (timestamp < oldMetrics.from || timestamp > oldMetrics.to)
+      )
+      .then(newItemsInRange => {
+        if (newItemsInRange.length) {
+          const metrics = {
             from,
             to,
-            steps,
-            metrics: {
-              speed: [],
-              errorMsg: []
+            data: [
+              ...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [
+                timestamp,
+                speed,
+                errorMsg
+              ]),
+              ...oldMetricsInRange
+            ]
+          };
+
+          dispatch({
+            type: RECEIVE_MINING_METRICS,
+            data: { minerIdentifier, metrics }
+          });
+        } else {
+          dispatch({
+            type: RECEIVE_MINING_METRICS,
+            data: {
+              minerIdentifier,
+              metrics: {
+                from,
+                to,
+                data: oldMetricsInRange
+              }
             }
-          }
-        });
-      }
-    });
+          });
+        }
+      });
   };
 };

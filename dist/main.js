@@ -4087,6 +4087,7 @@
   const SET_PROCESS_ID = 'SET_PROCESS_ID';
   const START_MINING = 'START_MINING';
   const STOP_MINING = 'STOP_MINING';
+  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
   const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
   const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
 
@@ -4142,7 +4143,7 @@
       [CONNECTION_FAILED_REGEX]: /Could not resolve host/
     }),
     path: 'ethminer.exe',
-    args: `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.XIGMA`,
+    args: address => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.${address}`,
     environmentVariables: JSON.stringify({
       GPU_FORCE_64BIT_PTR: '0',
       GPU_MAX_HEAP_SIZE: '100',
@@ -4151,7 +4152,7 @@
       GPU_SINGLE_ALLOC_PERCENT: '100'
     }),
     api: {
-      workerStats: `https://api.ethermine.org/miner/${minerGroup}/worker/:workerId/currentStats`
+      workerStats: workerId => `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`
     },
     storage: ethereumLogsStorage
   };
@@ -5522,10 +5523,12 @@
     coins: 0,
     isFetchingMetrics: false,
     metrics: {
-      speed: [],
-      errorMsg: []
+      from: Number.MAX_VALUE,
+      to: 0,
+      data: []
     },
-    errorMsg: null
+    errorMsg: null,
+    workerStats: {}
   };
 
   const mining = (state = {
@@ -5558,6 +5561,7 @@
         break;
       case STOP_MINING:
         set_1(newState, `miners.${data.minerIdentifier}.isMining`, false);
+        set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, 0);
         break;
       case REQUEST_MINING_METRICS:
         set_1(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, true);
@@ -5566,6 +5570,11 @@
         set_1(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, false);
         set_1(newState, `miners.${data.minerIdentifier}.metrics`, data.metrics);
         break;
+      case RECEIVE_WORKER_STATS:
+        set_1(newState, `miners.${data.minerIdentifier}.workerStats`, data.workerStats);
+        break;
+      default:
+        return state;
     }
     return newState;
   };
@@ -37937,6 +37946,1328 @@
   var Form_1 = Form.FormControl;
   var Form_2 = Form.FormHelperText;
 
+  var requirePropFactory_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  //  weak
+
+  var requirePropFactory = function requirePropFactory(componentNameInError) {
+    var requireProp = function requireProp(requiredProp) {
+      return function (props, propName, componentName, location, propFullName) {
+        var propFullNameSafe = propFullName || propName;
+
+        if (typeof props[propName] !== 'undefined' && !props[requiredProp]) {
+          return new Error('The property `' + propFullNameSafe + '` of ' + ('`' + componentNameInError + '` must be used on `' + requiredProp + '`.'));
+        }
+
+        return null;
+      };
+    };
+    return requireProp;
+  };
+
+  exports.default = requirePropFactory;
+  });
+
+  unwrapExports(requirePropFactory_1);
+
+  var withTheme_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$1);
+
+
+
+  var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
+
+
+
+  var _createClass3 = _interopRequireDefault(createClass$1);
+
+
+
+  var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
+
+
+
+  var _inherits3 = _interopRequireDefault(inherits$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _hoistNonReactStatics2 = _interopRequireDefault(hoistNonReactStatics);
+
+
+
+  var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
+
+
+
+  var _createMuiTheme2 = _interopRequireDefault(createMuiTheme_1);
+
+
+
+  var _themeListener2 = _interopRequireDefault(themeListener_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var defaultTheme = void 0;
+
+  function getDefaultTheme() {
+    if (defaultTheme) {
+      return defaultTheme;
+    }
+
+    defaultTheme = (0, _createMuiTheme2.default)();
+    return defaultTheme;
+  }
+
+  // Provide the theme object as a property to the input component.
+  var withTheme = function withTheme() {
+    return function (Component) {
+      var WithTheme = function (_React$Component) {
+        (0, _inherits3.default)(WithTheme, _React$Component);
+
+        function WithTheme(props, context) {
+          (0, _classCallCheck3.default)(this, WithTheme);
+
+          var _this = (0, _possibleConstructorReturn3.default)(this, (WithTheme.__proto__ || (0, _getPrototypeOf2.default)(WithTheme)).call(this, props, context));
+
+          _this.state = {};
+          _this.unsubscribeId = null;
+
+          _this.state = {
+            // We use || as the function call is lazy evaluated.
+            theme: _themeListener2.default.initial(context) || getDefaultTheme()
+          };
+          return _this;
+        }
+
+        (0, _createClass3.default)(WithTheme, [{
+          key: 'componentDidMount',
+          value: function componentDidMount() {
+            var _this2 = this;
+
+            this.unsubscribeId = _themeListener2.default.subscribe(this.context, function (theme) {
+              _this2.setState({ theme: theme });
+            });
+          }
+        }, {
+          key: 'componentWillUnmount',
+          value: function componentWillUnmount() {
+            if (this.unsubscribeId !== null) {
+              _themeListener2.default.unsubscribe(this.context, this.unsubscribeId);
+            }
+          }
+        }, {
+          key: 'render',
+          value: function render() {
+            return _react2.default.createElement(Component, (0, _extends3.default)({ theme: this.state.theme }, this.props));
+          }
+        }]);
+        return WithTheme;
+      }(_react2.default.Component);
+
+      WithTheme.contextTypes = _themeListener2.default.contextTypes;
+
+      {
+        WithTheme.displayName = (0, _wrapDisplayName2.default)(Component, 'WithTheme');
+      }
+
+      (0, _hoistNonReactStatics2.default)(WithTheme, Component);
+
+      {
+        // Exposed for test purposes.
+        WithTheme.Naked = Component;
+      }
+
+      return WithTheme;
+    };
+  };
+
+  exports.default = withTheme;
+  });
+
+  unwrapExports(withTheme_1);
+
+  var withWidth_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.isWidthDown = exports.isWidthUp = undefined;
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$1);
+
+
+
+  var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
+
+
+
+  var _createClass3 = _interopRequireDefault(createClass$1);
+
+
+
+  var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
+
+
+
+  var _inherits3 = _interopRequireDefault(inherits$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _reactEventListener2 = _interopRequireDefault(lib$8);
+
+
+
+  var _debounce2 = _interopRequireDefault(debounce_1);
+
+
+
+  var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
+
+
+
+  var _hoistNonReactStatics2 = _interopRequireDefault(hoistNonReactStatics);
+
+
+
+  var _withTheme2 = _interopRequireDefault(withTheme_1);
+
+
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  // By default, returns true if screen width is the same or greater than the given breakpoint.
+  var isWidthUp = exports.isWidthUp = function isWidthUp(breakpoint, width) {
+    var inclusive = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+    if (inclusive) {
+      return createBreakpoints_1.keys.indexOf(breakpoint) <= createBreakpoints_1.keys.indexOf(width);
+    }
+    return createBreakpoints_1.keys.indexOf(breakpoint) < createBreakpoints_1.keys.indexOf(width);
+  };
+
+  // By default, returns true if screen width is the same or less than the given breakpoint.
+  var isWidthDown = exports.isWidthDown = function isWidthDown(breakpoint, width) {
+    var inclusive = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+    if (inclusive) {
+      return createBreakpoints_1.keys.indexOf(width) <= createBreakpoints_1.keys.indexOf(breakpoint);
+    }
+    return createBreakpoints_1.keys.indexOf(width) < createBreakpoints_1.keys.indexOf(breakpoint);
+  };
+
+  var withWidth = function withWidth() {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    return function (Component) {
+      var _options$resizeInterv = options.resizeInterval,
+          resizeInterval = _options$resizeInterv === undefined ? 166 : _options$resizeInterv,
+          _options$withTheme = options.withTheme,
+          withThemeOption = _options$withTheme === undefined ? false : _options$withTheme;
+
+      var WithWidth = function (_React$Component) {
+        (0, _inherits3.default)(WithWidth, _React$Component);
+
+        function WithWidth() {
+          var _ref;
+
+          var _temp, _this, _ret;
+
+          (0, _classCallCheck3.default)(this, WithWidth);
+
+          for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+            args[_key] = arguments[_key];
+          }
+
+          return _ret = (_temp = (_this = (0, _possibleConstructorReturn3.default)(this, (_ref = WithWidth.__proto__ || (0, _getPrototypeOf2.default)(WithWidth)).call.apply(_ref, [this].concat(args))), _this), _this.state = {
+            width: undefined
+          }, _this.handleResize = (0, _debounce2.default)(function () {
+            _this.updateWidth(window.innerWidth);
+          }, resizeInterval), _temp), (0, _possibleConstructorReturn3.default)(_this, _ret);
+        }
+
+        (0, _createClass3.default)(WithWidth, [{
+          key: 'componentDidMount',
+          value: function componentDidMount() {
+            this.updateWidth(window.innerWidth);
+          }
+        }, {
+          key: 'componentWillUnmount',
+          value: function componentWillUnmount() {
+            this.handleResize.cancel();
+          }
+        }, {
+          key: 'updateWidth',
+          value: function updateWidth(innerWidth) {
+            var breakpoints = this.props.theme.breakpoints;
+            var width = null;
+
+            /**
+             * Start with the slowest value as low end devices often have a small screen.
+             *
+             * innerWidth |xs      sm      md      lg      xl
+             *            |-------|-------|-------|-------|------>
+             * width      |  xs   |  sm   |  md   |  lg   |  xl
+             */
+            var index = 1;
+            while (width === null && index < createBreakpoints_1.keys.length) {
+              var currentWidth = createBreakpoints_1.keys[index];
+
+              // @media are inclusive, so reproduce the behavior here.
+              if (innerWidth < breakpoints.values[currentWidth]) {
+                width = createBreakpoints_1.keys[index - 1];
+                break;
+              }
+
+              index += 1;
+            }
+
+            width = width || 'xl';
+
+            if (width !== this.state.width) {
+              this.setState({
+                width: width
+              });
+            }
+          }
+        }, {
+          key: 'render',
+          value: function render() {
+            var _props = this.props,
+                initialWidth = _props.initialWidth,
+                theme = _props.theme,
+                width = _props.width,
+                other = (0, _objectWithoutProperties3.default)(_props, ['initialWidth', 'theme', 'width']);
+
+            var props = (0, _extends3.default)({
+              width: width || this.state.width || initialWidth
+            }, other);
+            var more = {};
+
+            if (withThemeOption) {
+              more.theme = theme;
+            }
+
+            // When rendering the component on the server,
+            // we have no idea about the client browser screen width.
+            // In order to prevent blinks and help the reconciliation of the React tree
+            // we are not rendering the child component.
+            //
+            // An alternative is to use the `initialWidth` property.
+            if (props.width === undefined) {
+              return null;
+            }
+
+            return _react2.default.createElement(
+              _reactEventListener2.default,
+              { target: 'window', onResize: this.handleResize },
+              _react2.default.createElement(Component, (0, _extends3.default)({}, more, props))
+            );
+          }
+        }]);
+        return WithWidth;
+      }(_react2.default.Component);
+
+      WithWidth.propTypes = {
+        /**
+         * As `window.innerWidth` is unavailable on the server,
+         * we default to rendering an empty componenent during the first mount.
+         * In some situation you might want to use an heristic to approximate
+         * the screen width of the client browser screen width.
+         *
+         * For instance, you could be using the user-agent or the client-hints.
+         * http://caniuse.com/#search=client%20hint
+         */
+        initialWidth: _propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']),
+        /**
+         * @ignore
+         */
+        theme: _propTypes2.default.object.isRequired,
+        /**
+         * Bypass the width calculation logic.
+         */
+        width: _propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl'])
+      };
+
+      {
+        WithWidth.displayName = (0, _wrapDisplayName2.default)(Component, 'WithWidth');
+      }
+
+      (0, _hoistNonReactStatics2.default)(WithWidth, Component);
+
+      return (0, _withTheme2.default)()(WithWidth);
+    };
+  };
+
+  exports.default = withWidth;
+  });
+
+  unwrapExports(withWidth_1);
+  var withWidth_2 = withWidth_1.isWidthDown;
+  var withWidth_3 = withWidth_1.isWidthUp;
+
+  var exactProp_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.specialProperty = undefined;
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _keys2 = _interopRequireDefault(keys$1);
+
+
+
+  var _extends4 = _interopRequireDefault(_extends$6);
+
+  exports.default = exactProp;
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  // This module is based on https://github.com/airbnb/prop-types-exact repository.
+  // However, in order to reduce the number of dependencies and to remove some extra safe checks
+  // the module was forked.
+
+  var specialProperty = exports.specialProperty = 'exact-prop: \u200B';
+
+  function exactProp(propTypes, componentNameInError) {
+    return (0, _extends4.default)({}, propTypes, (0, _defineProperty3.default)({}, specialProperty, function (props) {
+      var unknownProps = (0, _keys2.default)(props).filter(function (prop) {
+        return !propTypes.hasOwnProperty(prop);
+      });
+      if (unknownProps.length > 0) {
+        return new TypeError(componentNameInError + ': unknown props found: ' + unknownProps.join(', ') + '. Please remove the unknown properties.');
+      }
+      return null;
+    }));
+  }
+  });
+
+  unwrapExports(exactProp_1);
+  var exactProp_2 = exactProp_1.specialProperty;
+
+  var HiddenJs_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+
+
+  var _withWidth2 = _interopRequireDefault(withWidth_1);
+
+
+
+  var _exactProp2 = _interopRequireDefault(exactProp_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  /**
+   * @ignore - internal component.
+   */
+  function HiddenJs(props) {
+    var children = props.children,
+        only = props.only,
+        width = props.width;
+
+
+    var visible = true;
+
+    // `only` check is faster to get out sooner if used.
+    if (only) {
+      if (Array.isArray(only)) {
+        for (var i = 0; i < only.length; i += 1) {
+          var breakpoint = only[i];
+          if (width === breakpoint) {
+            visible = false;
+            break;
+          }
+        }
+      } else if (only && width === only) {
+        visible = false;
+      }
+    }
+
+    // Allow `only` to be combined with other props. If already hidden, no need to check others.
+    if (visible) {
+      // determine visibility based on the smallest size up
+      for (var _i = 0; _i < createBreakpoints_1.keys.length; _i += 1) {
+        var _breakpoint = createBreakpoints_1.keys[_i];
+        var breakpointUp = props[_breakpoint + 'Up'];
+        var breakpointDown = props[_breakpoint + 'Down'];
+        if (breakpointUp && (0, withWidth_1.isWidthUp)(_breakpoint, width) || breakpointDown && (0, withWidth_1.isWidthDown)(_breakpoint, width)) {
+          visible = false;
+          break;
+        }
+      }
+    }
+
+    if (!visible) {
+      return null;
+    }
+
+    return children;
+  }
+
+  HiddenJs.propTypes = {
+    /**
+     * The content of the component.
+     */
+    children: _propTypes2.default.node,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * Specify which implementation to use.  'js' is the default, 'css' works better for server
+     * side rendering.
+     */
+    implementation: _propTypes2.default.oneOf(['js', 'css']),
+    /**
+     * You can use this property when choosing the `js` implementation with server side rendering.
+     *
+     * As `window.innerWidth` is unavailable on the server,
+     * we default to rendering an empty componenent during the first mount.
+     * In some situation you might want to use an heristic to approximate
+     * the screen width of the client browser screen width.
+     *
+     * For instance, you could be using the user-agent or the client-hints.
+     * http://caniuse.com/#search=client%20hint
+     */
+    initialWidth: _propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    lgDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    lgUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    mdDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    mdUp: _propTypes2.default.bool,
+    /**
+     * Hide the given breakpoint(s).
+     */
+    only: _propTypes2.default.oneOfType([_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']), _propTypes2.default.arrayOf(_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']))]),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    smDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    smUp: _propTypes2.default.bool,
+    /**
+     * @ignore
+     * width prop provided by withWidth decorator.
+     */
+    width: _propTypes2.default.string.isRequired,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xlDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xlUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xsDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xsUp: _propTypes2.default.bool
+  };
+
+  HiddenJs.propTypes = (0, _exactProp2.default)(HiddenJs.propTypes, 'HiddenJs');
+
+  exports.default = (0, _withWidth2.default)()(HiddenJs);
+  });
+
+  unwrapExports(HiddenJs_1);
+
+  var HiddenCss_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _keys2 = _interopRequireDefault(keys$1);
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _warning2 = _interopRequireDefault(browser);
+
+
+
+
+
+
+
+  var _withStyles2 = _interopRequireDefault(withStyles_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var styles = function styles(theme) {
+    var hidden = {
+      display: 'none'
+    };
+
+    return createBreakpoints_1.keys.reduce(function (acc, key) {
+      acc['only' + (0, helpers.capitalize)(key)] = (0, _defineProperty3.default)({}, theme.breakpoints.only(key), hidden);
+      acc[key + 'Up'] = (0, _defineProperty3.default)({}, theme.breakpoints.up(key), hidden);
+      acc[key + 'Down'] = (0, _defineProperty3.default)({}, theme.breakpoints.down(key), hidden);
+
+      return acc;
+    }, {});
+  };
+
+  /**
+   * @ignore - internal component.
+   */
+  function HiddenCss(props) {
+    var children = props.children,
+        classes = props.classes,
+        className = props.className,
+        lgDown = props.lgDown,
+        lgUp = props.lgUp,
+        mdDown = props.mdDown,
+        mdUp = props.mdUp,
+        only = props.only,
+        smDown = props.smDown,
+        smUp = props.smUp,
+        xlDown = props.xlDown,
+        xlUp = props.xlUp,
+        xsDown = props.xsDown,
+        xsUp = props.xsUp,
+        other = (0, _objectWithoutProperties3.default)(props, ['children', 'classes', 'className', 'lgDown', 'lgUp', 'mdDown', 'mdUp', 'only', 'smDown', 'smUp', 'xlDown', 'xlUp', 'xsDown', 'xsUp']);
+
+
+    (0, _warning2.default)((0, _keys2.default)(other).length === 0 || (0, _keys2.default)(other).length === 1 && other.hasOwnProperty('ref'), 'Material-UI: unsupported properties received ' + (0, _keys2.default)(other).join(', ') + ' by `<Hidden />`.');
+
+    var classNames = [];
+
+    if (className) {
+      classNames.push(className);
+    }
+
+    for (var i = 0; i < createBreakpoints_1.keys.length; i += 1) {
+      var breakpoint = createBreakpoints_1.keys[i];
+      var breakpointUp = props[breakpoint + 'Up'];
+      var breakpointDown = props[breakpoint + 'Down'];
+
+      if (breakpointUp) {
+        classNames.push(classes[breakpoint + 'Up']);
+      }
+      if (breakpointDown) {
+        classNames.push(classes[breakpoint + 'Down']);
+      }
+    }
+
+    if (only) {
+      var onlyBreakpoints = Array.isArray(only) ? only : [only];
+      onlyBreakpoints.forEach(function (breakpoint) {
+        classNames.push(classes['only' + (0, helpers.capitalize)(breakpoint)]);
+      });
+    }
+
+    return _react2.default.createElement(
+      'div',
+      { className: classNames.join(' ') },
+      children
+    );
+  }
+
+  HiddenCss.propTypes = {
+    /**
+     * The content of the component.
+     */
+    children: _propTypes2.default.node,
+    /**
+     * Useful to extend the style applied to components.
+     */
+    classes: _propTypes2.default.object.isRequired,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * Specify which implementation to use.  'js' is the default, 'css' works better for server
+     * side rendering.
+     */
+    implementation: _propTypes2.default.oneOf(['js', 'css']),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    lgDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    lgUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    mdDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    mdUp: _propTypes2.default.bool,
+    /**
+     * Hide the given breakpoint(s).
+     */
+    only: _propTypes2.default.oneOfType([_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']), _propTypes2.default.arrayOf(_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']))]),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    smDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    smUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xlDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xlUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xsDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xsUp: _propTypes2.default.bool
+  };
+
+  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiHiddenCss' })(HiddenCss);
+  });
+
+  unwrapExports(HiddenCss_1);
+
+  var Hidden_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _HiddenJs2 = _interopRequireDefault(HiddenJs_1);
+
+
+
+  var _HiddenCss2 = _interopRequireDefault(HiddenCss_1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  /**
+   * Responsively hides children based on the selected implementation.
+   */
+  function Hidden(props) {
+    var implementation = props.implementation,
+        other = (0, _objectWithoutProperties3.default)(props, ['implementation']);
+
+
+    if (implementation === 'js') {
+      return _react2.default.createElement(_HiddenJs2.default, other);
+    }
+
+    return _react2.default.createElement(_HiddenCss2.default, other);
+  }
+
+  Hidden.propTypes = {
+    /**
+     * The content of the component.
+     */
+    children: _propTypes2.default.node,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * Specify which implementation to use.  'js' is the default, 'css' works better for server
+     * side rendering.
+     */
+    implementation: _propTypes2.default.oneOf(['js', 'css']),
+    /**
+     * You can use this property when choosing the `js` implementation with server side rendering.
+     *
+     * As `window.innerWidth` is unavailable on the server,
+     * we default to rendering an empty componenent during the first mount.
+     * In some situation you might want to use an heristic to approximate
+     * the screen width of the client browser screen width.
+     *
+     * For instance, you could be using the user-agent or the client-hints.
+     * http://caniuse.com/#search=client%20hint
+     */
+    initialWidth: _propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    lgDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    lgUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    mdDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    mdUp: _propTypes2.default.bool,
+    /**
+     * Hide the given breakpoint(s).
+     */
+    only: _propTypes2.default.oneOfType([_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']), _propTypes2.default.arrayOf(_propTypes2.default.oneOf(['xs', 'sm', 'md', 'lg', 'xl']))]),
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    smDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    smUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xlDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xlUp: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and down will be hidden.
+     */
+    xsDown: _propTypes2.default.bool,
+    /**
+     * If true, screens this size and up will be hidden.
+     */
+    xsUp: _propTypes2.default.bool
+  };
+
+  Hidden.defaultProps = {
+    implementation: 'js',
+    lgDown: false,
+    lgUp: false,
+    mdDown: false,
+    mdUp: false,
+    smDown: false,
+    smUp: false,
+    xlDown: false,
+    xlUp: false,
+    xsDown: false,
+    xsUp: false
+  };
+
+  exports.default = Hidden;
+  });
+
+  unwrapExports(Hidden_1);
+
+  var Hidden$1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _interopRequireDefault(Hidden_1).default;
+    }
+  });
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  });
+
+  unwrapExports(Hidden$1);
+
+  var Grid_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.styles = undefined;
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _classnames2 = _interopRequireDefault(classnames);
+
+
+
+  var _withStyles2 = _interopRequireDefault(withStyles_1);
+
+
+
+
+
+  var _requirePropFactory2 = _interopRequireDefault(requirePropFactory_1);
+
+
+
+  var _Hidden2 = _interopRequireDefault(Hidden$1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var GUTTERS = [0, 8, 16, 24, 40]; // A grid component using the following libs as inspiration.
+  //
+  // For the implementation:
+  // - http://v4-alpha.getbootstrap.com/layout/flexbox-grid/
+  // - https://github.com/kristoferjoseph/flexboxgrid/blob/master/src/css/flexboxgrid.css
+  // - https://github.com/roylee0704/react-flexbox-grid
+  // - https://material.angularjs.org/latest/layout/introduction
+  //
+  // Follow this flexbox Guide to better understand the underlying model:
+  // - https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+  var GRID_SIZES = [true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+  function generateGrid(globalStyles, theme, breakpoint) {
+    // For the auto layouting
+    var styles = (0, _defineProperty3.default)({}, 'grid-' + breakpoint, {
+      flexBasis: 0,
+      flexGrow: 1,
+      maxWidth: '100%'
+    });
+
+    GRID_SIZES.forEach(function (size) {
+      if (typeof size === 'boolean') {
+        // Skip the first one as handle above.
+        return;
+      }
+
+      // Only keep 6 significant numbers.
+      var width = Math.round(size / 12 * 10e6) / 10e4 + '%';
+
+      /* eslint-disable max-len */
+      // Close to the bootstrap implementation:
+      // https://github.com/twbs/bootstrap/blob/8fccaa2439e97ec72a4b7dc42ccc1f649790adb0/scss/mixins/_grid.scss#L41
+      /* eslint-enable max-len */
+      styles['grid-' + breakpoint + '-' + size] = {
+        flexBasis: width,
+        maxWidth: width
+      };
+    });
+
+    // No need for a media query for the first size.
+    if (breakpoint === 'xs') {
+      (0, _extends3.default)(globalStyles, styles);
+    } else {
+      globalStyles[theme.breakpoints.up(breakpoint)] = styles;
+    }
+  }
+
+  function generateGutter(theme, breakpoint) {
+    var styles = {};
+
+    GUTTERS.forEach(function (spacing, index) {
+      if (index === 0) {
+        // Skip the default style.
+        return;
+      }
+
+      styles['spacing-' + breakpoint + '-' + spacing] = {
+        margin: -spacing / 2,
+        width: 'calc(100% + ' + spacing + 'px)',
+        '& > $typeItem': {
+          padding: spacing / 2
+        }
+      };
+    });
+
+    return styles;
+  }
+
+  // Default CSS values
+  // flex: '0 1 auto',
+  // flexDirection: 'row',
+  // alignItems: 'flex-start',
+  // flexWrap: 'nowrap',
+  // justifyContent: 'flex-start',
+  var styles = exports.styles = function styles(theme) {
+    return (0, _extends3.default)({
+      typeContainer: {
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexWrap: 'wrap',
+        width: '100%'
+      },
+      typeItem: {
+        boxSizing: 'border-box',
+        flex: '0 0 auto',
+        margin: '0' // For instance, it's useful when used with a `figure` element.
+      },
+      zeroMinWidth: {
+        minWidth: 0
+      },
+      'direction-xs-column': {
+        flexDirection: 'column'
+      },
+      'direction-xs-column-reverse': {
+        flexDirection: 'column-reverse'
+      },
+      'direction-xs-row-reverse': {
+        flexDirection: 'row-reverse'
+      },
+      'wrap-xs-nowrap': {
+        flexWrap: 'nowrap'
+      },
+      'wrap-xs-wrap-reverse': {
+        flexWrap: 'wrap-reverse'
+      },
+      'align-items-xs-center': {
+        alignItems: 'center'
+      },
+      'align-items-xs-flex-start': {
+        alignItems: 'flex-start'
+      },
+      'align-items-xs-flex-end': {
+        alignItems: 'flex-end'
+      },
+      'align-items-xs-baseline': {
+        alignItems: 'baseline'
+      },
+      'align-content-xs-center': {
+        alignContent: 'center'
+      },
+      'align-content-xs-flex-start': {
+        alignContent: 'flex-start'
+      },
+      'align-content-xs-flex-end': {
+        alignContent: 'flex-end'
+      },
+      'align-content-xs-space-between': {
+        alignContent: 'space-between'
+      },
+      'align-content-xs-space-around': {
+        alignContent: 'space-around'
+      },
+      'justify-xs-center': {
+        justifyContent: 'center'
+      },
+      'justify-xs-flex-end': {
+        justifyContent: 'flex-end'
+      },
+      'justify-xs-space-between': {
+        justifyContent: 'space-between'
+      },
+      'justify-xs-space-around': {
+        justifyContent: 'space-around'
+      }
+    }, generateGutter(theme, 'xs'), createBreakpoints_1.keys.reduce(function (accumulator, key) {
+      // Use side effect over immutability for better performance.
+      generateGrid(accumulator, theme, key);
+      return accumulator;
+    }, {}));
+  };
+
+  function Grid(props) {
+    var _classNames;
+
+    var alignContent = props.alignContent,
+        alignItems = props.alignItems,
+        classes = props.classes,
+        classNameProp = props.className,
+        Component = props.component,
+        container = props.container,
+        direction = props.direction,
+        hidden = props.hidden,
+        item = props.item,
+        justify = props.justify,
+        lg = props.lg,
+        md = props.md,
+        zeroMinWidth = props.zeroMinWidth,
+        sm = props.sm,
+        spacing = props.spacing,
+        wrap = props.wrap,
+        xl = props.xl,
+        xs = props.xs,
+        other = (0, _objectWithoutProperties3.default)(props, ['alignContent', 'alignItems', 'classes', 'className', 'component', 'container', 'direction', 'hidden', 'item', 'justify', 'lg', 'md', 'zeroMinWidth', 'sm', 'spacing', 'wrap', 'xl', 'xs']);
+
+
+    var className = (0, _classnames2.default)((_classNames = {}, (0, _defineProperty3.default)(_classNames, classes.typeContainer, container), (0, _defineProperty3.default)(_classNames, classes.typeItem, item), (0, _defineProperty3.default)(_classNames, classes.zeroMinWidth, zeroMinWidth), (0, _defineProperty3.default)(_classNames, classes['spacing-xs-' + String(spacing)], container && spacing !== 0), (0, _defineProperty3.default)(_classNames, classes['direction-xs-' + String(direction)], direction !== Grid.defaultProps.direction), (0, _defineProperty3.default)(_classNames, classes['wrap-xs-' + String(wrap)], wrap !== Grid.defaultProps.wrap), (0, _defineProperty3.default)(_classNames, classes['align-items-xs-' + String(alignItems)], alignItems !== Grid.defaultProps.alignItems), (0, _defineProperty3.default)(_classNames, classes['align-content-xs-' + String(alignContent)], alignContent !== Grid.defaultProps.alignContent), (0, _defineProperty3.default)(_classNames, classes['justify-xs-' + String(justify)], justify !== Grid.defaultProps.justify), (0, _defineProperty3.default)(_classNames, classes['grid-xs'], xs === true), (0, _defineProperty3.default)(_classNames, classes['grid-xs-' + String(xs)], xs && xs !== true), (0, _defineProperty3.default)(_classNames, classes['grid-sm'], sm === true), (0, _defineProperty3.default)(_classNames, classes['grid-sm-' + String(sm)], sm && sm !== true), (0, _defineProperty3.default)(_classNames, classes['grid-md'], md === true), (0, _defineProperty3.default)(_classNames, classes['grid-md-' + String(md)], md && md !== true), (0, _defineProperty3.default)(_classNames, classes['grid-lg'], lg === true), (0, _defineProperty3.default)(_classNames, classes['grid-lg-' + String(lg)], lg && lg !== true), (0, _defineProperty3.default)(_classNames, classes['grid-xl'], xl === true), (0, _defineProperty3.default)(_classNames, classes['grid-xl-' + String(xl)], xl && xl !== true), _classNames), classNameProp);
+    var gridProps = (0, _extends3.default)({ className: className }, other);
+
+    if (hidden) {
+      return _react2.default.createElement(
+        _Hidden2.default,
+        hidden,
+        _react2.default.createElement(Component, gridProps)
+      );
+    }
+
+    return _react2.default.createElement(Component, gridProps);
+  }
+
+  Grid.propTypes = {
+    /**
+     * Defines the `align-content` style property.
+     * It's applied for all screen sizes.
+     */
+    alignContent: _propTypes2.default.oneOf(['stretch', 'center', 'flex-start', 'flex-end', 'space-between', 'space-around']),
+    /**
+     * Defines the `align-items` style property.
+     * It's applied for all screen sizes.
+     */
+    alignItems: _propTypes2.default.oneOf(['flex-start', 'center', 'flex-end', 'stretch', 'baseline']),
+    /**
+     * The content of the component.
+     */
+    children: _propTypes2.default.node,
+    /**
+     * Useful to extend the style applied to components.
+     */
+    classes: _propTypes2.default.object.isRequired,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * The component used for the root node.
+     * Either a string to use a DOM element or a component.
+     */
+    component: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
+    /**
+     * If `true`, the component will have the flex *container* behavior.
+     * You should be wrapping *items* with a *container*.
+     */
+    container: _propTypes2.default.bool,
+    /**
+     * Defines the `flex-direction` style property.
+     * It is applied for all screen sizes.
+     */
+    direction: _propTypes2.default.oneOf(['row', 'row-reverse', 'column', 'column-reverse']),
+    /**
+     * If provided, will wrap with [Hidden](/api/hidden) component and given properties.
+     */
+    hidden: _propTypes2.default.object,
+    /**
+     * If `true`, the component will have the flex *item* behavior.
+     * You should be wrapping *items* with a *container*.
+     */
+    item: _propTypes2.default.bool,
+    /**
+     * Defines the `justify-content` style property.
+     * It is applied for all screen sizes.
+     */
+    justify: _propTypes2.default.oneOf(['flex-start', 'center', 'flex-end', 'space-between', 'space-around']),
+    /**
+     * Defines the number of grids the component is going to use.
+     * It's applied for the `lg` breakpoint and wider screens if not overridden.
+     */
+    lg: _propTypes2.default.oneOf([true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    /**
+     * Defines the number of grids the component is going to use.
+     * It's applied for the `md` breakpoint and wider screens if not overridden.
+     */
+    md: _propTypes2.default.oneOf([true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    /**
+     * Defines the number of grids the component is going to use.
+     * It's applied for the `sm` breakpoint and wider screens if not overridden.
+     */
+    sm: _propTypes2.default.oneOf([true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    /**
+     * Defines the space between the type `item` component.
+     * It can only be used on a type `container` component.
+     */
+    spacing: _propTypes2.default.oneOf(GUTTERS),
+    /**
+     * Defines the `flex-wrap` style property.
+     * It's applied for all screen sizes.
+     */
+    wrap: _propTypes2.default.oneOf(['nowrap', 'wrap', 'wrap-reverse']),
+    /**
+     * Defines the number of grids the component is going to use.
+     * It's applied for the `xl` breakpoint and wider screens.
+     */
+    xl: _propTypes2.default.oneOf([true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    /**
+     * Defines the number of grids the component is going to use.
+     * It's applied for all the screen sizes with the lowest priority.
+     */
+    xs: _propTypes2.default.oneOf([true, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+    /**
+     * If `true`, it sets `min-width: 0` on the item.
+     * Refer to the limitations section of the documentation to better understand the use case.
+     */
+    zeroMinWidth: _propTypes2.default.bool
+  };
+
+  Grid.defaultProps = {
+    alignContent: 'stretch',
+    alignItems: 'stretch',
+    component: 'div',
+    container: false,
+    direction: 'row',
+    item: false,
+    justify: 'flex-start',
+    zeroMinWidth: false,
+    spacing: 16,
+    wrap: 'wrap'
+  };
+
+  // Add a wrapper component to generate some helper messages in the development
+  // environment.
+  /* eslint-disable react/no-multi-comp */
+  // eslint-disable-next-line import/no-mutable-exports
+  var GridWrapper = Grid;
+
+  {
+    GridWrapper = function GridWrapper(props) {
+      return _react2.default.createElement(Grid, props);
+    };
+
+    var requireProp = (0, _requirePropFactory2.default)('Grid');
+    GridWrapper.propTypes = {
+      alignContent: requireProp('container'),
+      alignItems: requireProp('container'),
+      direction: requireProp('container'),
+      justify: requireProp('container'),
+      lg: requireProp('item'),
+      md: requireProp('item'),
+      sm: requireProp('item'),
+      spacing: requireProp('container'),
+      wrap: requireProp('container'),
+      xs: requireProp('item'),
+      zeroMinWidth: requireProp('zeroMinWidth')
+    };
+  }
+
+  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiGrid' })(GridWrapper);
+  });
+
+  unwrapExports(Grid_1);
+  var Grid_2 = Grid_1.styles;
+
+  var Grid$1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _interopRequireDefault(Grid_1).default;
+    }
+  });
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  });
+
+  var Grid$2 = unwrapExports(Grid$1);
+
   const ImageButton = (_ref) => {
     let { src, imgProps } = _ref,
         other = objectWithoutProperties(_ref, ['src', 'imgProps']);
@@ -41187,51 +42518,6 @@
     default: createBroadcast
   });
 
-  var exactProp_1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.specialProperty = undefined;
-
-
-
-  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
-
-
-
-  var _keys2 = _interopRequireDefault(keys$1);
-
-
-
-  var _extends4 = _interopRequireDefault(_extends$6);
-
-  exports.default = exactProp;
-
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-  // This module is based on https://github.com/airbnb/prop-types-exact repository.
-  // However, in order to reduce the number of dependencies and to remove some extra safe checks
-  // the module was forked.
-
-  var specialProperty = exports.specialProperty = 'exact-prop: \u200B';
-
-  function exactProp(propTypes, componentNameInError) {
-    return (0, _extends4.default)({}, propTypes, (0, _defineProperty3.default)({}, specialProperty, function (props) {
-      var unknownProps = (0, _keys2.default)(props).filter(function (prop) {
-        return !propTypes.hasOwnProperty(prop);
-      });
-      if (unknownProps.length > 0) {
-        return new TypeError(componentNameInError + ': unknown props found: ' + unknownProps.join(', ') + '. Please remove the unknown properties.');
-      }
-      return null;
-    }));
-  }
-  });
-
-  unwrapExports(exactProp_1);
-  var exactProp_2 = exactProp_1.specialProperty;
-
   var _brcast = ( brcast_es && createBroadcast ) || brcast_es;
 
   var MuiThemeProvider_1 = createCommonjsModule(function (module, exports) {
@@ -41434,137 +42720,6 @@
   });
 
   unwrapExports(MuiThemeProvider_1);
-
-  var withTheme_1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-
-
-  var _extends3 = _interopRequireDefault(_extends$6);
-
-
-
-  var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$1);
-
-
-
-  var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
-
-
-
-  var _createClass3 = _interopRequireDefault(createClass$1);
-
-
-
-  var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
-
-
-
-  var _inherits3 = _interopRequireDefault(inherits$1);
-
-
-
-  var _react2 = _interopRequireDefault(react);
-
-
-
-  var _hoistNonReactStatics2 = _interopRequireDefault(hoistNonReactStatics);
-
-
-
-  var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
-
-
-
-  var _createMuiTheme2 = _interopRequireDefault(createMuiTheme_1);
-
-
-
-  var _themeListener2 = _interopRequireDefault(themeListener_1);
-
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-  var defaultTheme = void 0;
-
-  function getDefaultTheme() {
-    if (defaultTheme) {
-      return defaultTheme;
-    }
-
-    defaultTheme = (0, _createMuiTheme2.default)();
-    return defaultTheme;
-  }
-
-  // Provide the theme object as a property to the input component.
-  var withTheme = function withTheme() {
-    return function (Component) {
-      var WithTheme = function (_React$Component) {
-        (0, _inherits3.default)(WithTheme, _React$Component);
-
-        function WithTheme(props, context) {
-          (0, _classCallCheck3.default)(this, WithTheme);
-
-          var _this = (0, _possibleConstructorReturn3.default)(this, (WithTheme.__proto__ || (0, _getPrototypeOf2.default)(WithTheme)).call(this, props, context));
-
-          _this.state = {};
-          _this.unsubscribeId = null;
-
-          _this.state = {
-            // We use || as the function call is lazy evaluated.
-            theme: _themeListener2.default.initial(context) || getDefaultTheme()
-          };
-          return _this;
-        }
-
-        (0, _createClass3.default)(WithTheme, [{
-          key: 'componentDidMount',
-          value: function componentDidMount() {
-            var _this2 = this;
-
-            this.unsubscribeId = _themeListener2.default.subscribe(this.context, function (theme) {
-              _this2.setState({ theme: theme });
-            });
-          }
-        }, {
-          key: 'componentWillUnmount',
-          value: function componentWillUnmount() {
-            if (this.unsubscribeId !== null) {
-              _themeListener2.default.unsubscribe(this.context, this.unsubscribeId);
-            }
-          }
-        }, {
-          key: 'render',
-          value: function render() {
-            return _react2.default.createElement(Component, (0, _extends3.default)({ theme: this.state.theme }, this.props));
-          }
-        }]);
-        return WithTheme;
-      }(_react2.default.Component);
-
-      WithTheme.contextTypes = _themeListener2.default.contextTypes;
-
-      {
-        WithTheme.displayName = (0, _wrapDisplayName2.default)(Component, 'WithTheme');
-      }
-
-      (0, _hoistNonReactStatics2.default)(WithTheme, Component);
-
-      {
-        // Exposed for test purposes.
-        WithTheme.Naked = Component;
-      }
-
-      return WithTheme;
-    };
-  };
-
-  exports.default = withTheme;
-  });
-
-  unwrapExports(withTheme_1);
 
   var styles = createCommonjsModule(function (module, exports) {
 
@@ -50828,6 +51983,7 @@
         type: SET_MINING_ADDRESS,
         data: { address, minerIdentifier }
       });
+      dispatch(fetchWorkerStats(minerIdentifier));
     };
   };
 
@@ -50837,12 +51993,42 @@
         type: SELECT_MINER,
         data: minerIdentifier
       });
+      dispatch(fetchWorkerStats(minerIdentifier));
+    };
+  };
+
+  const fetchWorkerStats = minerIdentifier => {
+    return (dispatch, getState) => {
+      const { mining: { miners } } = getState();
+      const workerId = miners[minerIdentifier].address;
+      if (!workerId) return;
+
+      const { api: { workerStats } } = getMiner(minerIdentifier);
+
+      fetch(workerStats(workerId)).then(res => res.json()).catch(error => {
+        dispatch({
+          type: SET_MINING_ERROR_MESSAGE,
+          data: {
+            minerIdentifier,
+            errorMsg: error
+          }
+        });
+      }).then(response => {
+        dispatch({
+          type: RECEIVE_WORKER_STATS,
+          data: {
+            minerIdentifier,
+            workerStats: response
+          }
+        });
+      });
     };
   };
 
   const handleDataByIdenfier = {};
   const startMining = minerIdentifier => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
+      const { mining: { address = 'default' } } = getState();
       if (handleDataByIdenfier[minerIdentifier]) return;
       const processManager = await getProcessManagerPlugin();
       const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
@@ -50875,7 +52061,7 @@
         }
       };
       processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-      processManager.launchProcess(path, args, environmentVariables, true, ({ data }) => {
+      processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
         dispatch({
           type: SET_PROCESS_ID,
           data: {
@@ -50890,13 +52076,13 @@
   const stopMining = minerIdentifier => {
     return async (dispatch, getState) => {
       const processManager = await getProcessManagerPlugin();
-      const state = getState();
+      const { mining: { miners } } = getState();
 
       dispatch({
         type: STOP_MINING,
         data: { minerIdentifier }
       });
-      const processId = state.mining.miners[minerIdentifier].processId;
+      const processId = miners[minerIdentifier].processId;
       if (processId || handleDataByIdenfier[minerIdentifier]) {
         processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
         processManager.terminateProcess(processId);
@@ -50905,42 +52091,39 @@
     };
   };
 
-  const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE, steps = 1 }) => {
-    return async dispatch => {
+  const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE }) => {
+    return async (dispatch, getState) => {
+      const { mining: { miners } } = getState();
+      const oldMetrics = miners[minerIdentifier].metrics;
       const { storage } = getMiner(minerIdentifier);
 
       dispatch({
         type: REQUEST_MINING_METRICS,
-        data: { minerIdentifier, from, to, steps }
+        data: { minerIdentifier }
       });
+      const oldMetricsInRange = oldMetrics.data.filter(([timestamp]) => timestamp > from && timestamp < to);
 
-      storage.find(timestamp => timestamp > from && timestamp < to).then(results => {
-        if (results.length) {
-          const { speedEntries, errorMsgEntries } = results.reduce(({ speedEntries, errorMsgEntries }, { timestamp, speed, errorMsg }) => {
-            if (!isNil_1(speed)) speedEntries.push([timestamp, speed]);else if (!isNil_1(errorMsg)) errorMsgEntries.push([timestamp, 0, errorMsg]);
-            return { speedEntries, errorMsgEntries };
-          }, { speedEntries: [], errorMsgEntries: [] });
-
-          const itemsInRange = {
-            speed: speedEntries,
-            errorMsg: errorMsgEntries
+      storage.find(timestamp => timestamp > from && timestamp < to && (timestamp < oldMetrics.from || timestamp > oldMetrics.to)).then(newItemsInRange => {
+        if (newItemsInRange.length) {
+          const metrics = {
+            from,
+            to,
+            data: [...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [timestamp, speed, errorMsg]), ...oldMetricsInRange]
           };
 
           dispatch({
             type: RECEIVE_MINING_METRICS,
-            data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
+            data: { minerIdentifier, metrics }
           });
         } else {
           dispatch({
             type: RECEIVE_MINING_METRICS,
             data: {
               minerIdentifier,
-              from,
-              to,
-              steps,
               metrics: {
-                speed: [],
-                errorMsg: []
+                from,
+                to,
+                data: oldMetricsInRange
               }
             }
           });
@@ -50970,13 +52153,13 @@
       const { address, miner, isMining } = this.props;
 
       return react.createElement(TextField$2, {
-        label: 'Payment Address',
-        helperText: `Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`,
-        fullWidth: true,
-        margin: 'normal',
-        value: address,
         disabled: isMining,
-        onChange: this.handleChange
+        fullWidth: true,
+        helperText: `Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`,
+        label: 'Payment Address',
+        margin: 'normal',
+        onChange: this.handleChange,
+        value: address
       });
     }
   }
@@ -98313,9 +99496,11 @@
   var entry_23$1 = entry$2.AreaChart;
 
   const styles$3 = {
-    buttons: {
-      display: 'flex',
-      flexFlow: 'row-reverse'
+    toolbar: {
+      display: 'flex'
+    },
+    flex: {
+      flex: 1
     }
   };
 
@@ -98367,6 +99552,9 @@
         this.setState({
           highlight: point
         });
+      }, this.perEventStyle = (column, event) => {
+        if (event.get('errorMsg')) return { speed: { normal: { fill: 'red' } } };
+        return {};
       }, _temp;
     }
 
@@ -98386,33 +99574,23 @@
     }
 
     render() {
-      const { classes, metrics: { speed, errorMsg } } = this.props;
+      const { classes, metrics } = this.props;
       const { height, timeRange, liveMode, highlight } = this.state;
 
-      const speedData = {
-        name: 'metrics',
-        columns: ['time', 'speed'],
-        points: speed
-      };
-      const speedSeries = new entry_20(speedData);
-
-      const errorMsgData = {
+      const metricsData = {
         name: 'metrics',
         columns: ['time', 'speed', 'errorMsg'],
-        points: errorMsg
+        points: metrics.data
       };
-      const errorMsgSeries = new entry_20(errorMsgData);
+      const metricsSeries = new entry_20(metricsData);
 
-      let text = `Speed: - mph, time: -:--`;
       let infoValues = [];
       if (highlight) {
         const speedText = `${highlight.event.get(highlight.column)} Mh/s`;
         const errorMsg = highlight.event.get('errorMsg');
-        text = `
-                Speed: ${speedText},
-                time: ${highlight.event.timestamp().toLocaleTimeString()}
-            `;
-        infoValues = [{ label: 'Speed', value: speedText }, { label: 'Error', value: errorMsg }];
+
+        infoValues = [{ label: 'Speed', value: speedText }];
+        if (errorMsg) infoValues.push({ label: 'Error', value: errorMsg });
       }
 
       return react.createElement(
@@ -98420,17 +99598,17 @@
         null,
         react.createElement(
           'div',
-          { className: classes.buttons },
+          { className: classes.toolbar },
+          react.createElement('div', { className: classes.flex }),
           react.createElement(
-            Button$2,
-            { disabled: liveMode, onClick: this.handleLiveModeClick },
-            'Live Mode'
+            'div',
+            null,
+            react.createElement(
+              Button$2,
+              { disabled: liveMode, onClick: this.handleLiveModeClick },
+              'Live Mode'
+            )
           )
-        ),
-        react.createElement(
-          Typography$2,
-          null,
-          text
         ),
         react.createElement(
           entry_9$1,
@@ -98438,53 +99616,39 @@
           react.createElement(
             entry_17$1,
             {
-              timeRange: timeRange,
-              onBackgroundClick: this.handleUnsetSelection,
               enablePanZoom: true,
-              onTimeRangeChanged: this.handleTimeRangeChanged
+              onBackgroundClick: this.handleUnsetSelection,
+              onTimeRangeChanged: this.handleTimeRangeChanged,
+              timeRange: timeRange
             },
             react.createElement(
               entry_16$1,
-              { height: height - 430 },
+              { height: height - 540 },
               react.createElement(entry_1$1, {
+                format: '.2f',
                 id: 'speed',
                 label: 'Speed (Mh/s)',
+                max: (metricsSeries.max('speed') || 0) + 1,
                 min: 0,
-                max: (speedSeries.max('speed') || 0) + 1,
-                width: '60',
-                format: '.2f'
+                width: '60'
               }),
               react.createElement(
                 entry_15$1,
                 null,
                 react.createElement(entry_8$1, {
                   axis: 'speed',
-                  series: speedSeries,
                   columns: ['speed'],
                   highlight: highlight,
                   info: infoValues,
                   infoHeight: 28,
-                  infoWidth: 110,
                   infoStyle: {
                     fill: 'black',
                     color: '#DDD'
                   },
-                  onMouseNear: this.handleMouseNear
-                }),
-                react.createElement(entry_8$1, {
+                  infoWidth: 110,
                   onMouseNear: this.handleMouseNear,
-                  highlight: highlight,
-                  info: infoValues,
-                  infoHeight: 28,
-                  infoWidth: 110,
-                  infoStyle: {
-                    fill: 'black',
-                    color: '#DDD'
-                  },
-                  style: { speed: { normal: { fill: 'red' } } },
-                  axis: 'speed',
-                  series: errorMsgSeries,
-                  columns: ['speed']
+                  series: metricsSeries,
+                  style: this.perEventStyle
                 })
               )
             )
@@ -98550,16 +99714,16 @@
         'div',
         null,
         [ethereum, monero].map(miner => react.createElement(ImageButton, {
-          key: miner.name,
-          src: miner.logo,
-          onClick: this.handleClick,
-          'data-mining-identifier': miner.identifier,
           className: classnames(classes.imageButton, {
             [classes.inactive]: selectedMinerIdentifier !== miner.identifier
           }),
+          'data-mining-identifier': miner.identifier,
           imgProps: {
             className: classes.image
-          }
+          },
+          key: miner.name,
+          onClick: this.handleClick,
+          src: miner.logo
         }))
       );
     }
@@ -98585,62 +99749,93 @@
 
   const enhance$2 = compose$1(styles_3(styles$4), connect(mapStateToProps$2, mapDispatchToProps$2))(Miner);
 
-  const styles$5 = {
-    stats: {
-      display: 'flex',
-      textAlign: 'center'
-    },
-    item: {
-      flex: 1
-    }
-  };
-
   class Stats extends react_1 {
+    constructor(...args) {
+      var _temp;
+
+      return _temp = super(...args), this.startFetchWorkerStatsInterval = () => {
+        const { minerIdentifier, fetchWorkerStats: fetchWorkerStats$$1 } = this.props;
+        this.stopWorkerStatsInterval();
+
+        fetchWorkerStats$$1(minerIdentifier);
+        this.workerStatsInterval = setInterval(() => {
+          fetchWorkerStats$$1(minerIdentifier);
+        }, 60000);
+      }, this.stopWorkerStatsInterval = () => {
+        this.workerStatsInterval && clearInterval(this.liveModeInterval);
+      }, _temp;
+    }
+
+    componentDidMount() {
+      this.startFetchWorkerStatsInterval();
+    }
+
+    componentWillUnmount() {
+      this.stopWorkerStatsInterval();
+    }
+
     render() {
-      const { classes, currentSpeed, shards, coins } = this.props;
+      const { currentSpeed, shards, coins } = this.props;
 
       return react.createElement(
-        'div',
-        { className: classes.stats },
+        Grid$2,
+        { container: true, justify: 'center', spacing: 16 },
         react.createElement(
-          Typography$2,
-          { className: classes.item },
-          'Speed: ',
-          currentSpeed,
-          ' Mh/s'
+          Grid$2,
+          { item: true },
+          react.createElement(
+            enhance$7,
+            { title: 'Hashrate' },
+            currentSpeed,
+            ' Mh/s'
+          )
         ),
         react.createElement(
-          Typography$2,
-          { className: classes.item },
-          'Shards: ',
-          shards
+          Grid$2,
+          { item: true },
+          react.createElement(
+            enhance$7,
+            { title: 'Shares' },
+            shards
+          )
         ),
         react.createElement(
-          Typography$2,
-          { className: classes.item },
-          'Coins: ',
-          coins
+          Grid$2,
+          { item: true },
+          react.createElement(
+            enhance$7,
+            { title: 'Unpaid Balance' },
+            coins
+          )
         )
       );
     }
   }
 
   Stats.propTypes = {
-    classes: propTypes.object.isRequired,
     currentSpeed: propTypes.number.isRequired,
     shards: propTypes.number.isRequired,
-    coins: propTypes.number.isRequired
+    coins: propTypes.number.isRequired,
+    minerIdentifier: propTypes.string.isRequired,
+    fetchWorkerStats: propTypes.func.isRequired
   };
 
   const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
+      minerIdentifier: selectedMinerIdentifier,
       currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
       shards: miners[selectedMinerIdentifier].shards,
       coins: miners[selectedMinerIdentifier].coins
     };
   };
 
-  const enhance$3 = compose$1(styles_3(styles$5), connect(mapStateToProps$3))(Stats);
+  const mapDispatchToProps$3 = dispatch => {
+    return {
+      fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch)
+    };
+  };
+
+  const enhance$3 = connect(mapStateToProps$3, mapDispatchToProps$3)(Stats);
 
   class Mining extends react_1 {
     constructor(...args) {
@@ -98694,7 +99889,7 @@
     };
   };
 
-  const mapDispatchToProps$3 = dispatch => {
+  const mapDispatchToProps$4 = dispatch => {
     return {
       startMining: bindActionCreators(startMining, dispatch),
       stopMining: bindActionCreators(stopMining, dispatch),
@@ -98702,7 +99897,7 @@
     };
   };
 
-  const enhance$4 = connect(mapStateToProps$4, mapDispatchToProps$3)(Mining);
+  const enhance$4 = connect(mapStateToProps$4, mapDispatchToProps$4)(Mining);
 
   const Status = ({ name, isMining, currentSpeed }) => {
     return react.createElement(
@@ -98733,7 +99928,7 @@
 
   const enhance$5 = connect(mapStateToProps$5)(Status);
 
-  const styles$6 = {
+  const styles$5 = {
     children: {
       overflow: 'auto',
       height: 'calc(100% - 64px)'
@@ -98748,13 +99943,13 @@
     null,
     react.createElement(
       AppBar$2,
-      { position: 'sticky', color: 'inherit' },
+      { color: 'inherit', position: 'sticky' },
       react.createElement(
         Toolbar$2,
         null,
         react.createElement(
           Typography$2,
-          { variant: 'title', color: 'inherit' },
+          { color: 'inherit', variant: 'title' },
           title
         ),
         react.createElement(
@@ -98793,18 +99988,18 @@
     title: propTypes.string.isRequired
   };
 
-  const enhance$6 = styles_3(styles$6)(AppLayout);
+  const enhance$6 = styles_3(styles$5)(AppLayout);
 
-  const styles$7 = {
+  const styles$6 = {
     card: {
       minWidth: 275,
       margin: '20 0'
     }
   };
 
-  const CardLayout = ({ classes, children, title }) => react.createElement(
+  const CardLayout = ({ classes, className, children, title }) => react.createElement(
     Card$2,
-    { className: classes.card },
+    { className: classnames(classes.card, className) },
     react.createElement(
       Card_2,
       null,
@@ -98820,12 +100015,13 @@
   CardLayout.propTypes = {
     classes: propTypes.object.isRequired,
     children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+    className: propTypes.string,
     title: propTypes.string.isRequired
   };
 
-  const enhance$7 = styles_3(styles$7)(CardLayout);
+  const enhance$7 = styles_3(styles$6)(CardLayout);
 
-  const styles$8 = {
+  const styles$7 = {
     wrapper: {
       margin: 20
     },
@@ -98856,7 +100052,7 @@
     title: propTypes.string.isRequired
   };
 
-  const enhance$8 = styles_3(styles$8)(PageLayout);
+  const enhance$8 = styles_3(styles$7)(PageLayout);
 
   var CssBaseline_1 = createCommonjsModule(function (module, exports) {
 
@@ -100259,14 +101455,14 @@
     };
   };
 
-  const mapDispatchToProps$4 = dispatch => {
+  const mapDispatchToProps$5 = dispatch => {
     return {
       trackHardwareInfo: bindActionCreators(trackHardwareInfo, dispatch),
       stopTrackingHardwareInfo: bindActionCreators(stopTrackingHardwareInfo, dispatch)
     };
   };
 
-  const enhance$9 = connect(mapStateToProps$6, mapDispatchToProps$4)(Hardware);
+  const enhance$9 = connect(mapStateToProps$6, mapDispatchToProps$5)(Hardware);
 
   class System extends react_1 {
     render() {
@@ -100287,11 +101483,11 @@
 
   const Discord = () => react.createElement("embed", {
     height: "100%",
-    width: "100%",
-    src: "https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/"
+    src: "https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/",
+    width: "100%"
   });
 
-  const styles$9 = {
+  const styles$8 = {
     discord: {
       height: 'calc(100% - 82px)'
     }
@@ -100311,7 +101507,7 @@
     classes: propTypes.object.isRequired
   };
 
-  const enhance$10 = styles_3(styles$9)(SupportPage);
+  const enhance$10 = styles_3(styles$8)(SupportPage);
 
   const routes = react.createElement(
     react_5,
@@ -100355,9 +101551,7 @@
 
     simpleIoPlugin.onFileListenerChanged.addListener(fileIdentifier => {
       if (LISTEN_TO_FILES.includes(fileIdentifier)) {
-        console.log('about to reload');
         setTimeout(() => {
-          console.log('reload');
           location.reload();
         }, 1000);
       }

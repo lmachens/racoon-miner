@@ -9,7 +9,7 @@ import {
 import React, { Component, Fragment } from 'react';
 import { TimeRange, TimeSeries } from 'pondjs';
 
-import { Button, Typography } from '../generic';
+import { Button } from '../generic';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
@@ -18,9 +18,11 @@ import { fetchMetrics } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
-  buttons: {
-    display: 'flex',
-    flexFlow: 'row-reverse'
+  toolbar: {
+    display: 'flex'
+  },
+  flex: {
+    flex: 1
   }
 };
 
@@ -106,89 +108,73 @@ class Metrics extends Component {
     });
   };
 
+  perEventStyle = (column, event) => {
+    if (event.get('errorMsg')) return { speed: { normal: { fill: 'red' } } };
+    return {};
+  };
+
   render() {
-    const { classes, metrics: { speed, errorMsg } } = this.props;
+    const { classes, metrics } = this.props;
     const { height, timeRange, liveMode, highlight } = this.state;
 
-    const speedData = {
-      name: 'metrics',
-      columns: ['time', 'speed'],
-      points: speed
-    };
-    const speedSeries = new TimeSeries(speedData);
-
-    const errorMsgData = {
+    const metricsData = {
       name: 'metrics',
       columns: ['time', 'speed', 'errorMsg'],
-      points: errorMsg
+      points: metrics.data
     };
-    const errorMsgSeries = new TimeSeries(errorMsgData);
+    const metricsSeries = new TimeSeries(metricsData);
 
-    let text = `Speed: - mph, time: -:--`;
     let infoValues = [];
     if (highlight) {
       const speedText = `${highlight.event.get(highlight.column)} Mh/s`;
       const errorMsg = highlight.event.get('errorMsg');
-      text = `
-                Speed: ${speedText},
-                time: ${highlight.event.timestamp().toLocaleTimeString()}
-            `;
-      infoValues = [{ label: 'Speed', value: speedText }, { label: 'Error', value: errorMsg }];
+
+      infoValues = [{ label: 'Speed', value: speedText }];
+      if (errorMsg) infoValues.push({ label: 'Error', value: errorMsg });
     }
 
     return (
       <Fragment>
-        <div className={classes.buttons}>
-          <Button disabled={liveMode} onClick={this.handleLiveModeClick}>
-            Live Mode
-          </Button>
+        <div className={classes.toolbar}>
+          <div className={classes.flex} />
+          <div>
+            <Button disabled={liveMode} onClick={this.handleLiveModeClick}>
+              Live Mode
+            </Button>
+          </div>
         </div>
-        <Typography>{text}</Typography>
+
         <Resizable>
           <ChartContainer
-            timeRange={timeRange}
-            onBackgroundClick={this.handleUnsetSelection}
             enablePanZoom={true}
+            onBackgroundClick={this.handleUnsetSelection}
             onTimeRangeChanged={this.handleTimeRangeChanged}
+            timeRange={timeRange}
           >
-            <ChartRow height={height - 430}>
+            <ChartRow height={height - 540}>
               <YAxis
+                format=".2f"
                 id="speed"
                 label="Speed (Mh/s)"
+                max={(metricsSeries.max('speed') || 0) + 1}
                 min={0}
-                max={(speedSeries.max('speed') || 0) + 1}
                 width="60"
-                format=".2f"
               />
               <Charts>
                 <ScatterChart
                   axis="speed"
-                  series={speedSeries}
                   columns={['speed']}
                   highlight={highlight}
                   info={infoValues}
                   infoHeight={28}
-                  infoWidth={110}
                   infoStyle={{
                     fill: 'black',
                     color: '#DDD'
                   }}
-                  onMouseNear={this.handleMouseNear}
-                />
-                <ScatterChart
-                  onMouseNear={this.handleMouseNear}
-                  highlight={highlight}
-                  info={infoValues}
-                  infoHeight={28}
                   infoWidth={110}
-                  infoStyle={{
-                    fill: 'black',
-                    color: '#DDD'
-                  }}
-                  style={{ speed: { normal: { fill: 'red' } } }}
-                  axis="speed"
-                  series={errorMsgSeries}
-                  columns={['speed']}
+                  onMouseNear={this.handleMouseNear}
+                  series={metricsSeries}
+                  style={this.perEventStyle}
                 />
               </Charts>
             </ChartRow>

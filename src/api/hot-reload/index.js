@@ -7,9 +7,7 @@ import { getSimpleIoPlugin } from '../plugins';
 
   simpleIoPlugin.onFileListenerChanged.addListener(fileIdentifier => {
     if (LISTEN_TO_FILES.includes(fileIdentifier)) {
-      console.log('about to reload');
       setTimeout(() => {
-        console.log('reload');
         location.reload();
       }, 1000);
     }

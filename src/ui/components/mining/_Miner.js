@@ -36,16 +36,16 @@ class Miner extends Component {
       <div>
         {[ethereum, monero].map(miner => (
           <ImageButton
-            key={miner.name}
-            src={miner.logo}
-            onClick={this.handleClick}
-            data-mining-identifier={miner.identifier}
             className={classNames(classes.imageButton, {
               [classes.inactive]: selectedMinerIdentifier !== miner.identifier
             })}
+            data-mining-identifier={miner.identifier}
             imgProps={{
               className: classes.image
             }}
+            key={miner.name}
+            onClick={this.handleClick}
+            src={miner.logo}
           />
         ))}
       </div>
