@@ -7,11 +7,11 @@ export const generateParser = regex => line => {
   };
   console.info(line);
   if (regex.SPEED_REGEX) {
-    const parsed = line.match(regex);
+    const parsed = line.match(regex.SPEED_REGEX);
     if (parsed) result.speed = parseFloat(parsed[1]);
   }
   if (regex.CONNECTION_FAILED_REGEX) {
-    const parsed = line.match(regex);
+    const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
     if (parsed) result.errorMsg = 'Connection failed';
   }
   return result;

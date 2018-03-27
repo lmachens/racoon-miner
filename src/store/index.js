@@ -1,12 +1,13 @@
-import 'localforage-getitems';
-
 import { applyMiddleware, createStore } from 'redux';
 import { persistReducer, persistStore } from 'redux-persist';
 
+import addFind from 'localforage-find';
 import localForage from 'localforage';
 import logger from 'redux-logger';
 import reducers from './reducers';
 import thunk from 'redux-thunk';
+
+addFind(localForage);
 
 const reduxStorage = localForage.createInstance({
   name: 'Raccoon Miner',

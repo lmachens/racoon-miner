@@ -12,6 +12,7 @@ import {
 
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
+import isNil from 'lodash/isNil';
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -45,7 +46,7 @@ export const startMining = minerIdentifier => {
 
     handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
       const { timestamp, errorMsg, speed } = parser(error || data);
-      if (speed) {
+      if (!isNil(speed)) {
         dispatch({
           type: SET_MINING_SPEED,
           data: {
@@ -53,8 +54,8 @@ export const startMining = minerIdentifier => {
             speed
           }
         });
-        storage.setItem(timestamp, { speed });
-      } else if (errorMsg) {
+        storage.setItem(timestamp, { timestamp, speed });
+      } else if (!isNil(errorMsg)) {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,
           data: {
@@ -62,7 +63,7 @@ export const startMining = minerIdentifier => {
             errorMsg
           }
         });
-        storage.setItem(timestamp, { errorMsg });
+        storage.setItem(timestamp, { timestamp, errorMsg });
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -105,29 +106,25 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE,
       data: { minerIdentifier, from, to, steps }
     });
 
-    storage.keys().then(timestamps => {
-      const timestampsInRange = timestamps.filter(timestamp => timestamp > from && timestamp < to);
-      if (timestampsInRange.length) {
-        storage.getItems(timestampsInRange).then(results => {
-          const entries = Object.entries(results);
-          const { speed, errorMsg } = entries.reduce(
-            ({ speed, errorMsg }, [timestamp, result]) => {
-              if (result.speed) speed.push([parseInt(timestamp), result.speed]);
-              else if (result.errorMsg) errorMsg.push([parseInt(timestamp), 0, result.errorMsg]);
-              return { speed, errorMsg };
-            },
-            { speed: [], errorMsg: [] }
-          );
+    storage.find(timestamp => timestamp > from && timestamp < to).then(results => {
+      if (results.length) {
+        const { speedEntries, errorMsgEntries } = results.reduce(
+          ({ speedEntries, errorMsgEntries }, { timestamp, speed, errorMsg }) => {
+            if (!isNil(speed)) speedEntries.push([timestamp, speed]);
+            else if (!isNil(errorMsg)) errorMsgEntries.push([timestamp, 0, errorMsg]);
+            return { speedEntries, errorMsgEntries };
+          },
+          { speedEntries: [], errorMsgEntries: [] }
+        );
 
-          const itemsInRange = {
-            speed,
-            errorMsg
-          };
+        const itemsInRange = {
+          speed: speedEntries,
+          errorMsg: errorMsgEntries
+        };
 
-          dispatch({
-            type: RECEIVE_MINING_METRICS,
-            data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
-          });
+        dispatch({
+          type: RECEIVE_MINING_METRICS,
+          data: { minerIdentifier, from, to, steps, metrics: itemsInRange }
         });
       } else {
         dispatch({
