@@ -21,8 +21,8 @@ const defaultMinerProps = {
   address: '',
   shards: 0,
   coins: 0,
-  isFetchingMetrics: false,
   metrics: {
+    fetching: false,
     from: Number.MAX_VALUE,
     to: 0,
     data: []
@@ -67,11 +67,13 @@ export const mining = (
       set(newState, `miners.${data.minerIdentifier}.currentSpeed`, 0);
       break;
     case REQUEST_MINING_METRICS:
-      set(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, true);
+      set(newState, `miners.${data.minerIdentifier}.metrics.fetching`, true);
+      set(newState, `miners.${data.minerIdentifier}.metrics.from`, data.from);
+      set(newState, `miners.${data.minerIdentifier}.metrics.to`, data.to);
       break;
     case RECEIVE_MINING_METRICS:
-      set(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, false);
-      set(newState, `miners.${data.minerIdentifier}.metrics`, data.metrics);
+      set(newState, `miners.${data.minerIdentifier}.metrics.fetching`, false);
+      set(newState, `miners.${data.minerIdentifier}.metrics.data`, data.metrics.data);
       break;
     case RECEIVE_WORKER_STATS:
       set(newState, `miners.${data.minerIdentifier}.workerStats`, data.workerStats);

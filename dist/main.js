@@ -5521,8 +5521,8 @@
     address: '',
     shards: 0,
     coins: 0,
-    isFetchingMetrics: false,
     metrics: {
+      fetching: false,
       from: Number.MAX_VALUE,
       to: 0,
       data: []
@@ -5564,11 +5564,13 @@
         set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, 0);
         break;
       case REQUEST_MINING_METRICS:
-        set_1(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, true);
+        set_1(newState, `miners.${data.minerIdentifier}.metrics.fetching`, true);
+        set_1(newState, `miners.${data.minerIdentifier}.metrics.from`, data.from);
+        set_1(newState, `miners.${data.minerIdentifier}.metrics.to`, data.to);
         break;
       case RECEIVE_MINING_METRICS:
-        set_1(newState, `miners.${data.minerIdentifier}.isFetchingMetrics`, false);
-        set_1(newState, `miners.${data.minerIdentifier}.metrics`, data.metrics);
+        set_1(newState, `miners.${data.minerIdentifier}.metrics.fetching`, false);
+        set_1(newState, `miners.${data.minerIdentifier}.metrics.data`, data.metrics.data);
         break;
       case RECEIVE_WORKER_STATS:
         set_1(newState, `miners.${data.minerIdentifier}.workerStats`, data.workerStats);
@@ -54324,22 +54326,22 @@
 
   const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE }) => {
     return async (dispatch, getState) => {
-      const { mining: { miners } } = getState();
-      const oldMetrics = miners[minerIdentifier].metrics;
       const { storage } = getMiner(minerIdentifier);
 
       dispatch({
         type: REQUEST_MINING_METRICS,
-        data: { minerIdentifier }
+        data: { minerIdentifier, from, to }
       });
-      const oldMetricsInRange = oldMetrics.data.filter(([timestamp]) => timestamp > from && timestamp < to);
 
-      storage.find(timestamp => timestamp > from && timestamp < to && (timestamp < oldMetrics.from || timestamp > oldMetrics.to)).then(newItemsInRange => {
+      storage.find(timestamp => timestamp > from && timestamp < to).then(newItemsInRange => {
+        const { mining: { miners } } = getState();
+        const { from: currentFrom, to: currentTo } = miners[minerIdentifier].metrics;
+
+        if (from !== currentFrom || to !== currentTo) return;
+
         if (newItemsInRange.length) {
           const metrics = {
-            from,
-            to,
-            data: sortBy_1([...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [timestamp, speed, errorMsg]), ...oldMetricsInRange], ([timestamp]) => timestamp)
+            data: sortBy_1(newItemsInRange, 'timestamp').map(({ timestamp, speed, errorMsg }) => [timestamp, speed, errorMsg])
           };
 
           dispatch({
@@ -54352,9 +54354,7 @@
             data: {
               minerIdentifier,
               metrics: {
-                from,
-                to,
-                data: sortBy_1(oldMetricsInRange, ([timestamp]) => timestamp)
+                data: []
               }
             }
           });
@@ -101726,6 +101726,73 @@
   var entry_22$1 = entry$2.BarChart;
   var entry_23$1 = entry$2.AreaChart;
 
+  /** Error message constants. */
+  var FUNC_ERROR_TEXT$2 = 'Expected a function';
+
+  /**
+   * Creates a throttled function that only invokes `func` at most once per
+   * every `wait` milliseconds. The throttled function comes with a `cancel`
+   * method to cancel delayed `func` invocations and a `flush` method to
+   * immediately invoke them. Provide `options` to indicate whether `func`
+   * should be invoked on the leading and/or trailing edge of the `wait`
+   * timeout. The `func` is invoked with the last arguments provided to the
+   * throttled function. Subsequent calls to the throttled function return the
+   * result of the last `func` invocation.
+   *
+   * **Note:** If `leading` and `trailing` options are `true`, `func` is
+   * invoked on the trailing edge of the timeout only if the throttled function
+   * is invoked more than once during the `wait` timeout.
+   *
+   * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+   * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+   *
+   * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+   * for details over the differences between `_.throttle` and `_.debounce`.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Function
+   * @param {Function} func The function to throttle.
+   * @param {number} [wait=0] The number of milliseconds to throttle invocations to.
+   * @param {Object} [options={}] The options object.
+   * @param {boolean} [options.leading=true]
+   *  Specify invoking on the leading edge of the timeout.
+   * @param {boolean} [options.trailing=true]
+   *  Specify invoking on the trailing edge of the timeout.
+   * @returns {Function} Returns the new throttled function.
+   * @example
+   *
+   * // Avoid excessively updating the position while scrolling.
+   * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
+   *
+   * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
+   * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
+   * jQuery(element).on('click', throttled);
+   *
+   * // Cancel the trailing throttled invocation.
+   * jQuery(window).on('popstate', throttled.cancel);
+   */
+  function throttle(func, wait, options) {
+    var leading = true,
+        trailing = true;
+
+    if (typeof func != 'function') {
+      throw new TypeError(FUNC_ERROR_TEXT$2);
+    }
+    if (isObject_1(options)) {
+      leading = 'leading' in options ? !!options.leading : leading;
+      trailing = 'trailing' in options ? !!options.trailing : trailing;
+    }
+    return debounce_1(func, wait, {
+      'leading': leading,
+      'maxWait': wait,
+      'trailing': trailing
+    });
+  }
+
+  var throttle_1 = throttle;
+
   const styles$3 = {
     toolbar: {
       display: 'flex'
@@ -101763,13 +101830,13 @@
         }, 1000);
       }, this.stopLiveModeInterval = () => {
         this.liveModeInterval && clearInterval(this.liveModeInterval);
-      }, this.refreshMetrics = () => {
+      }, this.refreshMetrics = throttle_1(() => {
         const { fetchMetrics: fetchMetrics$$1, minerIdentifier } = this.props;
         const { timeRange } = this.state;
         const from = timeRange.begin().getTime();
         const to = timeRange.end().getTime();
         fetchMetrics$$1(minerIdentifier, { from, to });
-      }, this.handleTimeRangeChanged = timeRange => {
+      }, 500), this.handleTimeRangeChanged = timeRange => {
         this.setState({ timeRange, liveMode: false }, this.refreshMetrics);
       }, this.handleLiveModeClick = () => {
         this.setState(({ timeRange }) => {
@@ -101805,15 +101872,15 @@
     }
 
     render() {
-      const { classes, metrics } = this.props;
+      const { classes, metricsData } = this.props;
       const { height, timeRange, liveMode, highlight } = this.state;
 
-      const metricsData = {
+      const metricsSeriesData = {
         name: 'metrics',
         columns: ['time', 'speed', 'errorMsg'],
-        points: metrics.data
+        points: metricsData
       };
-      const metricsSeries = new entry_20(metricsData);
+      const metricsSeries = new entry_20(metricsSeriesData);
 
       let infoValues = [];
       if (highlight) {
@@ -101891,7 +101958,7 @@
 
   Metrics.propTypes = {
     classes: propTypes.object.isRequired,
-    metrics: propTypes.object.isRequired,
+    metricsData: propTypes.array.isRequired,
     isMining: propTypes.bool.isRequired,
     minerIdentifier: propTypes.string.isRequired,
     fetchMetrics: propTypes.func.isRequired,
@@ -101901,9 +101968,9 @@
   const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
       isMining: miners[selectedMinerIdentifier].isMining,
-      metrics: miners[selectedMinerIdentifier].metrics,
+      metricsData: miners[selectedMinerIdentifier].metrics.data,
       minerIdentifier: selectedMinerIdentifier,
-      isFetchingMetrics: miners[selectedMinerIdentifier].isFetchingMetrics
+      isFetchingMetrics: miners[selectedMinerIdentifier].metrics.fetching
     };
   };
 

@@ -135,60 +135,43 @@ export const stopMining = minerIdentifier => {
 
 export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE }) => {
   return async (dispatch, getState) => {
-    const { mining: { miners } } = getState();
-    const oldMetrics = miners[minerIdentifier].metrics;
     const { storage } = getMiner(minerIdentifier);
 
     dispatch({
       type: REQUEST_MINING_METRICS,
-      data: { minerIdentifier }
+      data: { minerIdentifier, from, to }
     });
-    const oldMetricsInRange = oldMetrics.data.filter(
-      ([timestamp]) => timestamp > from && timestamp < to
-    );
 
-    storage
-      .find(
-        timestamp =>
-          timestamp > from &&
-          timestamp < to &&
-          (timestamp < oldMetrics.from || timestamp > oldMetrics.to)
-      )
-      .then(newItemsInRange => {
-        if (newItemsInRange.length) {
-          const metrics = {
-            from,
-            to,
-            data: sortBy(
-              [
-                ...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [
-                  timestamp,
-                  speed,
-                  errorMsg
-                ]),
-                ...oldMetricsInRange
-              ],
-              ([timestamp]) => timestamp
-            )
-          };
+    storage.find(timestamp => timestamp > from && timestamp < to).then(newItemsInRange => {
+      const { mining: { miners } } = getState();
+      const { from: currentFrom, to: currentTo } = miners[minerIdentifier].metrics;
 
-          dispatch({
-            type: RECEIVE_MINING_METRICS,
-            data: { minerIdentifier, metrics }
-          });
-        } else {
-          dispatch({
-            type: RECEIVE_MINING_METRICS,
-            data: {
-              minerIdentifier,
-              metrics: {
-                from,
-                to,
-                data: sortBy(oldMetricsInRange, ([timestamp]) => timestamp)
-              }
+      if (from !== currentFrom || to !== currentTo) return;
+
+      if (newItemsInRange.length) {
+        const metrics = {
+          data: sortBy(newItemsInRange, 'timestamp').map(({ timestamp, speed, errorMsg }) => [
+            timestamp,
+            speed,
+            errorMsg
+          ])
+        };
+
+        dispatch({
+          type: RECEIVE_MINING_METRICS,
+          data: { minerIdentifier, metrics }
+        });
+      } else {
+        dispatch({
+          type: RECEIVE_MINING_METRICS,
+          data: {
+            minerIdentifier,
+            metrics: {
+              data: []
             }
-          });
-        }
-      });
+          }
+        });
+      }
+    });
   };
 };

@@ -15,6 +15,7 @@ import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { fetchMetrics } from '../../../store/actions';
+import throttle from 'lodash/throttle';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -80,13 +81,13 @@ class Metrics extends Component {
     this.liveModeInterval && clearInterval(this.liveModeInterval);
   };
 
-  refreshMetrics = () => {
+  refreshMetrics = throttle(() => {
     const { fetchMetrics, minerIdentifier } = this.props;
     const { timeRange } = this.state;
     const from = timeRange.begin().getTime();
     const to = timeRange.end().getTime();
     fetchMetrics(minerIdentifier, { from, to });
-  };
+  }, 500);
 
   handleTimeRangeChanged = timeRange => {
     this.setState({ timeRange, liveMode: false }, this.refreshMetrics);
@@ -114,15 +115,15 @@ class Metrics extends Component {
   };
 
   render() {
-    const { classes, metrics } = this.props;
+    const { classes, metricsData } = this.props;
     const { height, timeRange, liveMode, highlight } = this.state;
 
-    const metricsData = {
+    const metricsSeriesData = {
       name: 'metrics',
       columns: ['time', 'speed', 'errorMsg'],
-      points: metrics.data
+      points: metricsData
     };
-    const metricsSeries = new TimeSeries(metricsData);
+    const metricsSeries = new TimeSeries(metricsSeriesData);
 
     let infoValues = [];
     if (highlight) {
@@ -187,7 +188,7 @@ class Metrics extends Component {
 
 Metrics.propTypes = {
   classes: PropTypes.object.isRequired,
-  metrics: PropTypes.object.isRequired,
+  metricsData: PropTypes.array.isRequired,
   isMining: PropTypes.bool.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   fetchMetrics: PropTypes.func.isRequired,
@@ -197,9 +198,9 @@ Metrics.propTypes = {
 const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     isMining: miners[selectedMinerIdentifier].isMining,
-    metrics: miners[selectedMinerIdentifier].metrics,
+    metricsData: miners[selectedMinerIdentifier].metrics.data,
     minerIdentifier: selectedMinerIdentifier,
-    isFetchingMetrics: miners[selectedMinerIdentifier].isFetchingMetrics
+    isFetchingMetrics: miners[selectedMinerIdentifier].metrics.fetching
   };
 };
 
