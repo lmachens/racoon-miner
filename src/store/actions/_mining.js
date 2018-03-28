@@ -14,6 +14,7 @@ import {
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
+import sortBy from 'lodash/sortBy';
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -158,14 +159,17 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE 
           const metrics = {
             from,
             to,
-            data: [
-              ...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [
-                timestamp,
-                speed,
-                errorMsg
-              ]),
-              ...oldMetricsInRange
-            ]
+            data: sortBy(
+              [
+                ...newItemsInRange.map(({ timestamp, speed, errorMsg }) => [
+                  timestamp,
+                  speed,
+                  errorMsg
+                ]),
+                ...oldMetricsInRange
+              ],
+              ([timestamp]) => timestamp
+            )
           };
 
           dispatch({
@@ -180,7 +184,7 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE 
               metrics: {
                 from,
                 to,
-                data: oldMetricsInRange
+                data: sortBy(oldMetricsInRange, ([timestamp]) => timestamp)
               }
             }
           });
