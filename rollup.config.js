@@ -15,6 +15,7 @@ export default [
     },
     plugins: [
       replace({
+        'process.env.__REDUX_LOGGER__': false,
         //'process.env.NODE_ENV': JSON.stringify('production'), // needed by react
         'process.env.NODE_ENV': JSON.stringify('development'), // needed by react
         'process.env.__APP_PATH__': JSON.stringify(`${process.cwd()}/dist`.replace(/\\/g, '/')),

@@ -3,7 +3,6 @@ import { persistReducer, persistStore } from 'redux-persist';
 
 import addFind from 'localforage-find';
 import localForage from 'localforage';
-import logger from 'redux-logger';
 import reducers from './reducers';
 import thunk from 'redux-thunk';
 
@@ -19,7 +18,13 @@ const persistConfig = {
   storage: reduxStorage
 };
 const persistedReducer = persistReducer(persistConfig, reducers);
-const createStoreWithMiddleware = applyMiddleware(thunk, logger)(createStore);
 
+let createStoreWithMiddleware;
+if (process.env.__REDUX_LOGGER__) {
+  const logger = require('redux-logger');
+  createStoreWithMiddleware = applyMiddleware(thunk, logger)(createStore);
+} else {
+  createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
+}
 export const store = createStoreWithMiddleware(persistedReducer);
 export const persistor = persistStore(store);

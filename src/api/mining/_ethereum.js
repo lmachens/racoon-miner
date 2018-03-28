@@ -21,8 +21,8 @@ export const ethereum = {
     [CONNECTION_FAILED_REGEX]: /Could not resolve host/
   }),
   path: 'ethminer.exe',
-  args: address =>
-    `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.${address}`,
+  args: workerId =>
+    `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
   environmentVariables: JSON.stringify({
     GPU_FORCE_64BIT_PTR: '0',
     GPU_MAX_HEAP_SIZE: '100',
@@ -32,7 +32,9 @@ export const ethereum = {
   }),
   api: {
     workerStats: workerId =>
-      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`
+      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`,
+    workerHistory: workerId =>
+      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/history`
   },
   storage: ethereumLogsStorage
 };

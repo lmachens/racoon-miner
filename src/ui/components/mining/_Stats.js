@@ -31,18 +31,21 @@ class Stats extends Component {
   };
 
   render() {
-    const { currentSpeed, shards, coins } = this.props;
+    const { currentSpeed, workerStats } = this.props;
 
     return (
       <Grid container justify="center" spacing={16}>
         <Grid item>
-          <CardLayout title="Hashrate">{currentSpeed} Mh/s</CardLayout>
+          <CardLayout title="Hashrate">
+            {currentSpeed} MH/s<br />
+            Ø{(workerStats.averageHashrate / 100000).toFixed(2)} MH/s
+          </CardLayout>
         </Grid>
         <Grid item>
-          <CardLayout title="Shares">{shards}</CardLayout>
+          <CardLayout title="Shares">{workerStats.validShares || 0}</CardLayout>
         </Grid>
         <Grid item>
-          <CardLayout title="Unpaid Balance">{coins}</CardLayout>
+          <CardLayout title="Unpaid Balance">{0}</CardLayout>
         </Grid>
       </Grid>
     );
@@ -51,8 +54,7 @@ class Stats extends Component {
 
 Stats.propTypes = {
   currentSpeed: PropTypes.number.isRequired,
-  shards: PropTypes.number.isRequired,
-  coins: PropTypes.number.isRequired,
+  workerStats: PropTypes.object.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   fetchWorkerStats: PropTypes.func.isRequired
 };
@@ -61,8 +63,7 @@ const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     minerIdentifier: selectedMinerIdentifier,
     currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
-    shards: miners[selectedMinerIdentifier].shards,
-    coins: miners[selectedMinerIdentifier].coins
+    workerStats: miners[selectedMinerIdentifier].workerStats
   };
 };
 

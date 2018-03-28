@@ -7,7 +7,7 @@ import { getMiner } from '../../../api/mining';
 const Status = ({ name, isMining, currentSpeed }) => {
   return (
     <Typography>
-      {name}: {currentSpeed} Mh/s {isMining ? 'running' : 'stopped'}
+      {name}: {currentSpeed} MH/s {isMining ? 'running' : 'stopped'}
     </Typography>
   );
 };

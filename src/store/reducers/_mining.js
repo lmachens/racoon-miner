@@ -19,8 +19,6 @@ const defaultMinerProps = {
   isMining: false,
   currentSpeed: 0,
   address: '',
-  shards: 0,
-  coins: 0,
   metrics: {
     fetching: false,
     from: Number.MAX_VALUE,
@@ -28,7 +26,16 @@ const defaultMinerProps = {
     data: []
   },
   errorMsg: null,
-  workerStats: {}
+  workerStats: {
+    invalidShares: 0,
+    staleShares: 0,
+    validShares: 0,
+    reportedHashrate: 0,
+    averageHashrate: 0,
+    currentHashrate: 0,
+    lastSeen: 0,
+    time: 0
+  }
 };
 
 export const mining = (

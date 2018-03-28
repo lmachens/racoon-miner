@@ -22,7 +22,6 @@ export const setMiningAddress = (minerIdentifier, address) => {
       type: SET_MINING_ADDRESS,
       data: { address, minerIdentifier }
     });
-    dispatch(fetchWorkerStats(minerIdentifier));
   };
 };
 
@@ -51,7 +50,7 @@ export const fetchWorkerStats = minerIdentifier => {
           type: SET_MINING_ERROR_MESSAGE,
           data: {
             minerIdentifier,
-            errorMsg: error
+            errorMsg: error.message
           }
         });
       })
@@ -60,7 +59,7 @@ export const fetchWorkerStats = minerIdentifier => {
           type: RECEIVE_WORKER_STATS,
           data: {
             minerIdentifier,
-            workerStats: response
+            workerStats: response.data
           }
         });
       });
@@ -103,6 +102,7 @@ export const startMining = minerIdentifier => {
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
+    console.log(args(address));
     processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
       dispatch({
         type: SET_PROCESS_ID,

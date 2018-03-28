@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
+import { fetchWorkerStats, setMiningAddress } from '../../../store/actions';
 
 import PropTypes from 'prop-types';
 import { TextField } from '../generic';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
+import debounce from 'lodash/debounce';
 import { getMiner } from '../../../api/mining';
-import { setMiningAddress } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -20,7 +21,14 @@ class Address extends Component {
     const { setMiningAddress, minerIdentifier } = this.props;
 
     setMiningAddress(minerIdentifier, event.target.value);
+    this.updateWorkerStats();
   };
+
+  updateWorkerStats = debounce(() => {
+    const { fetchWorkerStats, minerIdentifier } = this.props;
+
+    fetchWorkerStats(minerIdentifier);
+  }, 1000);
 
   render() {
     const { address, miner, isMining } = this.props;
@@ -45,6 +53,7 @@ Address.propTypes = {
   address: PropTypes.string.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
+  fetchWorkerStats: PropTypes.func.isRequired,
   setMiningAddress: PropTypes.func.isRequired
 };
 
@@ -59,6 +68,7 @@ const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier } }) => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch),
     setMiningAddress: bindActionCreators(setMiningAddress, dispatch)
   };
 };
