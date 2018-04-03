@@ -9,7 +9,7 @@
     "localforage": "^1.7.1",
     "localforage-find": "^2.0.1",
     "lodash": "^4.17.5",
-    "material-ui": "^1.0.0-beta.37",
+    "material-ui": "^1.0.0-beta.40",
     "material-ui-icons": "^1.0.0-beta.36",
     "pondjs": "^0.8.8",
     "prop-types": "^15.6.1",

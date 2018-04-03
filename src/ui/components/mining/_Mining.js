@@ -21,6 +21,7 @@ class Mining extends Component {
 
     return (
       <Fragment>
+        <Stats />
         <Button disabled={miner.disabled} onClick={this.handleMiningClick}>
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
@@ -29,7 +30,6 @@ class Mining extends Component {
             Error: {errorMsg}
           </Typography>
         )}
-        <Stats />
         <Metrics />
       </Fragment>
     );

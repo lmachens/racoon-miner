@@ -15,7 +15,7 @@ const styles = {
 
 const PageLayout = ({ classes, children, title }) => (
   <div className={classes.wrapper}>
-    <Typography variant="headline">{title}</Typography>
+    {title && <Typography variant="headline">{title}</Typography>}
     <div className={classes.children}>{children}</div>
   </div>
 );
@@ -23,7 +23,7 @@ const PageLayout = ({ classes, children, title }) => (
 PageLayout.propTypes = {
   classes: PropTypes.object.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string
 };
 
 const enhance = withStyles(styles)(PageLayout);

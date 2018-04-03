@@ -4,7 +4,7 @@ import { PageLayout } from '../layouts';
 import React from 'react';
 
 const MiningPage = () => (
-  <PageLayout title="Mining">
+  <PageLayout>
     <Miner />
     <Address />
     <Mining />
