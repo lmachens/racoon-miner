@@ -101906,7 +101906,7 @@
 
       let infoValues = [];
       if (highlight) {
-        const speedText = `${highlight.event.get(highlight.column)} MH/s`;
+        const speedText = `${highlight.event.get(highlight.column).toFixed(2)} MH/s`;
         const errorMsg = highlight.event.get('errorMsg');
 
         infoValues = [{ label: 'Speed', value: speedText }];
