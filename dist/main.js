@@ -53296,7 +53296,7 @@
   const handleDataByIdenfier = {};
   const startMining = minerIdentifier => {
     return async (dispatch, getState) => {
-      const { mining: { address = 'default' } } = getState();
+      const { mining: { address = 'default', miners } } = getState();
       if (handleDataByIdenfier[minerIdentifier]) return;
       const processManager = await getProcessManagerPlugin();
       const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
@@ -53306,8 +53306,9 @@
         data: { minerIdentifier }
       });
 
-      handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
+      handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
         const { timestamp, errorMsg, speed } = parser(error || data);
+
         if (!isNil_1(speed)) {
           dispatch({
             type: SET_MINING_SPEED,
@@ -53316,7 +53317,20 @@
               speed
             }
           });
-          storage.setItem(timestamp, { timestamp, speed });
+          const nearestMinute = Math.round(timestamp / 10000) * 10000;
+          const existingMinute = await storage.getItem(nearestMinute);
+          if (existingMinute) {
+            storage.setItem(nearestMinute, {
+              timestamp: nearestMinute,
+              speed: (existingMinute.speed * existingMinute.measurements + speed) / (existingMinute.measurements + 1),
+              measurements: 1
+            });
+          } else {
+            const { from, to } = miners[minerIdentifier].metrics;
+            dispatch(fetchMetrics(minerIdentifier, from, to));
+
+            storage.setItem(nearestMinute, { timestamp: nearestMinute, speed, measurements: 1 });
+          }
         } else if (!isNil_1(errorMsg)) {
           dispatch({
             type: SET_MINING_ERROR_MESSAGE,
@@ -53329,7 +53343,6 @@
         }
       };
       processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-      console.log(args(address));
       processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
         dispatch({
           type: SET_PROCESS_ID,
@@ -101820,7 +101833,7 @@
 
       return _temp = super(...args), this.state = {
         height: document.body.clientHeight,
-        timeRange: new entry_22([Date.now() - 600000, Date.now()]),
+        timeRange: new entry_22([Date.now() - 1800000, Date.now() + 60000]),
         liveMode: true,
         highlight: null
       }, this.updateDimensions = () => {
@@ -101831,15 +101844,12 @@
         this.liveModeInterval = setInterval(() => {
           this.setState(({ liveMode, timeRange }) => {
             if (!liveMode) return {};
-            const newTimeRange = new entry_22([timeRange.begin().getTime() + 1000, timeRange.end().getTime() + 1000]);
+            const newTimeRange = new entry_22([timeRange.begin().getTime() + 10000, timeRange.end().getTime() + 10000]);
             return {
               timeRange: newTimeRange
             };
-          }, () => {
-            const { isMining } = this.props;
-            isMining && this.refreshMetrics();
           });
-        }, 1000);
+        }, 10000);
       }, this.stopLiveModeInterval = () => {
         this.liveModeInterval && clearInterval(this.liveModeInterval);
       }, this.refreshMetrics = throttle_1(() => {
@@ -101927,6 +101937,7 @@
             entry_17$1,
             {
               enablePanZoom: true,
+              minDuration: 720000,
               onBackgroundClick: this.handleUnsetSelection,
               onTimeRangeChanged: this.handleTimeRangeChanged,
               timeRange: timeRange

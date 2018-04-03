@@ -30,7 +30,7 @@ const styles = {
 class Metrics extends Component {
   state = {
     height: document.body.clientHeight,
-    timeRange: new TimeRange([Date.now() - 600000, Date.now()]),
+    timeRange: new TimeRange([Date.now() - 1800000, Date.now() + 60000]),
     liveMode: true,
     highlight: null
   };
@@ -58,23 +58,17 @@ class Metrics extends Component {
     this.stopLiveModeInterval();
 
     this.liveModeInterval = setInterval(() => {
-      this.setState(
-        ({ liveMode, timeRange }) => {
-          if (!liveMode) return {};
-          const newTimeRange = new TimeRange([
-            timeRange.begin().getTime() + 1000,
-            timeRange.end().getTime() + 1000
-          ]);
-          return {
-            timeRange: newTimeRange
-          };
-        },
-        () => {
-          const { isMining } = this.props;
-          isMining && this.refreshMetrics();
-        }
-      );
-    }, 1000);
+      this.setState(({ liveMode, timeRange }) => {
+        if (!liveMode) return {};
+        const newTimeRange = new TimeRange([
+          timeRange.begin().getTime() + 10000,
+          timeRange.end().getTime() + 10000
+        ]);
+        return {
+          timeRange: newTimeRange
+        };
+      });
+    }, 10000);
   };
 
   stopLiveModeInterval = () => {
@@ -148,6 +142,7 @@ class Metrics extends Component {
         <Resizable>
           <ChartContainer
             enablePanZoom={true}
+            minDuration={720000}
             onBackgroundClick={this.handleUnsetSelection}
             onTimeRangeChanged={this.handleTimeRangeChanged}
             timeRange={timeRange}

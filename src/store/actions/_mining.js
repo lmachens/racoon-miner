@@ -69,7 +69,7 @@ export const fetchWorkerStats = minerIdentifier => {
 const handleDataByIdenfier = {};
 export const startMining = minerIdentifier => {
   return async (dispatch, getState) => {
-    const { mining: { address = 'default' } } = getState();
+    const { mining: { address = 'default', miners } } = getState();
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
     const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
@@ -79,8 +79,9 @@ export const startMining = minerIdentifier => {
       data: { minerIdentifier }
     });
 
-    handleDataByIdenfier[minerIdentifier] = ({ error, data }) => {
+    handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
       const { timestamp, errorMsg, speed } = parser(error || data);
+
       if (!isNil(speed)) {
         dispatch({
           type: SET_MINING_SPEED,
@@ -89,7 +90,22 @@ export const startMining = minerIdentifier => {
             speed
           }
         });
-        storage.setItem(timestamp, { timestamp, speed });
+        const nearestMinute = Math.round(timestamp / 10000) * 10000;
+        const existingMinute = await storage.getItem(nearestMinute);
+        if (existingMinute) {
+          storage.setItem(nearestMinute, {
+            timestamp: nearestMinute,
+            speed:
+              (existingMinute.speed * existingMinute.measurements + speed) /
+              (existingMinute.measurements + 1),
+            measurements: 1
+          });
+        } else {
+          const { from, to } = miners[minerIdentifier].metrics;
+          dispatch(fetchMetrics(minerIdentifier, from, to));
+
+          storage.setItem(nearestMinute, { timestamp: nearestMinute, speed, measurements: 1 });
+        }
       } else if (!isNil(errorMsg)) {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,
@@ -102,7 +118,6 @@ export const startMining = minerIdentifier => {
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-    console.log(args(address));
     processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
       dispatch({
         type: SET_PROCESS_ID,
