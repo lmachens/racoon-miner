@@ -9,4 +9,5 @@ export * from './_Link';
 export * from './_Table';
 export * from './_TextField';
 export * from './_Toolbar';
+export * from './_Tooltip';
 export * from './_Typography';

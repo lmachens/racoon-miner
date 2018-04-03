@@ -52195,6 +52195,9 @@
 
   var TextField$2 = unwrapExports(TextField$1);
 
+  // export { default as Tooltip } from 'material-ui/Tooltip';
+  // Issues with positioning
+
   const interval = 1000;
 
   let hardwareInfoListener = null;
