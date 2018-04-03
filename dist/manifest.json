@@ -22,6 +22,7 @@
         "transparent": false,
         "resizable": true,
         "show_in_taskbar": true,
+        "desktop_only": true,
         "size": {
           "width": 800,
           "height": 600

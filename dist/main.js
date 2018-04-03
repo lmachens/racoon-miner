@@ -4137,7 +4137,7 @@
       [CONNECTION_FAILED_REGEX]: /Could not resolve host/
     }),
     path: 'ethminer.exe',
-    args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -FS us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
+    args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
     environmentVariables: JSON.stringify({
       GPU_FORCE_64BIT_PTR: '0',
       GPU_MAX_HEAP_SIZE: '100',
@@ -102104,11 +102104,11 @@
           react.createElement(
             enhance$7,
             { title: 'Hashrate' },
-            currentSpeed,
+            currentSpeed.toFixed(2),
             ' MH/s',
             react.createElement('br', null),
             '\xD8',
-            (workerStats.averageHashrate / 100000).toFixed(2),
+            (workerStats.averageHashrate / 100000 || 0).toFixed(2),
             ' MH/s'
           )
         ),

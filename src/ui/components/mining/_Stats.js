@@ -37,8 +37,8 @@ class Stats extends Component {
       <Grid container justify="center" spacing={16}>
         <Grid item>
           <CardLayout title="Hashrate">
-            {currentSpeed} MH/s<br />
-            Ø{(workerStats.averageHashrate / 100000).toFixed(2)} MH/s
+            {currentSpeed.toFixed(2)} MH/s<br />
+            Ø{(workerStats.averageHashrate / 100000 || 0).toFixed(2)} MH/s
           </CardLayout>
         </Grid>
         <Grid item>
