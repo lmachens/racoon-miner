@@ -15,7 +15,8 @@ const reduxStorage = localForage.createInstance({
 
 const persistConfig = {
   key: 'root',
-  storage: reduxStorage
+  storage: reduxStorage,
+  blacklist: ['activeMiners']
 };
 const persistedReducer = persistReducer(persistConfig, reducers);
 

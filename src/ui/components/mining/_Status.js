@@ -19,10 +19,10 @@ Status.propTypes = {
   currentSpeed: PropTypes.number.isRequired
 };
 
-const mapStateToProps = ({ mining: { miners } }, { minerIdentifier }) => {
+const mapStateToProps = ({ activeMiners }, { minerIdentifier }) => {
   return {
-    isMining: miners[minerIdentifier].isMining,
-    currentSpeed: miners[minerIdentifier].currentSpeed,
+    isMining: activeMiners[minerIdentifier].isMining,
+    currentSpeed: activeMiners[minerIdentifier].currentSpeed,
     name: getMiner(minerIdentifier).name
   };
 };

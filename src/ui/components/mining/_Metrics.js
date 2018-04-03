@@ -1,4 +1,5 @@
 import {
+  Baseline,
   ChartContainer,
   ChartRow,
   Charts,
@@ -109,7 +110,7 @@ class Metrics extends Component {
   };
 
   render() {
-    const { classes, metricsData } = this.props;
+    const { classes, currentSpeed, metricsData } = this.props;
     const { height, timeRange, liveMode, highlight } = this.state;
 
     const metricsSeriesData = {
@@ -157,6 +158,12 @@ class Metrics extends Component {
                 width="60"
               />
               <Charts>
+                <Baseline
+                  axis="speed"
+                  label={`${currentSpeed.toFixed(2)} MH/s`}
+                  position="right"
+                  value={currentSpeed}
+                />
                 <ScatterChart
                   axis="speed"
                   columns={['speed']}
@@ -183,6 +190,7 @@ class Metrics extends Component {
 
 Metrics.propTypes = {
   classes: PropTypes.object.isRequired,
+  currentSpeed: PropTypes.number.isRequired,
   metricsData: PropTypes.array.isRequired,
   isMining: PropTypes.bool.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
@@ -190,9 +198,10 @@ Metrics.propTypes = {
   isFetchingMetrics: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
+const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners }, activeMiners }) => {
   return {
-    isMining: miners[selectedMinerIdentifier].isMining,
+    currentSpeed: activeMiners[selectedMinerIdentifier].currentSpeed,
+    isMining: activeMiners[selectedMinerIdentifier].isMining,
     metricsData: miners[selectedMinerIdentifier].metrics.data,
     minerIdentifier: selectedMinerIdentifier,
     isFetchingMetrics: miners[selectedMinerIdentifier].metrics.fetching

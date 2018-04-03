@@ -57,12 +57,12 @@ Address.propTypes = {
   setMiningAddress: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier } }) => {
+const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
   return {
     minerIdentifier: selectedMinerIdentifier,
     address: miners[selectedMinerIdentifier].address,
     miner: getMiner(selectedMinerIdentifier),
-    isMining: miners[selectedMinerIdentifier].isMining
+    isMining: activeMiners[selectedMinerIdentifier].isMining
   };
 };
 

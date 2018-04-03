@@ -15,9 +15,6 @@ import {
 import set from 'lodash/set';
 
 const defaultMinerProps = {
-  processId: null,
-  isMining: false,
-  currentSpeed: 0,
   address: '',
   metrics: {
     fetching: false,
@@ -25,7 +22,6 @@ const defaultMinerProps = {
     to: 0,
     data: []
   },
-  errorMsg: null,
   workerStats: {
     invalidShares: 0,
     staleShares: 0,
@@ -56,23 +52,6 @@ export const mining = (
     case SELECT_MINER:
       set(newState, `selectedMinerIdentifier`, data);
       break;
-    case SET_MINING_SPEED:
-      set(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.speed);
-      set(newState, `miners.${data.minerIdentifier}.errorMsg`, null);
-      break;
-    case SET_MINING_ERROR_MESSAGE:
-      set(newState, `miners.${data.minerIdentifier}.errorMsg`, data.errorMsg);
-      break;
-    case SET_PROCESS_ID:
-      set(newState, `miners.${data.minerIdentifier}.processId`, data.processId);
-      break;
-    case START_MINING:
-      set(newState, `miners.${data.minerIdentifier}.isMining`, true);
-      break;
-    case STOP_MINING:
-      set(newState, `miners.${data.minerIdentifier}.isMining`, false);
-      set(newState, `miners.${data.minerIdentifier}.currentSpeed`, 0);
-      break;
     case REQUEST_MINING_METRICS:
       set(newState, `miners.${data.minerIdentifier}.metrics.fetching`, true);
       set(newState, `miners.${data.minerIdentifier}.metrics.from`, data.from);
@@ -84,6 +63,46 @@ export const mining = (
       break;
     case RECEIVE_WORKER_STATS:
       set(newState, `miners.${data.minerIdentifier}.workerStats`, data.workerStats);
+      break;
+    default:
+      return state;
+  }
+  return newState;
+};
+
+const defaultActiveMinersProps = {
+  processId: null,
+  isMining: false,
+  currentSpeed: 0,
+  errorMsg: null
+};
+
+export const activeMiners = (
+  state = {
+    [ETHEREUM_MINER]: { ...defaultActiveMinersProps },
+    [MONERO_MINER]: { ...defaultActiveMinersProps }
+  },
+  { type, data }
+) => {
+  const newState = { ...state };
+
+  switch (type) {
+    case SET_MINING_SPEED:
+      set(newState, `${data.minerIdentifier}.currentSpeed`, data.speed);
+      set(newState, `${data.minerIdentifier}.errorMsg`, null);
+      break;
+    case SET_MINING_ERROR_MESSAGE:
+      set(newState, `${data.minerIdentifier}.errorMsg`, data.errorMsg);
+      break;
+    case SET_PROCESS_ID:
+      set(newState, `${data.minerIdentifier}.processId`, data.processId);
+      break;
+    case START_MINING:
+      set(newState, `${data.minerIdentifier}.isMining`, true);
+      break;
+    case STOP_MINING:
+      set(newState, `${data.minerIdentifier}.isMining`, false);
+      set(newState, `${data.minerIdentifier}.currentSpeed`, 0);
       break;
     default:
       return state;

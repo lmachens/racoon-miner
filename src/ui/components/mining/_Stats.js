@@ -31,14 +31,13 @@ class Stats extends Component {
   };
 
   render() {
-    const { currentSpeed, workerStats } = this.props;
+    const { workerStats } = this.props;
 
     return (
       <Grid container justify="center" spacing={16}>
         <Grid item>
-          <CardLayout title="Hashrate">
-            {currentSpeed.toFixed(2)} MH/s<br />
-            Ø{(workerStats.averageHashrate / 100000 || 0).toFixed(2)} MH/s
+          <CardLayout title="Ø Hashrate">
+            {(workerStats.averageHashrate / 100000 || 0).toFixed(2)} MH/s
           </CardLayout>
         </Grid>
         <Grid item>
@@ -53,7 +52,6 @@ class Stats extends Component {
 }
 
 Stats.propTypes = {
-  currentSpeed: PropTypes.number.isRequired,
   workerStats: PropTypes.object.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   fetchWorkerStats: PropTypes.func.isRequired
@@ -62,7 +60,6 @@ Stats.propTypes = {
 const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
     minerIdentifier: selectedMinerIdentifier,
-    currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
     workerStats: miners[selectedMinerIdentifier].workerStats
   };
 };

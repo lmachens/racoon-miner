@@ -1,10 +1,12 @@
+import { activeMiners, mining } from './_mining';
+
 import { combineReducers } from 'redux';
 import { hardwareInfo } from './_hardwareInfo';
-import { mining } from './_mining';
 
 const reducers = combineReducers({
   hardwareInfo,
-  mining
+  mining,
+  activeMiners
 });
 
 export default reducers;

@@ -4071,34 +4071,6 @@
   });
   });
 
-  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
-  const STOP_TRACKING_HARDWARE_INFO = 'STOP_TRACKING_HARDWARE_INFO';
-
-  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
-  const SELECT_MINER = 'SELECT_MINER';
-  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
-  const SET_MINING_SPEED = 'SET_MINING_SPEED';
-  const SET_PROCESS_ID = 'SET_PROCESS_ID';
-  const START_MINING = 'START_MINING';
-  const STOP_MINING = 'STOP_MINING';
-  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
-  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
-  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
-
-  const hardwareInfo = (state = {
-    isListening: false,
-    data: null
-  }, { type, data }) => {
-    switch (type) {
-      case RECEIVE_HARDWARE_INFO:
-        return { isListening: true, data };
-      case STOP_TRACKING_HARDWARE_INFO:
-        return { isListening: false };
-      default:
-        return state;
-    }
-  };
-
   const SPEED_REGEX = 'SPEED_REGEX';
   const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
 
@@ -4187,6 +4159,20 @@
         return monero;
     }
   };
+
+  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
+  const STOP_TRACKING_HARDWARE_INFO = 'STOP_TRACKING_HARDWARE_INFO';
+
+  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
+  const SELECT_MINER = 'SELECT_MINER';
+  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
+  const SET_MINING_SPEED = 'SET_MINING_SPEED';
+  const SET_PROCESS_ID = 'SET_PROCESS_ID';
+  const START_MINING = 'START_MINING';
+  const STOP_MINING = 'STOP_MINING';
+  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
+  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
+  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
 
   /** Detect free variable `global` from Node.js. */
   var freeGlobal$1 = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
@@ -5510,9 +5496,6 @@
   };
 
   const defaultMinerProps = {
-    processId: null,
-    isMining: false,
-    currentSpeed: 0,
     address: '',
     metrics: {
       fetching: false,
@@ -5520,7 +5503,6 @@
       to: 0,
       data: []
     },
-    errorMsg: null,
     workerStats: {
       invalidShares: 0,
       staleShares: 0,
@@ -5548,23 +5530,6 @@
       case SELECT_MINER:
         set_1(newState, `selectedMinerIdentifier`, data);
         break;
-      case SET_MINING_SPEED:
-        set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, data.speed);
-        set_1(newState, `miners.${data.minerIdentifier}.errorMsg`, null);
-        break;
-      case SET_MINING_ERROR_MESSAGE:
-        set_1(newState, `miners.${data.minerIdentifier}.errorMsg`, data.errorMsg);
-        break;
-      case SET_PROCESS_ID:
-        set_1(newState, `miners.${data.minerIdentifier}.processId`, data.processId);
-        break;
-      case START_MINING:
-        set_1(newState, `miners.${data.minerIdentifier}.isMining`, true);
-        break;
-      case STOP_MINING:
-        set_1(newState, `miners.${data.minerIdentifier}.isMining`, false);
-        set_1(newState, `miners.${data.minerIdentifier}.currentSpeed`, 0);
-        break;
       case REQUEST_MINING_METRICS:
         set_1(newState, `miners.${data.minerIdentifier}.metrics.fetching`, true);
         set_1(newState, `miners.${data.minerIdentifier}.metrics.from`, data.from);
@@ -5583,9 +5548,61 @@
     return newState;
   };
 
+  const defaultActiveMinersProps = {
+    processId: null,
+    isMining: false,
+    currentSpeed: 0,
+    errorMsg: null
+  };
+
+  const activeMiners = (state = {
+    [ETHEREUM_MINER]: _extends$5({}, defaultActiveMinersProps),
+    [MONERO_MINER]: _extends$5({}, defaultActiveMinersProps)
+  }, { type, data }) => {
+    const newState = _extends$5({}, state);
+
+    switch (type) {
+      case SET_MINING_SPEED:
+        set_1(newState, `${data.minerIdentifier}.currentSpeed`, data.speed);
+        set_1(newState, `${data.minerIdentifier}.errorMsg`, null);
+        break;
+      case SET_MINING_ERROR_MESSAGE:
+        set_1(newState, `${data.minerIdentifier}.errorMsg`, data.errorMsg);
+        break;
+      case SET_PROCESS_ID:
+        set_1(newState, `${data.minerIdentifier}.processId`, data.processId);
+        break;
+      case START_MINING:
+        set_1(newState, `${data.minerIdentifier}.isMining`, true);
+        break;
+      case STOP_MINING:
+        set_1(newState, `${data.minerIdentifier}.isMining`, false);
+        set_1(newState, `${data.minerIdentifier}.currentSpeed`, 0);
+        break;
+      default:
+        return state;
+    }
+    return newState;
+  };
+
+  const hardwareInfo = (state = {
+    isListening: false,
+    data: null
+  }, { type, data }) => {
+    switch (type) {
+      case RECEIVE_HARDWARE_INFO:
+        return { isListening: true, data };
+      case STOP_TRACKING_HARDWARE_INFO:
+        return { isListening: false };
+      default:
+        return state;
+    }
+  };
+
   const reducers = combineReducers({
     hardwareInfo,
-    mining
+    mining,
+    activeMiners
   });
 
   function createThunkMiddleware(extraArgument) {
@@ -5616,7 +5633,8 @@
 
   const persistConfig = {
     key: 'root',
-    storage: reduxStorage
+    storage: reduxStorage,
+    blacklist: ['activeMiners']
   };
   const persistedReducer = persistReducer(persistConfig, reducers);
 
@@ -54428,12 +54446,12 @@
     setMiningAddress: propTypes.func.isRequired
   };
 
-  const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier } }) => {
+  const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
     return {
       minerIdentifier: selectedMinerIdentifier,
       address: miners[selectedMinerIdentifier].address,
       miner: getMiner(selectedMinerIdentifier),
-      isMining: miners[selectedMinerIdentifier].isMining
+      isMining: activeMiners[selectedMinerIdentifier].isMining
     };
   };
 
@@ -101894,7 +101912,7 @@
     }
 
     render() {
-      const { classes, metricsData } = this.props;
+      const { classes, currentSpeed, metricsData } = this.props;
       const { height, timeRange, liveMode, highlight } = this.state;
 
       const metricsSeriesData = {
@@ -101956,6 +101974,12 @@
               react.createElement(
                 entry_15$1,
                 null,
+                react.createElement(entry_20$1, {
+                  axis: 'speed',
+                  label: `${currentSpeed.toFixed(2)} MH/s`,
+                  position: 'right',
+                  value: currentSpeed
+                }),
                 react.createElement(entry_8$1, {
                   axis: 'speed',
                   columns: ['speed'],
@@ -101981,6 +102005,7 @@
 
   Metrics.propTypes = {
     classes: propTypes.object.isRequired,
+    currentSpeed: propTypes.number.isRequired,
     metricsData: propTypes.array.isRequired,
     isMining: propTypes.bool.isRequired,
     minerIdentifier: propTypes.string.isRequired,
@@ -101988,9 +102013,10 @@
     isFetchingMetrics: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+  const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners }, activeMiners }) => {
     return {
-      isMining: miners[selectedMinerIdentifier].isMining,
+      currentSpeed: activeMiners[selectedMinerIdentifier].currentSpeed,
+      isMining: activeMiners[selectedMinerIdentifier].isMining,
       metricsData: miners[selectedMinerIdentifier].metrics.data,
       minerIdentifier: selectedMinerIdentifier,
       isFetchingMetrics: miners[selectedMinerIdentifier].metrics.fetching
@@ -102104,7 +102130,7 @@
     }
 
     render() {
-      const { currentSpeed, workerStats } = this.props;
+      const { workerStats } = this.props;
 
       return react.createElement(
         Grid$2,
@@ -102114,11 +102140,7 @@
           { item: true },
           react.createElement(
             enhance$7,
-            { title: 'Hashrate' },
-            currentSpeed.toFixed(2),
-            ' MH/s',
-            react.createElement('br', null),
-            '\xD8',
+            { title: '\xD8 Hashrate' },
             (workerStats.averageHashrate / 100000 || 0).toFixed(2),
             ' MH/s'
           )
@@ -102146,7 +102168,6 @@
   }
 
   Stats.propTypes = {
-    currentSpeed: propTypes.number.isRequired,
     workerStats: propTypes.object.isRequired,
     minerIdentifier: propTypes.string.isRequired,
     fetchWorkerStats: propTypes.func.isRequired
@@ -102155,7 +102176,6 @@
   const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
       minerIdentifier: selectedMinerIdentifier,
-      currentSpeed: miners[selectedMinerIdentifier].currentSpeed,
       workerStats: miners[selectedMinerIdentifier].workerStats
     };
   };
@@ -102211,10 +102231,10 @@
     minerIdentifier: propTypes.string.isRequired
   };
 
-  const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+  const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
     return {
-      isMining: miners[selectedMinerIdentifier].isMining,
-      errorMsg: miners[selectedMinerIdentifier].errorMsg,
+      isMining: activeMiners[selectedMinerIdentifier].isMining,
+      errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,
       miner: getMiner(selectedMinerIdentifier),
       minerIdentifier: selectedMinerIdentifier
     };
@@ -102249,10 +102269,10 @@
     currentSpeed: propTypes.number.isRequired
   };
 
-  const mapStateToProps$5 = ({ mining: { miners } }, { minerIdentifier }) => {
+  const mapStateToProps$5 = ({ activeMiners }, { minerIdentifier }) => {
     return {
-      isMining: miners[minerIdentifier].isMining,
-      currentSpeed: miners[minerIdentifier].currentSpeed,
+      isMining: activeMiners[minerIdentifier].isMining,
+      currentSpeed: activeMiners[minerIdentifier].currentSpeed,
       name: getMiner(minerIdentifier).name
     };
   };
