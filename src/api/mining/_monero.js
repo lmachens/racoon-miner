@@ -27,5 +27,6 @@ export const monero = {
   storage: moneroLogsStorage,
   links: {
     wallet: 'https://getmonero.org/'
-  }
+  },
+  isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
 };

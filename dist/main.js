@@ -4145,7 +4145,8 @@
     storage: ethereumLogsStorage,
     links: {
       wallet: 'https://www.myetherwallet.com/'
-    }
+    },
+    isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
   };
 
   //import { generateParser } from './_generateParser';
@@ -4175,7 +4176,8 @@
     storage: moneroLogsStorage,
     links: {
       wallet: 'https://getmonero.org/'
-    }
+    },
+    isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
   };
 
   const getMiner = minerIdentifier => {
@@ -55940,11 +55942,20 @@
     constructor(...args) {
       var _temp;
 
-      return _temp = super(...args), this.handleChange = event => {
-        const { setMiningAddress: setMiningAddress$$1, minerIdentifier } = this.props;
+      return _temp = super(...args), this.state = {
+        validAddress: true
+      }, this.handleChange = event => {
+        const { setMiningAddress: setMiningAddress$$1, miner, minerIdentifier } = this.props;
 
-        setMiningAddress$$1(minerIdentifier, event.target.value);
-        this.updateWorkerStats();
+        const address = event.target.value;
+        setMiningAddress$$1(minerIdentifier, address);
+        const validAddress = !address || miner.isValidAddress(address);
+
+        this.setState({
+          validAddress
+        });
+
+        if (validAddress) this.updateWorkerStats();
       }, this.updateWorkerStats = debounce_1(() => {
         const { fetchWorkerStats: fetchWorkerStats$$1, minerIdentifier } = this.props;
 
@@ -55954,12 +55965,14 @@
 
     render() {
       const { address, miner, isMining } = this.props;
+      const { validAddress } = this.state;
 
       return react.createElement(
         react_5,
         null,
         react.createElement(TextField$2, {
           disabled: isMining,
+          error: !validAddress,
           helperText: 'Your address is used in payouts and to identify your mining progress',
           label: `${miner.name} address`,
           margin: 'normal',
@@ -55974,7 +55987,7 @@
           react.createElement(
             Button$2,
             { color: 'primary', size: 'small' },
-            'Create Wallet'
+            'Create Address'
           )
         )
       );

@@ -17,11 +17,22 @@ const styles = {
 };
 
 class Address extends Component {
-  handleChange = event => {
-    const { setMiningAddress, minerIdentifier } = this.props;
+  state = {
+    validAddress: true
+  };
 
-    setMiningAddress(minerIdentifier, event.target.value);
-    this.updateWorkerStats();
+  handleChange = event => {
+    const { setMiningAddress, miner, minerIdentifier } = this.props;
+
+    const address = event.target.value;
+    setMiningAddress(minerIdentifier, address);
+    const validAddress = !address || miner.isValidAddress(address);
+
+    this.setState({
+      validAddress
+    });
+
+    if (validAddress) this.updateWorkerStats();
   };
 
   updateWorkerStats = debounce(() => {
@@ -32,11 +43,13 @@ class Address extends Component {
 
   render() {
     const { address, miner, isMining } = this.props;
+    const { validAddress } = this.state;
 
     return (
       <Fragment>
         <TextField
           disabled={isMining}
+          error={!validAddress}
           helperText="Your address is used in payouts and to identify your mining progress"
           label={`${miner.name} address`}
           margin="normal"
@@ -47,7 +60,7 @@ class Address extends Component {
         <br />
         <ExternalLink to={miner.links.wallet}>
           <Button color="primary" size="small">
-            Create Wallet
+            Create Address
           </Button>
         </ExternalLink>
       </Fragment>
