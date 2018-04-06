@@ -1,6 +1,5 @@
-import { Button, ExternalLink, IconButton, InputAdornment, TextField } from '../generic';
+import { Button, ExternalLink, InfoButton, InputAdornment, TextField } from '../generic';
 import React, { Component, Fragment } from 'react';
-import { fetchWorkerStats, setMiningAddress } from '../../../store/actions';
 
 import Done from 'material-ui-icons/Done';
 import Error from 'material-ui-icons/Error';
@@ -8,8 +7,8 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import debounce from 'lodash/debounce';
 import { getMiner } from '../../../api/mining';
+import { setMiningAddress } from '../../../store/actions';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -20,35 +19,29 @@ const styles = {
 
 class Address extends Component {
   handleChange = event => {
-    const { setMiningAddress, miner, minerIdentifier } = this.props;
+    const { setMiningAddress, minerIdentifier } = this.props;
 
     const address = event.target.value;
     setMiningAddress(minerIdentifier, address);
-    const validAddress = miner.isValidAddress(address);
-
-    if (validAddress) this.updateWorkerStats();
   };
 
-  updateWorkerStats = debounce(() => {
-    const { fetchWorkerStats, minerIdentifier } = this.props;
-
-    fetchWorkerStats(minerIdentifier);
-  }, 1000);
-
   render() {
-    const { address, miner, isMining } = this.props;
+    const { address, miner, isMining, isValidAddress } = this.props;
 
     return (
       <Fragment>
         <TextField
           disabled={isMining}
-          helperText="Your address is used in payouts and to identify your mining progress"
+          helperText="Your address is used for payouts and to track your mining progress"
+          InputLabelProps={{
+            shrink: true
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton aria-label="Valid state">
-                  {miner.isValidAddress(address) ? <Done /> : <Error color="error" />}
-                </IconButton>
+                <InfoButton icon popover={isValidAddress ? 'Valid address' : 'Invalid address'}>
+                  {isValidAddress ? <Done /> : <Error color="error" />}
+                </InfoButton>
               </InputAdornment>
             )
           }}
@@ -75,22 +68,24 @@ Address.propTypes = {
   address: PropTypes.string.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
-  fetchWorkerStats: PropTypes.func.isRequired,
+  isValidAddress: PropTypes.bool.isRequired,
   setMiningAddress: PropTypes.func.isRequired
 };
 
 const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
+  const miner = getMiner(selectedMinerIdentifier);
+  const address = miners[selectedMinerIdentifier].address;
   return {
     minerIdentifier: selectedMinerIdentifier,
-    address: miners[selectedMinerIdentifier].address,
-    miner: getMiner(selectedMinerIdentifier),
+    address,
+    isValidAddress: miner.isValidAddress(address),
+    miner,
     isMining: activeMiners[selectedMinerIdentifier].isMining
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch),
     setMiningAddress: bindActionCreators(setMiningAddress, dispatch)
   };
 };

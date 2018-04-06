@@ -4,6 +4,7 @@ export * from './_Card';
 export * from './_Form';
 export * from './_Grid';
 export * from './_ImageButton';
+export * from './_InfoButton';
 export * from './_Input';
 export * from './_Link';
 export * from './_Popover';

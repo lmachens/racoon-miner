@@ -24,6 +24,20 @@ export const setMiningAddress = (minerIdentifier, address) => {
       type: SET_MINING_ADDRESS,
       data: { address, minerIdentifier }
     });
+
+    const miner = getMiner(minerIdentifier);
+    const validAddress = miner.isValidAddress(address);
+
+    if (validAddress) fetchWorkerStats(minerIdentifier);
+    else {
+      dispatch({
+        type: RECEIVE_WORKER_STATS,
+        data: {
+          minerIdentifier,
+          workerStats: {}
+        }
+      });
+    }
   };
 };
 

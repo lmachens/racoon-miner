@@ -23,16 +23,7 @@ const defaultMinerProps = {
     to: 0,
     data: []
   },
-  workerStats: {
-    invalidShares: 0,
-    staleShares: 0,
-    validShares: 0,
-    reportedHashrate: 0,
-    averageHashrate: 0,
-    currentHashrate: 0,
-    lastSeen: 0,
-    time: 0
-  }
+  workerStats: {}
 };
 
 export const mining = (
