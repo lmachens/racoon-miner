@@ -56,6 +56,7 @@ export const fetchWorkerStats = minerIdentifier => {
         });
       })
       .then(response => {
+        console.log(response.data);
         dispatch({
           type: RECEIVE_WORKER_STATS,
           data: {

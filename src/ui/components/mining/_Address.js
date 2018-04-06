@@ -1,4 +1,4 @@
-import { Button, TextField } from '../generic';
+import { Button, ExternalLink, TextField } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { fetchWorkerStats, setMiningAddress } from '../../../store/actions';
 
@@ -45,9 +45,11 @@ class Address extends Component {
           value={address}
         />
         <br />
-        <Button color="primary" size="small">
-          Create Wallet
-        </Button>
+        <ExternalLink to={miner.links.wallet}>
+          <Button color="primary" size="small">
+            Create Wallet
+          </Button>
+        </ExternalLink>
       </Fragment>
     );
   }

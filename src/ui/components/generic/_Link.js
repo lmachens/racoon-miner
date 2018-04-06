@@ -1,5 +1,6 @@
+import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
-import React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { withStyles } from 'material-ui/styles';
 
@@ -23,5 +24,32 @@ Link.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 };
 
-const enhanced = withStyles(styles)(Link);
-export { enhanced as Link };
+const LinkEnhanced = withStyles(styles)(Link);
+export { LinkEnhanced as Link };
+
+class ExternalLink extends Component {
+  handleClick = event => {
+    event.preventDefault();
+    const { to } = this.props;
+
+    overwolf.utils.openUrlInDefaultBrowser(to);
+  };
+
+  render() {
+    const { children, classes, to } = this.props;
+    return (
+      <a className={classes.link} href={to} onClick={this.handleClick} target="_blank">
+        {children}
+      </a>
+    );
+  }
+}
+
+ExternalLink.propTypes = {
+  classes: PropTypes.object.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  to: PropTypes.string.isRequired
+};
+
+const ExternalLinkEnhanced = withStyles(styles)(ExternalLink);
+export { ExternalLinkEnhanced as ExternalLink };

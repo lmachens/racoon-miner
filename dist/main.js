@@ -4142,7 +4142,10 @@
       workerStats: workerId => `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`,
       workerHistory: workerId => `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/history`
     },
-    storage: ethereumLogsStorage
+    storage: ethereumLogsStorage,
+    links: {
+      wallet: 'https://www.myetherwallet.com/'
+    }
   };
 
   //import { generateParser } from './_generateParser';
@@ -4169,7 +4172,10 @@
     api: {
       workerStats: `https://supportxmr.com/api/miner/${minerGroup$1}/stats/:workerId`
     },
-    storage: moneroLogsStorage
+    storage: moneroLogsStorage,
+    links: {
+      wallet: 'https://getmonero.org/'
+    }
   };
 
   const getMiner = minerIdentifier => {
@@ -47191,7 +47197,37 @@
     children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
   };
 
-  const enhanced = styles_3(styles$2)(Link$1);
+  const LinkEnhanced = styles_3(styles$2)(Link$1);
+
+  class ExternalLink extends react_1 {
+    constructor(...args) {
+      var _temp;
+
+      return _temp = super(...args), this.handleClick = event => {
+        event.preventDefault();
+        const { to } = this.props;
+
+        overwolf.utils.openUrlInDefaultBrowser(to);
+      }, _temp;
+    }
+
+    render() {
+      const { children, classes, to } = this.props;
+      return react.createElement(
+        'a',
+        { className: classes.link, href: to, onClick: this.handleClick, target: '_blank' },
+        children
+      );
+    }
+  }
+
+  ExternalLink.propTypes = {
+    classes: propTypes.object.isRequired,
+    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+    to: propTypes.string.isRequired
+  };
+
+  const ExternalLinkEnhanced = styles_3(styles$2)(ExternalLink);
 
   var Table_1 = createCommonjsModule(function (module, exports) {
 
@@ -54776,6 +54812,7 @@
           }
         });
       }).then(response => {
+        console.log(response.data);
         dispatch({
           type: RECEIVE_WORKER_STATS,
           data: {
@@ -55923,9 +55960,13 @@
         }),
         react.createElement('br', null),
         react.createElement(
-          Button$2,
-          { color: 'primary', size: 'small' },
-          'Create Wallet'
+          ExternalLinkEnhanced,
+          { to: miner.links.wallet },
+          react.createElement(
+            Button$2,
+            { color: 'primary', size: 'small' },
+            'Create Wallet'
+          )
         )
       );
     }
@@ -103888,7 +103929,7 @@
           'div',
           { className: classes.flex },
           links.map(link => react.createElement(
-            enhanced,
+            LinkEnhanced,
             { key: link.title, to: link.to },
             react.createElement(
               Button$2,

@@ -24,5 +24,8 @@ export const monero = {
   api: {
     workerStats: `https://supportxmr.com/api/miner/${minerGroup}/stats/:workerId`
   },
-  storage: moneroLogsStorage
+  storage: moneroLogsStorage,
+  links: {
+    wallet: 'https://getmonero.org/'
+  }
 };

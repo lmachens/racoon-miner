@@ -42,5 +42,8 @@ export const ethereum = {
     workerHistory: workerId =>
       `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/history`
   },
-  storage: ethereumLogsStorage
+  storage: ethereumLogsStorage,
+  links: {
+    wallet: 'https://www.myetherwallet.com/'
+  }
 };
