@@ -1,28 +1,41 @@
-import { Button, Typography } from '../generic';
+import { Button, Popover, Typography } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { selectMiner, startMining, stopMining } from '../../../store/actions';
 
-import { Metrics } from './_Metrics';
 import PropTypes from 'prop-types';
-import { Stats } from './_Stats';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
 
 class Mining extends Component {
-  handleMiningClick = () => {
-    const { isMining, startMining, stopMining, minerIdentifier } = this.props;
-    if (isMining) stopMining(minerIdentifier);
-    else startMining(minerIdentifier);
+  state = {
+    warningOpen: false
   };
+
+  handleMiningClick = () => {
+    const { address, isMining, startMining, stopMining, minerIdentifier } = this.props;
+    if (isMining) return stopMining(minerIdentifier);
+
+    if (!address) this.setState({ warningOpen: true });
+    startMining(minerIdentifier);
+  };
+
+  handleWarningClose = () => {
+    this.setState({ warningOpen: false });
+  };
+
+  anchorEl = null;
 
   render() {
     const { connecting, errorMsg, miner, isMining } = this.props;
+    const { warningOpen } = this.state;
 
     return (
       <Fragment>
-        <Stats />
         <Button
+          buttonRef={node => {
+            this.anchorEl = node;
+          }}
           color="primary"
           disabled={miner.disabled}
           onClick={this.handleMiningClick}
@@ -38,13 +51,19 @@ class Mining extends Component {
             Error: {errorMsg}
           </Typography>
         )}
-        <Metrics />
+        <Popover anchorEl={this.anchorEl} onClose={this.handleWarningClose} open={warningOpen}>
+          <Typography>
+            You have to enter a valid address to enable payout. If you only want to try out mining,
+            feel free to continue.
+          </Typography>
+        </Popover>
       </Fragment>
     );
   }
 }
 
 Mining.propTypes = {
+  address: PropTypes.string.isRequired,
   connecting: PropTypes.bool.isRequired,
   miner: PropTypes.object.isRequired,
   errorMsg: PropTypes.string,
@@ -55,8 +74,9 @@ Mining.propTypes = {
   minerIdentifier: PropTypes.string.isRequired
 };
 
-const mapStateToProps = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
+const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
   return {
+    address: miners[selectedMinerIdentifier].address,
     connecting: activeMiners[selectedMinerIdentifier].connecting,
     isMining: activeMiners[selectedMinerIdentifier].isMining,
     errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,

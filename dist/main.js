@@ -36052,7 +36052,7 @@
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   });
 
-  var MUI_Button = unwrapExports(Button$1);
+  var Button$2 = unwrapExports(Button$1);
 
   /**
    * Gets the timestamp of the number of milliseconds that have elapsed since
@@ -39657,7 +39657,7 @@
   function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
   });
 
-  var Popover$2 = unwrapExports(Popover$1);
+  var MUI_Popover = unwrapExports(Popover$1);
 
   function createBroadcast (initialState) {
     var listeners = {};
@@ -39973,13 +39973,40 @@
   var styles_2 = styles.createMuiTheme;
   var styles_3 = styles.withStyles;
 
-  const Button$2 = MUI_Button;
-
   const styles$1 = theme => ({
     popoverPaper: {
       padding: theme.spacing.unit * 2
     }
   });
+
+  const Popover$2 = (_ref) => {
+    let { classes, children } = _ref,
+        other = objectWithoutProperties(_ref, ['classes', 'children']);
+    return react.createElement(
+      MUI_Popover,
+      _extends$5({
+        anchorOrigin: {
+          vertical: 'bottom',
+          horizontal: 'center'
+        },
+        classes: {
+          paper: classes.popoverPaper
+        },
+        transformOrigin: {
+          vertical: 'top',
+          horizontal: 'center'
+        }
+      }, other),
+      children
+    );
+  };
+
+  Popover$2.propTypes = {
+    classes: propTypes.object.isRequired,
+    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+    popover: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
+  };
+  const enhancedPopover = styles_3(styles$1)(Popover$2);
 
   class InfoButton extends react_1 {
     constructor(...args) {
@@ -39999,7 +40026,7 @@
     }
 
     render() {
-      const { children, classes, popover } = this.props;
+      const { children, popover } = this.props;
       const { open } = this.state;
 
       return react.createElement(
@@ -40018,23 +40045,8 @@
           children
         ),
         react.createElement(
-          Popover$2,
-          {
-            anchorEl: this.anchorEl,
-            anchorOrigin: {
-              vertical: 'bottom',
-              horizontal: 'center'
-            },
-            classes: {
-              paper: classes.popoverPaper
-            },
-            onClose: this.handleClose,
-            open: open,
-            transformOrigin: {
-              vertical: 'top',
-              horizontal: 'center'
-            }
-          },
+          enhancedPopover,
+          { anchorEl: this.anchorEl, onClose: this.handleClose, open: open },
           popover
         )
       );
@@ -40042,12 +40054,9 @@
   }
 
   InfoButton.propTypes = {
-    classes: propTypes.object.isRequired,
     children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
     popover: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
   };
-
-  const InfoButtonWithStyles = styles_3(styles$1)(InfoButton);
 
   var Card_1 = createCommonjsModule(function (module, exports) {
 
@@ -103640,6 +103649,127 @@
 
   const enhance$2 = compose$1(styles_3(styles$5), connect(mapStateToProps$2, mapDispatchToProps$2))(Miner);
 
+  class Mining extends react_1 {
+    constructor(...args) {
+      var _temp;
+
+      return _temp = super(...args), this.state = {
+        warningOpen: false
+      }, this.handleMiningClick = () => {
+        const { address, isMining, startMining: startMining$$1, stopMining: stopMining$$1, minerIdentifier } = this.props;
+        if (isMining) return stopMining$$1(minerIdentifier);
+
+        if (!address) this.setState({ warningOpen: true });
+        startMining$$1(minerIdentifier);
+      }, this.handleWarningClose = () => {
+        this.setState({ warningOpen: false });
+      }, this.anchorEl = null, _temp;
+    }
+
+    render() {
+      const { connecting, errorMsg, miner, isMining } = this.props;
+      const { warningOpen } = this.state;
+
+      return react.createElement(
+        react_5,
+        null,
+        react.createElement(
+          Button$2,
+          {
+            buttonRef: node => {
+              this.anchorEl = node;
+            },
+            color: 'primary',
+            disabled: miner.disabled,
+            onClick: this.handleMiningClick,
+            variant: 'raised'
+          },
+          react.createElement('img', { src: '/assets/pickaxe.png', style: { width: 24, height: 24, marginRight: 2 } }),
+          isMining && connecting && 'Connecting',
+          isMining && !connecting && 'Stop mining',
+          !isMining && 'Start mining'
+        ),
+        errorMsg && react.createElement(
+          Typography$2,
+          { color: 'error', variant: 'caption' },
+          'Error: ',
+          errorMsg
+        ),
+        react.createElement(
+          enhancedPopover,
+          { anchorEl: this.anchorEl, onClose: this.handleWarningClose, open: warningOpen },
+          react.createElement(
+            Typography$2,
+            null,
+            'You have to enter a valid address to enable payout. If you only want to try out mining, feel free to continue.'
+          )
+        )
+      );
+    }
+  }
+
+  Mining.propTypes = {
+    address: propTypes.string.isRequired,
+    connecting: propTypes.bool.isRequired,
+    miner: propTypes.object.isRequired,
+    errorMsg: propTypes.string,
+    isMining: propTypes.bool.isRequired,
+    startMining: propTypes.func.isRequired,
+    stopMining: propTypes.func.isRequired,
+    selectMiner: propTypes.func.isRequired,
+    minerIdentifier: propTypes.string.isRequired
+  };
+
+  const mapStateToProps$3 = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
+    return {
+      address: miners[selectedMinerIdentifier].address,
+      connecting: activeMiners[selectedMinerIdentifier].connecting,
+      isMining: activeMiners[selectedMinerIdentifier].isMining,
+      errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,
+      miner: getMiner(selectedMinerIdentifier),
+      minerIdentifier: selectedMinerIdentifier
+    };
+  };
+
+  const mapDispatchToProps$3 = dispatch => {
+    return {
+      startMining: bindActionCreators(startMining, dispatch),
+      stopMining: bindActionCreators(stopMining, dispatch),
+      selectMiner: bindActionCreators(selectMiner, dispatch)
+    };
+  };
+
+  const enhance$3 = connect(mapStateToProps$3, mapDispatchToProps$3)(Mining);
+
+  const Status = ({ name, isMining, currentSpeed }) => {
+    return react.createElement(
+      Typography$2,
+      null,
+      name,
+      ': ',
+      currentSpeed,
+      ' MH/s ',
+      isMining ? 'running' : 'stopped'
+    );
+  };
+
+  Status.propTypes = {
+    minerIdentifier: propTypes.string.isRequired,
+    name: propTypes.string.isRequired,
+    isMining: propTypes.bool.isRequired,
+    currentSpeed: propTypes.number.isRequired
+  };
+
+  const mapStateToProps$4 = ({ activeMiners }, { minerIdentifier }) => {
+    return {
+      isMining: activeMiners[minerIdentifier].isMining,
+      currentSpeed: activeMiners[minerIdentifier].currentSpeed,
+      name: getMiner(minerIdentifier).name
+    };
+  };
+
+  const enhance$4 = connect(mapStateToProps$4)(Status);
+
   class Stats extends react_1 {
     constructor(...args) {
       var _temp;
@@ -103681,7 +103811,7 @@
                 react_5,
                 null,
                 react.createElement(
-                  InfoButtonWithStyles,
+                  InfoButton,
                   { popover: react.createElement(
                       Typography$2,
                       null,
@@ -103710,7 +103840,7 @@
                 react_5,
                 null,
                 react.createElement(
-                  InfoButtonWithStyles,
+                  InfoButton,
                   { popover: react.createElement(
                       Typography$2,
                       null,
@@ -103738,7 +103868,7 @@
                 react_5,
                 null,
                 react.createElement(
-                  InfoButtonWithStyles,
+                  InfoButton,
                   { popover: react.createElement(
                       Typography$2,
                       null,
@@ -103747,7 +103877,7 @@
                   'Payout'
                 ),
                 react.createElement(
-                  InfoButtonWithStyles,
+                  InfoButton,
                   {
                     popover: react.createElement(
                       Typography$2,
@@ -103783,7 +103913,7 @@
     fetchWorkerStats: propTypes.func.isRequired
   };
 
-  const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+  const mapStateToProps$5 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
       miner: getMiner(selectedMinerIdentifier),
       minerIdentifier: selectedMinerIdentifier,
@@ -103791,114 +103921,13 @@
     };
   };
 
-  const mapDispatchToProps$3 = dispatch => {
+  const mapDispatchToProps$4 = dispatch => {
     return {
       fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch)
     };
   };
 
-  const enhance$3 = connect(mapStateToProps$3, mapDispatchToProps$3)(Stats);
-
-  class Mining extends react_1 {
-    constructor(...args) {
-      var _temp;
-
-      return _temp = super(...args), this.handleMiningClick = () => {
-        const { isMining, startMining: startMining$$1, stopMining: stopMining$$1, minerIdentifier } = this.props;
-        if (isMining) stopMining$$1(minerIdentifier);else startMining$$1(minerIdentifier);
-      }, _temp;
-    }
-
-    render() {
-      const { connecting, errorMsg, miner, isMining } = this.props;
-
-      return react.createElement(
-        react_5,
-        null,
-        react.createElement(enhance$3, null),
-        react.createElement(
-          Button$2,
-          {
-            color: 'primary',
-            disabled: miner.disabled,
-            onClick: this.handleMiningClick,
-            variant: 'raised'
-          },
-          react.createElement('img', { src: '/assets/pickaxe.png', style: { width: 24, height: 24, marginRight: 2 } }),
-          isMining && connecting && 'Connecting',
-          isMining && !connecting && 'Stop mining',
-          !isMining && 'Start mining'
-        ),
-        errorMsg && react.createElement(
-          Typography$2,
-          { color: 'error', variant: 'caption' },
-          'Error: ',
-          errorMsg
-        ),
-        react.createElement(enhance$1, null)
-      );
-    }
-  }
-
-  Mining.propTypes = {
-    connecting: propTypes.bool.isRequired,
-    miner: propTypes.object.isRequired,
-    errorMsg: propTypes.string,
-    isMining: propTypes.bool.isRequired,
-    startMining: propTypes.func.isRequired,
-    stopMining: propTypes.func.isRequired,
-    selectMiner: propTypes.func.isRequired,
-    minerIdentifier: propTypes.string.isRequired
-  };
-
-  const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
-    return {
-      connecting: activeMiners[selectedMinerIdentifier].connecting,
-      isMining: activeMiners[selectedMinerIdentifier].isMining,
-      errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,
-      miner: getMiner(selectedMinerIdentifier),
-      minerIdentifier: selectedMinerIdentifier
-    };
-  };
-
-  const mapDispatchToProps$4 = dispatch => {
-    return {
-      startMining: bindActionCreators(startMining, dispatch),
-      stopMining: bindActionCreators(stopMining, dispatch),
-      selectMiner: bindActionCreators(selectMiner, dispatch)
-    };
-  };
-
-  const enhance$4 = connect(mapStateToProps$4, mapDispatchToProps$4)(Mining);
-
-  const Status = ({ name, isMining, currentSpeed }) => {
-    return react.createElement(
-      Typography$2,
-      null,
-      name,
-      ': ',
-      currentSpeed,
-      ' MH/s ',
-      isMining ? 'running' : 'stopped'
-    );
-  };
-
-  Status.propTypes = {
-    minerIdentifier: propTypes.string.isRequired,
-    name: propTypes.string.isRequired,
-    isMining: propTypes.bool.isRequired,
-    currentSpeed: propTypes.number.isRequired
-  };
-
-  const mapStateToProps$5 = ({ activeMiners }, { minerIdentifier }) => {
-    return {
-      isMining: activeMiners[minerIdentifier].isMining,
-      currentSpeed: activeMiners[minerIdentifier].currentSpeed,
-      name: getMiner(minerIdentifier).name
-    };
-  };
-
-  const enhance$5 = connect(mapStateToProps$5)(Status);
+  const enhance$5 = connect(mapStateToProps$5, mapDispatchToProps$4)(Stats);
 
   const styles$6 = {
     children: {
@@ -103941,9 +103970,9 @@
         react.createElement(
           'div',
           null,
-          react.createElement(enhance$5, { minerIdentifier: ETHEREUM_MINER }),
+          react.createElement(enhance$4, { minerIdentifier: ETHEREUM_MINER }),
           react.createElement('br', null),
-          react.createElement(enhance$5, { minerIdentifier: MONERO_MINER })
+          react.createElement(enhance$4, { minerIdentifier: MONERO_MINER })
         )
       )
     ),
@@ -105331,7 +105360,9 @@
     null,
     react.createElement(enhance$2, null),
     react.createElement(enhance, null),
-    react.createElement(enhance$4, null)
+    react.createElement(enhance$5, null),
+    react.createElement(enhance$3, null),
+    react.createElement(enhance$1, null)
   );
 
   class Hardware extends react_1 {

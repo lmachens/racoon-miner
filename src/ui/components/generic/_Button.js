@@ -1,17 +1,10 @@
 import React, { Component, Fragment } from 'react';
 
-import MUI_Button from 'material-ui/Button';
+import Button from 'material-ui/Button';
 import { Popover } from './_Popover';
 import PropTypes from 'prop-types';
-import { withStyles } from 'material-ui/styles';
 
-export const Button = MUI_Button;
-
-const styles = theme => ({
-  popoverPaper: {
-    padding: theme.spacing.unit * 2
-  }
-});
+export { Button };
 
 class InfoButton extends Component {
   state = {
@@ -33,7 +26,7 @@ class InfoButton extends Component {
   anchorEl = null;
 
   render() {
-    const { children, classes, popover } = this.props;
+    const { children, popover } = this.props;
     const { open } = this.state;
 
     return (
@@ -48,22 +41,7 @@ class InfoButton extends Component {
         >
           {children}
         </Button>
-        <Popover
-          anchorEl={this.anchorEl}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center'
-          }}
-          classes={{
-            paper: classes.popoverPaper
-          }}
-          onClose={this.handleClose}
-          open={open}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center'
-          }}
-        >
+        <Popover anchorEl={this.anchorEl} onClose={this.handleClose} open={open}>
           {popover}
         </Popover>
       </Fragment>
@@ -72,10 +50,8 @@ class InfoButton extends Component {
 }
 
 InfoButton.propTypes = {
-  classes: PropTypes.object.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   popover: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 };
 
-const InfoButtonWithStyles = withStyles(styles)(InfoButton);
-export { InfoButtonWithStyles as InfoButton };
+export { InfoButton };
