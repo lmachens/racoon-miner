@@ -56065,7 +56065,14 @@
               { position: 'end' },
               react.createElement(
                 InfoButton,
-                { icon: true, popover: isValidAddress ? 'Valid address' : 'Invalid address' },
+                {
+                  icon: true,
+                  popover: react.createElement(
+                    Typography$2,
+                    null,
+                    isValidAddress ? 'Valid address' : 'Invalid address! It should start with 0x and have 42 characters.'
+                  )
+                },
                 isValidAddress ? react.createElement(Done, null) : react.createElement(Error$1, { color: 'error' })
               )
             )
@@ -103618,7 +103625,7 @@
             },
             react.createElement(
               entry_16$1,
-              { height: height - 540 },
+              { height: height - 570 },
               react.createElement(entry_1$1, {
                 format: '.2f',
                 id: 'speed',

@@ -148,7 +148,7 @@ class Metrics extends Component {
             onTimeRangeChanged={this.handleTimeRangeChanged}
             timeRange={timeRange}
           >
-            <ChartRow height={height - 540}>
+            <ChartRow height={height - 570}>
               <YAxis
                 format=".2f"
                 id="speed"

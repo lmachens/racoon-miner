@@ -1,4 +1,11 @@
-import { Button, ExternalLink, InfoButton, InputAdornment, TextField } from '../generic';
+import {
+  Button,
+  ExternalLink,
+  InfoButton,
+  InputAdornment,
+  TextField,
+  Typography
+} from '../generic';
 import React, { Component, Fragment } from 'react';
 
 import Done from 'material-ui-icons/Done';
@@ -39,7 +46,16 @@ class Address extends Component {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <InfoButton icon popover={isValidAddress ? 'Valid address' : 'Invalid address'}>
+                <InfoButton
+                  icon
+                  popover={
+                    <Typography>
+                      {isValidAddress
+                        ? 'Valid address'
+                        : 'Invalid address! It should start with 0x and have 42 characters.'}
+                    </Typography>
+                  }
+                >
                   {isValidAddress ? <Done /> : <Error color="error" />}
                 </InfoButton>
               </InputAdornment>
