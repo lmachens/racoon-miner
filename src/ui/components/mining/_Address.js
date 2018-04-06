@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import { Button, TextField } from '../generic';
+import React, { Component, Fragment } from 'react';
 import { fetchWorkerStats, setMiningAddress } from '../../../store/actions';
 
 import PropTypes from 'prop-types';
-import { TextField } from '../generic';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
@@ -34,15 +34,21 @@ class Address extends Component {
     const { address, miner, isMining } = this.props;
 
     return (
-      <TextField
-        disabled={isMining}
-        fullWidth
-        helperText={`Minimum payment threshold ${miner.minimumPaymentThreshold} ${miner.currency}`}
-        label="Payment Address"
-        margin="normal"
-        onChange={this.handleChange}
-        value={address}
-      />
+      <Fragment>
+        <TextField
+          disabled={isMining}
+          helperText="Your address is used in payouts and to identify your mining progress"
+          label={`${miner.name} address`}
+          margin="normal"
+          onChange={this.handleChange}
+          placeholder="0x0000000000000000000000000000000000000000"
+          value={address}
+        />
+        <br />
+        <Button color="primary" size="small">
+          Create Wallet
+        </Button>
+      </Fragment>
     );
   }
 }

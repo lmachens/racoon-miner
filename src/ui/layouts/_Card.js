@@ -1,4 +1,4 @@
-import { Card, CardContent, Typography } from '../components/generic';
+import { Card, CardActions, CardContent, Typography } from '../components/generic';
 
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -9,19 +9,27 @@ const styles = {
   card: {
     minWidth: 275,
     margin: '20 0'
+  },
+  actions: {
+    justifyContent: 'center',
+    marginTop: -20
   }
 };
 
-const CardLayout = ({ classes, className, children, title }) => (
+const CardLayout = ({ actions, classes, className, children, title }) => (
   <Card className={classNames(classes.card, className)}>
     <CardContent>
-      <Typography variant="subheading">{title}</Typography>
+      <Typography gutterBottom variant="title">
+        {title}
+      </Typography>
       {children}
     </CardContent>
+    {actions && <CardActions className={classes.actions}>{actions}</CardActions>}
   </Card>
 );
 
 CardLayout.propTypes = {
+  actions: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
   classes: PropTypes.object.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   className: PropTypes.string,

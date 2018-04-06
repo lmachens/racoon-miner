@@ -19,7 +19,7 @@ export const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,
   logo: 'assets/ethereum.png',
-  currency: 'Ether',
+  currency: 'ETH',
   minimumPaymentThreshold: 0.05,
   parser: generateParser({
     [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,

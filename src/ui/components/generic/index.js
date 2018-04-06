@@ -6,6 +6,7 @@ export * from './_Grid';
 export * from './_ImageButton';
 export * from './_Input';
 export * from './_Link';
+export * from './_Popover';
 export * from './_Table';
 export * from './_TextField';
 export * from './_Toolbar';

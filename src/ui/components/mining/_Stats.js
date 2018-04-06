@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
+import { Grid, InfoButton, Typography } from '../generic';
+import React, { Component, Fragment } from 'react';
 
 import { CardLayout } from '../../layouts';
-import { Grid } from '../generic';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { fetchWorkerStats } from '../../../store/actions';
+import { getMiner } from '../../../api/mining';
 
 class Stats extends Component {
   componentDidMount() {
@@ -31,20 +32,56 @@ class Stats extends Component {
   };
 
   render() {
-    const { workerStats } = this.props;
+    const { miner, workerStats } = this.props;
 
     return (
       <Grid container justify="center" spacing={16}>
         <Grid item>
-          <CardLayout title="Ø Hashrate">
-            {(workerStats.averageHashrate / 100000 || 0).toFixed(2)} MH/s
+          <CardLayout
+            actions={
+              <Fragment>
+                <InfoButton popover={<Typography>ToDo</Typography>}>Learn More</InfoButton>
+              </Fragment>
+            }
+            title="Ø Hashrate"
+          >
+            <Typography>{(workerStats.averageHashrate / 100000 || 0).toFixed(2)} MH/s</Typography>
           </CardLayout>
         </Grid>
         <Grid item>
-          <CardLayout title="Shares">{workerStats.validShares || 0}</CardLayout>
+          <CardLayout
+            actions={
+              <Fragment>
+                <InfoButton popover={<Typography>ToDo</Typography>}>Learn More</InfoButton>
+              </Fragment>
+            }
+            title="Shares"
+          >
+            <Typography>{workerStats.validShares || 0}</Typography>
+          </CardLayout>
         </Grid>
         <Grid item>
-          <CardLayout title="Unpaid Balance">{0}</CardLayout>
+          <CardLayout
+            actions={
+              <Fragment>
+                <InfoButton popover={<Typography>ToDo</Typography>}>Payout</InfoButton>
+                <InfoButton
+                  popover={
+                    <Typography>
+                      Minimum payment threshold is {miner.minimumPaymentThreshold} {miner.currency}
+                    </Typography>
+                  }
+                >
+                  Learn More
+                </InfoButton>
+              </Fragment>
+            }
+            title="Unpaid Balance"
+          >
+            <Typography>
+              {(0).toFixed(6)} {miner.currency}
+            </Typography>
+          </CardLayout>
         </Grid>
       </Grid>
     );
@@ -52,6 +89,7 @@ class Stats extends Component {
 }
 
 Stats.propTypes = {
+  miner: PropTypes.object.isRequired,
   workerStats: PropTypes.object.isRequired,
   minerIdentifier: PropTypes.string.isRequired,
   fetchWorkerStats: PropTypes.func.isRequired
@@ -59,6 +97,7 @@ Stats.propTypes = {
 
 const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
   return {
+    miner: getMiner(selectedMinerIdentifier),
     minerIdentifier: selectedMinerIdentifier,
     workerStats: miners[selectedMinerIdentifier].workerStats
   };
