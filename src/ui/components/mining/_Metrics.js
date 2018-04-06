@@ -12,6 +12,7 @@ import { TimeRange, TimeSeries } from 'pondjs';
 
 import { Button } from '../generic';
 import PropTypes from 'prop-types';
+import { SpeedLimit } from './_SpeedLimit';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
@@ -21,10 +22,17 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   toolbar: {
-    display: 'flex'
+    display: 'flex',
+    marginBottom: 5,
+    alignItems: 'baseline'
   },
-  flex: {
-    flex: 1
+  flexLeft: {
+    flex: 1,
+    textAlign: 'left'
+  },
+  flexRight: {
+    flex: 1,
+    textAlign: 'right'
   }
 };
 
@@ -132,8 +140,10 @@ class Metrics extends Component {
     return (
       <Fragment>
         <div className={classes.toolbar}>
-          <div className={classes.flex} />
-          <div>
+          <div className={classes.flexLeft} />
+          <div>{false && <SpeedLimit />}</div>
+
+          <div className={classes.flexRight}>
             <Button disabled={liveMode} onClick={this.handleLiveModeClick}>
               Live Mode
             </Button>
@@ -148,7 +158,7 @@ class Metrics extends Component {
             onTimeRangeChanged={this.handleTimeRangeChanged}
             timeRange={timeRange}
           >
-            <ChartRow height={height - 570}>
+            <ChartRow height={height - 586}>
               <YAxis
                 format=".2f"
                 id="speed"

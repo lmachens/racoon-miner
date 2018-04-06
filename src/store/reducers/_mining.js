@@ -7,6 +7,7 @@ import {
   SET_MINING_ADDRESS,
   SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
+  SET_MINING_SPEED_LIMIT,
   SET_PROCESS_ID,
   START_MINING,
   STOP_MINING
@@ -17,6 +18,7 @@ import set from 'lodash/set';
 
 const defaultMinerProps = {
   address: '',
+  speedLimit: 100,
   metrics: {
     fetching: false,
     from: Number.MAX_VALUE,
@@ -40,6 +42,9 @@ export const mining = (
   switch (type) {
     case SET_MINING_ADDRESS:
       set(newState, `miners.${data.minerIdentifier}.address`, data.address);
+      break;
+    case SET_MINING_SPEED_LIMIT:
+      set(newState, `miners.${data.minerIdentifier}.speedLimit`, data.speedLimit);
       break;
     case SELECT_MINER:
       set(newState, `selectedMinerIdentifier`, data);

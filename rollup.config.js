@@ -59,7 +59,8 @@ export default [
             'TableHead'
           ],
           'node_modules/material-ui/Form/index.js': ['FormControl', 'FormHelperText'],
-          'node_modules/material-ui/Input/index.js': ['InputLabel', 'InputAdornment']
+          'node_modules/material-ui/Input/index.js': ['InputLabel', 'InputAdornment'],
+          'node_modules/material-ui/Progress/index.js': ['CircularProgress']
         }
       }),
       babel({

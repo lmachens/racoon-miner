@@ -20,7 +20,7 @@ export const monero = {
   parser: () => {},
   path: '',
   args: '',
-  environmentVariables: JSON.stringify({}),
+  environmentVariables: () => JSON.stringify({}),
   api: {
     workerStats: `https://supportxmr.com/api/miner/${minerGroup}/stats/:workerId`
   },

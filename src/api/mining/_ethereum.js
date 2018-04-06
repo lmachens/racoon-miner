@@ -29,13 +29,14 @@ export const ethereum = {
   path: 'ethminer.exe',
   args: workerId =>
     `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
-  environmentVariables: JSON.stringify({
-    GPU_FORCE_64BIT_PTR: '0',
-    GPU_MAX_HEAP_SIZE: '100',
-    GPU_USE_SYNC_OBJECTS: '1',
-    GPU_MAX_ALLOC_PERCENT: '100',
-    GPU_SINGLE_ALLOC_PERCENT: '100'
-  }),
+  environmentVariables: () =>
+    JSON.stringify({
+      GPU_FORCE_64BIT_PTR: '0',
+      GPU_MAX_HEAP_SIZE: '100',
+      GPU_USE_SYNC_OBJECTS: '1',
+      GPU_MAX_ALLOC_PERCENT: '100',
+      GPU_SINGLE_ALLOC_PERCENT: '100'
+    }),
   api: {
     workerStats: workerId =>
       `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`,

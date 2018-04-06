@@ -8,6 +8,7 @@ export * from './_InfoButton';
 export * from './_Input';
 export * from './_Link';
 export * from './_Popover';
+export * from './_Progress';
 export * from './_Table';
 export * from './_TextField';
 export * from './_Toolbar';

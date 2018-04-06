@@ -4077,6 +4077,7 @@
   const CONNECTING_POOL = 'CONNECTING_POOL';
   const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
   const SELECT_MINER = 'SELECT_MINER';
+  const SET_MINING_SPEED_LIMIT = 'SET_MINING_SPEED_LIMIT';
   const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
   const SET_MINING_SPEED = 'SET_MINING_SPEED';
   const SET_PROCESS_ID = 'SET_PROCESS_ID';
@@ -4131,7 +4132,7 @@
     }),
     path: 'ethminer.exe',
     args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
-    environmentVariables: JSON.stringify({
+    environmentVariables: () => JSON.stringify({
       GPU_FORCE_64BIT_PTR: '0',
       GPU_MAX_HEAP_SIZE: '100',
       GPU_USE_SYNC_OBJECTS: '1',
@@ -4169,7 +4170,7 @@
     parser: () => {},
     path: '',
     args: '',
-    environmentVariables: JSON.stringify({}),
+    environmentVariables: () => JSON.stringify({}),
     api: {
       workerStats: `https://supportxmr.com/api/miner/${minerGroup$1}/stats/:workerId`
     },
@@ -5512,6 +5513,7 @@
 
   const defaultMinerProps = {
     address: '',
+    speedLimit: 100,
     metrics: {
       fetching: false,
       from: Number.MAX_VALUE,
@@ -5532,6 +5534,9 @@
     switch (type) {
       case SET_MINING_ADDRESS:
         set_1(newState, `miners.${data.minerIdentifier}.address`, data.address);
+        break;
+      case SET_MINING_SPEED_LIMIT:
+        set_1(newState, `miners.${data.minerIdentifier}.speedLimit`, data.speedLimit);
         break;
       case SELECT_MINER:
         set_1(newState, `selectedMinerIdentifier`, data);
@@ -47413,6 +47418,532 @@
 
   const ExternalLinkEnhanced = styles_3(styles$2)(ExternalLink);
 
+  var CircularProgress_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.styles = undefined;
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _classnames2 = _interopRequireDefault(classnames);
+
+
+
+  var _withStyles2 = _interopRequireDefault(withStyles_1);
+
+
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var SIZE = 50;
+
+  function getRelativeValue(value, min, max) {
+    var clampedValue = Math.min(Math.max(min, value), max);
+    return (clampedValue - min) / (max - min);
+  }
+
+  function easeOut(t) {
+    t = getRelativeValue(t, 0, 1);
+    // https://gist.github.com/gre/1650294
+    t = (t -= 1) * t * t + 1;
+    return t;
+  }
+
+  function easeIn(t) {
+    return t * t;
+  }
+
+  var styles = exports.styles = function styles(theme) {
+    return {
+      root: {
+        display: 'inline-block'
+      },
+      colorPrimary: {
+        color: theme.palette.primary.main
+      },
+      colorSecondary: {
+        color: theme.palette.secondary.main
+      },
+      svg: {},
+      svgIndeterminate: {
+        animation: 'mui-progress-circular-rotate 1.4s linear infinite'
+      },
+      circle: {
+        stroke: 'currentColor',
+        strokeLinecap: 'round'
+      },
+      circleIndeterminate: {
+        animation: 'mui-progress-circular-dash 1.4s ease-in-out infinite',
+        // Some default value that looks fine waiting for the animation to kicks in.
+        strokeDasharray: '80px, 200px',
+        strokeDashoffset: '0px' // Add the unit to fix a Edge 16 and below bug.
+      },
+      '@keyframes mui-progress-circular-rotate': {
+        '100%': {
+          transform: 'rotate(360deg)'
+        }
+      },
+      '@keyframes mui-progress-circular-dash': {
+        '0%': {
+          strokeDasharray: '1px, 200px',
+          strokeDashoffset: '0px'
+        },
+        '50%': {
+          strokeDasharray: '100px, 200px',
+          strokeDashoffset: '-15px'
+        },
+        '100%': {
+          strokeDasharray: '100px, 200px',
+          strokeDashoffset: '-120px'
+        }
+      }
+    };
+  };
+
+  /**
+   * ## ARIA
+   *
+   * If the progress bar is describing the loading progress of a particular region of a page,
+   * you should use `aria-describedby` to point to the progress bar, and set the `aria-busy`
+   * attribute to `true` on that region until it has finished loading.
+   */
+  function CircularProgress(props) {
+    var _classNames2;
+
+    var classes = props.classes,
+        className = props.className,
+        color = props.color,
+        max = props.max,
+        min = props.min,
+        size = props.size,
+        style = props.style,
+        thickness = props.thickness,
+        value = props.value,
+        variant = props.variant,
+        other = (0, _objectWithoutProperties3.default)(props, ['classes', 'className', 'color', 'max', 'min', 'size', 'style', 'thickness', 'value', 'variant']);
+
+
+    var circleStyle = {};
+    var rootStyle = {};
+    var rootProps = {};
+
+    if (variant === 'determinate' || variant === 'static') {
+      var relVal = getRelativeValue(value, min, max) * 100;
+      var circumference = 2 * Math.PI * (SIZE / 2 - 5);
+      circleStyle.strokeDasharray = circumference.toFixed(3);
+      rootProps['aria-valuenow'] = Math.round(relVal);
+
+      if (variant === 'static') {
+        circleStyle.strokeDashoffset = ((100 - relVal) / 100 * circumference).toFixed(3) + 'px';
+        rootStyle.transform = 'rotate(-90deg)';
+      } else {
+        circleStyle.strokeDashoffset = (easeIn((100 - relVal) / 100) * circumference).toFixed(3) + 'px';
+        rootStyle.transform = 'rotate(' + (easeOut(relVal / 70) * 270).toFixed(3) + 'deg)';
+      }
+    }
+
+    return _react2.default.createElement(
+      'div',
+      (0, _extends3.default)({
+        className: (0, _classnames2.default)(classes.root, (0, _defineProperty3.default)({}, classes['color' + (0, helpers.capitalize)(color)], color !== 'inherit'), className),
+        style: (0, _extends3.default)({ width: size, height: size }, rootStyle, style),
+        role: 'progressbar'
+      }, rootProps, other),
+      _react2.default.createElement(
+        'svg',
+        {
+          className: (0, _classnames2.default)(classes.svg, (_classNames2 = {}, (0, _defineProperty3.default)(_classNames2, classes.svgIndeterminate, variant === 'indeterminate'), (0, _defineProperty3.default)(_classNames2, classes.svgStatic, variant === 'static'), _classNames2)),
+          viewBox: '0 0 ' + SIZE + ' ' + SIZE
+        },
+        _react2.default.createElement('circle', {
+          className: (0, _classnames2.default)(classes.circle, (0, _defineProperty3.default)({}, classes.circleIndeterminate, variant === 'indeterminate')),
+          style: circleStyle,
+          cx: SIZE / 2,
+          cy: SIZE / 2,
+          r: SIZE / 2 - 5,
+          fill: 'none',
+          strokeWidth: thickness
+        })
+      )
+    );
+  }
+
+  CircularProgress.propTypes = {
+    /**
+     * Useful to extend the style applied to components.
+     */
+    classes: _propTypes2.default.object.isRequired,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * The color of the component. It supports those theme colors that make sense for this component.
+     */
+    color: _propTypes2.default.oneOf(['primary', 'secondary', 'inherit']),
+    /**
+     * The max value of progress in determinate variant.
+     */
+    max: _propTypes2.default.number,
+    /**
+     * The min value of progress in determinate variant.
+     */
+    min: _propTypes2.default.number,
+    /**
+     * The size of the circle.
+     */
+    size: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
+    /**
+     * @ignore
+     */
+    style: _propTypes2.default.object,
+    /**
+     * The thickness of the circle.
+     */
+    thickness: _propTypes2.default.number,
+    /**
+     * The value of the progress indicator for the determinate and static variants.
+     * Value between 0 and 100.
+     */
+    value: _propTypes2.default.number,
+    /**
+     * The variant of progress indicator. Use indeterminate
+     * when there is no progress value.
+     */
+    variant: _propTypes2.default.oneOf(['determinate', 'indeterminate', 'static'])
+  };
+
+  CircularProgress.defaultProps = {
+    color: 'primary',
+    max: 100,
+    min: 0,
+    size: 40,
+    thickness: 3.6,
+    value: 0,
+    variant: 'indeterminate'
+  };
+
+  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiCircularProgress', flip: false })(CircularProgress);
+  });
+
+  unwrapExports(CircularProgress_1);
+  var CircularProgress_2 = CircularProgress_1.styles;
+
+  var LinearProgress_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.styles = undefined;
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _classnames2 = _interopRequireDefault(classnames);
+
+
+
+  var _warning2 = _interopRequireDefault(browser);
+
+
+
+  var _withStyles2 = _interopRequireDefault(withStyles_1);
+
+
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var TRANSITION_DURATION = 4; // 400ms
+
+  var styles = exports.styles = function styles(theme) {
+    return {
+      root: {
+        position: 'relative',
+        overflow: 'hidden',
+        height: 5
+      },
+      colorPrimary: {
+        backgroundColor: (0, colorManipulator.lighten)(theme.palette.primary.light, 0.6)
+      },
+      colorSecondary: {
+        backgroundColor: (0, colorManipulator.lighten)(theme.palette.secondary.light, 0.4)
+      },
+      buffer: {
+        backgroundColor: 'transparent'
+      },
+      query: {
+        transform: 'rotate(180deg)'
+      },
+      dashed: {
+        position: 'absolute',
+        marginTop: 0,
+        height: '100%',
+        width: '100%',
+        animation: 'buffer 3s infinite linear'
+      },
+      dashedColorPrimary: {
+        backgroundImage: 'radial-gradient(' + (0, colorManipulator.lighten)(theme.palette.primary.light, 0.6) + ' 0%, ' + (0, colorManipulator.lighten)(theme.palette.primary.light, 0.6) + ' 16%, transparent 42%)',
+        backgroundSize: '10px 10px',
+        backgroundPosition: '0px -23px'
+      },
+      dashedColorSecondary: {
+        backgroundImage: 'radial-gradient(' + (0, colorManipulator.lighten)(theme.palette.secondary.light, 0.4) + ' 0%, ' + (0, colorManipulator.lighten)(theme.palette.secondary.light, 0.6) + ' 16%, transparent 42%)',
+        backgroundSize: '10px 10px',
+        backgroundPosition: '0px -23px'
+      },
+      bar: {
+        width: '100%',
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        top: 0,
+        transition: 'transform 0.2s linear',
+        transformOrigin: 'left'
+      },
+      barColorPrimary: {
+        backgroundColor: theme.palette.primary.main
+      },
+      barColorSecondary: {
+        backgroundColor: theme.palette.secondary.main
+      },
+      bar1Indeterminate: {
+        width: 'auto',
+        willChange: 'left, right',
+        animation: 'mui-indeterminate1 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite'
+      },
+      bar2Indeterminate: {
+        width: 'auto',
+        willChange: 'left, right',
+        animation: 'mui-indeterminate2 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite',
+        animationDelay: '1.15s'
+      },
+      bar1Determinate: {
+        willChange: 'transform',
+        transition: 'transform .' + TRANSITION_DURATION + 's linear'
+      },
+      bar1Buffer: {
+        zIndex: 1,
+        transition: 'transform .' + TRANSITION_DURATION + 's linear'
+      },
+      bar2Buffer: {
+        transition: 'transform .' + TRANSITION_DURATION + 's linear'
+      },
+      // Legends:
+      // || represents the viewport
+      // -  represents a light background
+      // x  represents a dark background
+      '@keyframes mui-indeterminate1': {
+        //  |-----|---x-||-----||-----|
+        '0%': {
+          left: '-35%',
+          right: '100%'
+        },
+        //  |-----|-----||-----||xxxx-|
+        '60%': {
+          left: '100%',
+          right: '-90%'
+        },
+        '100%': {
+          left: '100%',
+          right: '-90%'
+        }
+      },
+      '@keyframes mui-indeterminate2': {
+        //  |xxxxx|xxxxx||-----||-----|
+        '0%': {
+          left: '-200%',
+          right: '100%'
+        },
+        //  |-----|-----||-----||-x----|
+        '60%': {
+          left: '107%',
+          right: '-8%'
+        },
+        '100%': {
+          left: '107%',
+          right: '-8%'
+        }
+      },
+      '@keyframes buffer': {
+        '0%': {
+          opacity: 1,
+          backgroundPosition: '0px -23px'
+        },
+        '50%': {
+          opacity: 0,
+          backgroundPosition: '0px -23px'
+        },
+        '100%': {
+          opacity: 1,
+          backgroundPosition: '-200px -23px'
+        }
+      }
+    };
+  };
+
+  /**
+   * ## ARIA
+   *
+   * If the progress bar is describing the loading progress of a particular region of a page,
+   * you should use `aria-describedby` to point to the progress bar, and set the `aria-busy`
+   * attribute to `true` on that region until it has finished loading.
+   */
+  function LinearProgress(props) {
+    var _classNames, _classNames2, _classNames3, _classNames4;
+
+    var classes = props.classes,
+        classNameProp = props.className,
+        color = props.color,
+        value = props.value,
+        valueBuffer = props.valueBuffer,
+        variant = props.variant,
+        other = (0, _objectWithoutProperties3.default)(props, ['classes', 'className', 'color', 'value', 'valueBuffer', 'variant']);
+
+
+    var className = (0, _classnames2.default)(classes.root, (_classNames = {}, (0, _defineProperty3.default)(_classNames, classes.colorPrimary, color === 'primary'), (0, _defineProperty3.default)(_classNames, classes.colorSecondary, color === 'secondary'), (0, _defineProperty3.default)(_classNames, classes.buffer, variant === 'buffer'), (0, _defineProperty3.default)(_classNames, classes.query, variant === 'query'), _classNames), classNameProp);
+    var dashedClass = (0, _classnames2.default)(classes.dashed, (_classNames2 = {}, (0, _defineProperty3.default)(_classNames2, classes.dashedColorPrimary, color === 'primary'), (0, _defineProperty3.default)(_classNames2, classes.dashedColorSecondary, color === 'secondary'), _classNames2));
+    var bar1ClassName = (0, _classnames2.default)(classes.bar, (_classNames3 = {}, (0, _defineProperty3.default)(_classNames3, classes.barColorPrimary, color === 'primary'), (0, _defineProperty3.default)(_classNames3, classes.barColorSecondary, color === 'secondary'), (0, _defineProperty3.default)(_classNames3, classes.bar1Indeterminate, variant === 'indeterminate' || variant === 'query'), (0, _defineProperty3.default)(_classNames3, classes.bar1Determinate, variant === 'determinate'), (0, _defineProperty3.default)(_classNames3, classes.bar1Buffer, variant === 'buffer'), _classNames3));
+    var bar2ClassName = (0, _classnames2.default)(classes.bar, (_classNames4 = {}, (0, _defineProperty3.default)(_classNames4, classes.barColorPrimary, color === 'primary' && variant !== 'buffer'), (0, _defineProperty3.default)(_classNames4, classes.colorPrimary, color === 'primary' && variant === 'buffer'), (0, _defineProperty3.default)(_classNames4, classes.barColorSecondary, color === 'secondary' && variant !== 'buffer'), (0, _defineProperty3.default)(_classNames4, classes.colorSecondary, color === 'secondary' && variant === 'buffer'), (0, _defineProperty3.default)(_classNames4, classes.bar2Indeterminate, variant === 'indeterminate' || variant === 'query'), (0, _defineProperty3.default)(_classNames4, classes.bar2Buffer, variant === 'buffer'), _classNames4));
+    var rootProps = {};
+    var inlineStyles = { bar1: {}, bar2: {} };
+
+    if (variant === 'determinate' || variant === 'buffer') {
+      if (value !== undefined) {
+        rootProps['aria-valuenow'] = Math.round(value);
+        inlineStyles.bar1.transform = 'scaleX(' + value / 100 + ')';
+      } else {
+        (0, _warning2.default)(false, 'Material-UI: you need to provide a value property ' + 'when using the determinate or buffer variant of LinearProgress .');
+      }
+    }
+    if (variant === 'buffer') {
+      if (valueBuffer !== undefined) {
+        inlineStyles.bar2.transform = 'scaleX(' + (valueBuffer || 0) / 100 + ')';
+      } else {
+        (0, _warning2.default)(false, 'Material-UI: you need to provide a valueBuffer property ' + 'when using the buffer variant of LinearProgress.');
+      }
+    }
+
+    return _react2.default.createElement(
+      'div',
+      (0, _extends3.default)({ className: className, role: 'progressbar' }, rootProps, other),
+      variant === 'buffer' ? _react2.default.createElement('div', { className: dashedClass }) : null,
+      _react2.default.createElement('div', { className: bar1ClassName, style: inlineStyles.bar1 }),
+      variant === 'determinate' ? null : _react2.default.createElement('div', { className: bar2ClassName, style: inlineStyles.bar2 })
+    );
+  }
+
+  LinearProgress.propTypes = {
+    /**
+     * Useful to extend the style applied to components.
+     */
+    classes: _propTypes2.default.object.isRequired,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * The color of the component. It supports those theme colors that make sense for this component.
+     */
+    color: _propTypes2.default.oneOf(['primary', 'secondary']),
+    /**
+     * The value of the progress indicator for the determinate and buffer variants.
+     * Value between 0 and 100.
+     */
+    value: _propTypes2.default.number,
+    /**
+     * The value for the buffer variant.
+     * Value between 0 and 100.
+     */
+    valueBuffer: _propTypes2.default.number,
+    /**
+     * The variant of progress indicator. Use indeterminate or query
+     * when there is no progress value.
+     */
+    variant: _propTypes2.default.oneOf(['determinate', 'indeterminate', 'buffer', 'query'])
+  };
+
+  LinearProgress.defaultProps = {
+    color: 'primary',
+    variant: 'indeterminate'
+  };
+
+  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiLinearProgress' })(LinearProgress);
+  });
+
+  unwrapExports(LinearProgress_1);
+  var LinearProgress_2 = LinearProgress_1.styles;
+
+  var Progress = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  Object.defineProperty(exports, 'CircularProgress', {
+    enumerable: true,
+    get: function get() {
+      return _interopRequireDefault(CircularProgress_1).default;
+    }
+  });
+
+
+
+  Object.defineProperty(exports, 'LinearProgress', {
+    enumerable: true,
+    get: function get() {
+      return _interopRequireDefault(LinearProgress_1).default;
+    }
+  });
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  });
+
+  unwrapExports(Progress);
+  var Progress_1 = Progress.CircularProgress;
+
   var Table_1 = createCommonjsModule(function (module, exports) {
 
   Object.defineProperty(exports, "__esModule", {
@@ -55861,6 +56392,15 @@
     };
   };
 
+  const setMiningSpeedLimit = (minerIdentifier, speedLimit) => {
+    return dispatch => {
+      dispatch({
+        type: SET_MINING_SPEED_LIMIT,
+        data: { speedLimit, minerIdentifier }
+      });
+    };
+  };
+
   const selectMiner = minerIdentifier => {
     return dispatch => {
       dispatch({
@@ -55958,7 +56498,9 @@
         }
       };
       processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-      processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
+      //const speedLimit = miners[minerIdentifier].speedLimit;
+
+      processManager.launchProcess(path, args(address), environmentVariables(), true, ({ data }) => {
         console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
         dispatch({
           type: SET_PROCESS_ID,
@@ -103432,6 +103974,75 @@
   var entry_22$1 = entry$2.BarChart;
   var entry_23$1 = entry$2.AreaChart;
 
+  class SpeedLimit extends react_1 {
+    constructor(...args) {
+      var _temp;
+
+      return _temp = super(...args), this.handleChange = event => {
+        const { setMiningSpeedLimit: setMiningSpeedLimit$$1, minerIdentifier } = this.props;
+
+        const speedLimit = parseInt(event.target.value);
+        if (speedLimit > 0 && speedLimit < 101) setMiningSpeedLimit$$1(minerIdentifier, speedLimit);
+      }, _temp;
+    }
+
+    render() {
+      const { speedLimit, isMining } = this.props;
+      return react.createElement(TextField$2, {
+        disabled: isMining,
+        InputProps: {
+          startAdornment: react.createElement(
+            Input_2$1,
+            { position: 'start' },
+            react.createElement(
+              Typography$2,
+              { variant: 'caption' },
+              'Speed:'
+            )
+          ),
+          endAdornment: react.createElement(
+            Input_2$1,
+            { position: 'end' },
+            react.createElement(
+              Typography$2,
+              { variant: 'caption' },
+              '%'
+            )
+          ),
+          style: { width: 105 }
+        },
+        inputProps: { min: 1, max: 100, style: { textAlign: 'center' } },
+        margin: 'normal',
+        onChange: this.handleChange,
+        type: 'number',
+        value: speedLimit
+      });
+    }
+  }
+
+  SpeedLimit.propTypes = {
+    setMiningSpeedLimit: propTypes.func.isRequired,
+    minerIdentifier: propTypes.string.isRequired,
+    isMining: propTypes.bool.isRequired,
+    speedLimit: propTypes.number.isRequired
+  };
+
+  const mapStateToProps$1 = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
+    return {
+      minerIdentifier: selectedMinerIdentifier,
+      speedLimit: miners[selectedMinerIdentifier].speedLimit,
+      isMining: activeMiners[selectedMinerIdentifier].isMining
+    };
+  };
+
+  const mapDispatchToProps$1 = dispatch => {
+    return {
+      setMiningSpeedLimit: bindActionCreators(setMiningSpeedLimit, dispatch)
+    };
+  };
+
+  const SpeedLimitEnhance = connect(mapStateToProps$1, mapDispatchToProps$1)(SpeedLimit);
+
   /** Error message constants. */
   var FUNC_ERROR_TEXT$2 = 'Expected a function';
 
@@ -103501,10 +104112,17 @@
 
   const styles$4 = {
     toolbar: {
-      display: 'flex'
+      display: 'flex',
+      marginBottom: 5,
+      alignItems: 'baseline'
     },
-    flex: {
-      flex: 1
+    flexLeft: {
+      flex: 1,
+      textAlign: 'left'
+    },
+    flexRight: {
+      flex: 1,
+      textAlign: 'right'
     }
   };
 
@@ -103600,10 +104218,15 @@
         react.createElement(
           'div',
           { className: classes.toolbar },
-          react.createElement('div', { className: classes.flex }),
+          react.createElement('div', { className: classes.flexLeft }),
           react.createElement(
             'div',
             null,
+            false && react.createElement(SpeedLimitEnhance, null)
+          ),
+          react.createElement(
+            'div',
+            { className: classes.flexRight },
             react.createElement(
               Button$2,
               { disabled: liveMode, onClick: this.handleLiveModeClick },
@@ -103625,7 +104248,7 @@
             },
             react.createElement(
               entry_16$1,
-              { height: height - 570 },
+              { height: height - 586 },
               react.createElement(entry_1$1, {
                 format: '.2f',
                 id: 'speed',
@@ -103676,7 +104299,7 @@
     isFetchingMetrics: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners }, activeMiners }) => {
+  const mapStateToProps$2 = ({ mining: { selectedMinerIdentifier, miners }, activeMiners }) => {
     return {
       currentSpeed: activeMiners[selectedMinerIdentifier].currentSpeed,
       isMining: activeMiners[selectedMinerIdentifier].isMining,
@@ -103686,13 +104309,13 @@
     };
   };
 
-  const mapDispatchToProps$1 = dispatch => {
+  const mapDispatchToProps$2 = dispatch => {
     return {
       fetchMetrics: bindActionCreators(fetchMetrics, dispatch)
     };
   };
 
-  const enhance$1 = compose$1(styles_3(styles$4), connect(mapStateToProps$1, mapDispatchToProps$1))(Metrics);
+  const enhance$1 = compose$1(styles_3(styles$4), connect(mapStateToProps$2, mapDispatchToProps$2))(Metrics);
 
   const styles$5 = {
     imageButton: {
@@ -103752,20 +104375,20 @@
     selectMiner: propTypes.func.isRequired
   };
 
-  const mapStateToProps$2 = ({ mining: { selectedMinerIdentifier } }) => {
+  const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier } }) => {
     return {
       selectedMinerIdentifier
     };
   };
 
-  const mapDispatchToProps$2 = dispatch => {
+  const mapDispatchToProps$3 = dispatch => {
     return {
       fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch),
       selectMiner: bindActionCreators(selectMiner, dispatch)
     };
   };
 
-  const enhance$2 = compose$1(styles_3(styles$5), connect(mapStateToProps$2, mapDispatchToProps$2))(Miner);
+  const enhance$2 = compose$1(styles_3(styles$5), connect(mapStateToProps$3, mapDispatchToProps$3))(Miner);
 
   class Mining extends react_1 {
     constructor(...args) {
@@ -103838,7 +104461,7 @@
     minerIdentifier: propTypes.string.isRequired
   };
 
-  const mapStateToProps$3 = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
+  const mapStateToProps$4 = ({ mining: { miners, selectedMinerIdentifier }, activeMiners }) => {
     return {
       address: miners[selectedMinerIdentifier].address,
       connecting: activeMiners[selectedMinerIdentifier].connecting,
@@ -103849,7 +104472,7 @@
     };
   };
 
-  const mapDispatchToProps$3 = dispatch => {
+  const mapDispatchToProps$4 = dispatch => {
     return {
       startMining: bindActionCreators(startMining, dispatch),
       stopMining: bindActionCreators(stopMining, dispatch),
@@ -103857,7 +104480,7 @@
     };
   };
 
-  const enhance$3 = connect(mapStateToProps$3, mapDispatchToProps$3)(Mining);
+  const enhance$3 = connect(mapStateToProps$4, mapDispatchToProps$4)(Mining);
 
   const Status = ({ name, isMining, currentSpeed }) => {
     return react.createElement(
@@ -103878,7 +104501,7 @@
     currentSpeed: propTypes.number.isRequired
   };
 
-  const mapStateToProps$4 = ({ activeMiners }, { minerIdentifier }) => {
+  const mapStateToProps$5 = ({ activeMiners }, { minerIdentifier }) => {
     return {
       isMining: activeMiners[minerIdentifier].isMining,
       currentSpeed: activeMiners[minerIdentifier].currentSpeed,
@@ -103886,7 +104509,7 @@
     };
   };
 
-  const enhance$4 = connect(mapStateToProps$4)(Status);
+  const enhance$4 = connect(mapStateToProps$5)(Status);
 
   class Stats extends react_1 {
     constructor(...args) {
@@ -104031,7 +104654,7 @@
     fetchWorkerStats: propTypes.func.isRequired
   };
 
-  const mapStateToProps$5 = ({ mining: { selectedMinerIdentifier, miners } }) => {
+  const mapStateToProps$6 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
       miner: getMiner(selectedMinerIdentifier),
       minerIdentifier: selectedMinerIdentifier,
@@ -104039,13 +104662,13 @@
     };
   };
 
-  const mapDispatchToProps$4 = dispatch => {
+  const mapDispatchToProps$5 = dispatch => {
     return {
       fetchWorkerStats: bindActionCreators(fetchWorkerStats, dispatch)
     };
   };
 
-  const enhance$5 = connect(mapStateToProps$5, mapDispatchToProps$4)(Stats);
+  const enhance$5 = connect(mapStateToProps$6, mapDispatchToProps$5)(Stats);
 
   const styles$6 = {
     children: {
@@ -105533,20 +106156,20 @@
     stopTrackingHardwareInfo: propTypes.func.isRequired
   };
 
-  const mapStateToProps$6 = ({ hardwareInfo }) => {
+  const mapStateToProps$7 = ({ hardwareInfo }) => {
     return {
       hardwareInfo
     };
   };
 
-  const mapDispatchToProps$5 = dispatch => {
+  const mapDispatchToProps$6 = dispatch => {
     return {
       trackHardwareInfo: bindActionCreators(trackHardwareInfo, dispatch),
       stopTrackingHardwareInfo: bindActionCreators(stopTrackingHardwareInfo, dispatch)
     };
   };
 
-  const enhance$9 = connect(mapStateToProps$6, mapDispatchToProps$5)(Hardware);
+  const enhance$9 = connect(mapStateToProps$7, mapDispatchToProps$6)(Hardware);
 
   class System extends react_1 {
     render() {
