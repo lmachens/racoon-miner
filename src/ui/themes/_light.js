@@ -2,6 +2,12 @@ import { createMuiTheme } from 'material-ui/styles';
 
 export const light = createMuiTheme({
   palette: {
-    type: 'light'
+    type: 'light',
+    primary: {
+      light: '#ffa140',
+      main: '#ef7102',
+      dark: '#b54200',
+      contrastText: '#fff'
+    }
   }
 });

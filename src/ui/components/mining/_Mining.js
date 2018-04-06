@@ -22,7 +22,13 @@ class Mining extends Component {
     return (
       <Fragment>
         <Stats />
-        <Button disabled={miner.disabled} onClick={this.handleMiningClick}>
+        <Button
+          color="primary"
+          disabled={miner.disabled}
+          onClick={this.handleMiningClick}
+          variant="raised"
+        >
+          <img src="/assets/pickaxe.png" style={{ width: 24, height: 24, marginRight: 2 }} />
           {isMining ? 'Stop mining' : 'Start mining'}
         </Button>
         {errorMsg && (
