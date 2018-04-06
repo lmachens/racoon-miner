@@ -1,1 +1,1 @@
-export { default as Input, InputLabel } from 'material-ui/Input';
+export { default as Input, InputLabel, InputAdornment } from 'material-ui/Input';

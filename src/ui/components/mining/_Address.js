@@ -1,7 +1,9 @@
-import { Button, ExternalLink, TextField } from '../generic';
+import { Button, ExternalLink, IconButton, InputAdornment, TextField } from '../generic';
 import React, { Component, Fragment } from 'react';
 import { fetchWorkerStats, setMiningAddress } from '../../../store/actions';
 
+import Done from 'material-ui-icons/Done';
+import Error from 'material-ui-icons/Error';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
@@ -17,20 +19,12 @@ const styles = {
 };
 
 class Address extends Component {
-  state = {
-    validAddress: true
-  };
-
   handleChange = event => {
     const { setMiningAddress, miner, minerIdentifier } = this.props;
 
     const address = event.target.value;
     setMiningAddress(minerIdentifier, address);
-    const validAddress = !address || miner.isValidAddress(address);
-
-    this.setState({
-      validAddress
-    });
+    const validAddress = miner.isValidAddress(address);
 
     if (validAddress) this.updateWorkerStats();
   };
@@ -43,14 +37,21 @@ class Address extends Component {
 
   render() {
     const { address, miner, isMining } = this.props;
-    const { validAddress } = this.state;
 
     return (
       <Fragment>
         <TextField
           disabled={isMining}
-          error={!validAddress}
           helperText="Your address is used in payouts and to identify your mining progress"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton aria-label="Valid state">
+                  {miner.isValidAddress(address) ? <Done /> : <Error color="error" />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
           label={`${miner.name} address`}
           margin="normal"
           onChange={this.handleChange}

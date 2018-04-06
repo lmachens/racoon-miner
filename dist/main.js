@@ -40010,6 +40010,176 @@
   };
   const enhancedPopover = styles_3(styles$1)(Popover$2);
 
+  var IconButton_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.styles = undefined;
+
+
+
+  var _extends3 = _interopRequireDefault(_extends$6);
+
+
+
+  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
+
+
+
+  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+  var _classnames2 = _interopRequireDefault(classnames);
+
+
+
+  var _withStyles2 = _interopRequireDefault(withStyles_1);
+
+
+
+  var _ButtonBase2 = _interopRequireDefault(ButtonBase$1);
+
+
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  // @inheritedComponent ButtonBase
+
+  var styles = exports.styles = function styles(theme) {
+    return {
+      root: {
+        textAlign: 'center',
+        flex: '0 0 auto',
+        fontSize: theme.typography.pxToRem(24),
+        width: 48,
+        height: 48,
+        padding: 0,
+        borderRadius: '50%',
+        color: theme.palette.action.active,
+        transition: theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest
+        })
+      },
+      colorInherit: {
+        color: 'inherit'
+      },
+      colorPrimary: {
+        color: theme.palette.primary.main
+      },
+      colorSecondary: {
+        color: theme.palette.secondary.main
+      },
+      disabled: {
+        color: theme.palette.action.disabled
+      },
+      label: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'inherit',
+        justifyContent: 'inherit'
+      }
+    };
+  };
+
+  /**
+   * Refer to the [Icons](/style/icons) section of the documentation
+   * regarding the available icon options.
+   */
+  function IconButton(props) {
+    var _classNames;
+
+    var children = props.children,
+        classes = props.classes,
+        className = props.className,
+        color = props.color,
+        disabled = props.disabled,
+        other = (0, _objectWithoutProperties3.default)(props, ['children', 'classes', 'className', 'color', 'disabled']);
+
+
+    return _react2.default.createElement(
+      _ButtonBase2.default,
+      (0, _extends3.default)({
+        className: (0, _classnames2.default)(classes.root, (_classNames = {}, (0, _defineProperty3.default)(_classNames, classes['color' + (0, helpers.capitalize)(color)], color !== 'default'), (0, _defineProperty3.default)(_classNames, classes.disabled, disabled), _classNames), className),
+        centerRipple: true,
+        focusRipple: true,
+        disabled: disabled
+      }, other),
+      _react2.default.createElement(
+        'span',
+        { className: classes.label },
+        children
+      )
+    );
+  }
+
+  IconButton.propTypes = {
+    /**
+     * The icon element.
+     */
+    children: _propTypes2.default.node,
+    /**
+     * Useful to extend the style applied to components.
+     */
+    classes: _propTypes2.default.object.isRequired,
+    /**
+     * @ignore
+     */
+    className: _propTypes2.default.string,
+    /**
+     * The color of the component. It supports those theme colors that make sense for this component.
+     */
+    color: _propTypes2.default.oneOf(['default', 'inherit', 'primary', 'secondary']),
+    /**
+     * If `true`, the button will be disabled.
+     */
+    disabled: _propTypes2.default.bool,
+    /**
+     * If `true`, the ripple will be disabled.
+     */
+    disableRipple: _propTypes2.default.bool
+  };
+
+  IconButton.defaultProps = {
+    color: 'default',
+    disabled: false
+  };
+
+  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiIconButton' })(IconButton);
+  });
+
+  unwrapExports(IconButton_1);
+  var IconButton_2 = IconButton_1.styles;
+
+  var IconButton$1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _interopRequireDefault(IconButton_1).default;
+    }
+  });
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+  });
+
+  var IconButton$2 = unwrapExports(IconButton$1);
+
   class InfoButton extends react_1 {
     constructor(...args) {
       var _temp;
@@ -44319,6 +44489,7 @@
 
   unwrapExports(Input$1);
   var Input_1$1 = Input$1.InputLabel;
+  var Input_2$1 = Input$1.InputAdornment;
 
   /**
    * Copyright (c) 2013-present, Facebook, Inc.
@@ -51023,176 +51194,6 @@
 
   unwrapExports(KeyboardArrowRight_1);
 
-  var IconButton_1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.styles = undefined;
-
-
-
-  var _extends3 = _interopRequireDefault(_extends$6);
-
-
-
-  var _defineProperty3 = _interopRequireDefault(defineProperty$5);
-
-
-
-  var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
-
-
-
-  var _react2 = _interopRequireDefault(react);
-
-
-
-  var _propTypes2 = _interopRequireDefault(propTypes);
-
-
-
-  var _classnames2 = _interopRequireDefault(classnames);
-
-
-
-  var _withStyles2 = _interopRequireDefault(withStyles_1);
-
-
-
-  var _ButtonBase2 = _interopRequireDefault(ButtonBase$1);
-
-
-
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-  // @inheritedComponent ButtonBase
-
-  var styles = exports.styles = function styles(theme) {
-    return {
-      root: {
-        textAlign: 'center',
-        flex: '0 0 auto',
-        fontSize: theme.typography.pxToRem(24),
-        width: 48,
-        height: 48,
-        padding: 0,
-        borderRadius: '50%',
-        color: theme.palette.action.active,
-        transition: theme.transitions.create('background-color', {
-          duration: theme.transitions.duration.shortest
-        })
-      },
-      colorInherit: {
-        color: 'inherit'
-      },
-      colorPrimary: {
-        color: theme.palette.primary.main
-      },
-      colorSecondary: {
-        color: theme.palette.secondary.main
-      },
-      disabled: {
-        color: theme.palette.action.disabled
-      },
-      label: {
-        width: '100%',
-        display: 'flex',
-        alignItems: 'inherit',
-        justifyContent: 'inherit'
-      }
-    };
-  };
-
-  /**
-   * Refer to the [Icons](/style/icons) section of the documentation
-   * regarding the available icon options.
-   */
-  function IconButton(props) {
-    var _classNames;
-
-    var children = props.children,
-        classes = props.classes,
-        className = props.className,
-        color = props.color,
-        disabled = props.disabled,
-        other = (0, _objectWithoutProperties3.default)(props, ['children', 'classes', 'className', 'color', 'disabled']);
-
-
-    return _react2.default.createElement(
-      _ButtonBase2.default,
-      (0, _extends3.default)({
-        className: (0, _classnames2.default)(classes.root, (_classNames = {}, (0, _defineProperty3.default)(_classNames, classes['color' + (0, helpers.capitalize)(color)], color !== 'default'), (0, _defineProperty3.default)(_classNames, classes.disabled, disabled), _classNames), className),
-        centerRipple: true,
-        focusRipple: true,
-        disabled: disabled
-      }, other),
-      _react2.default.createElement(
-        'span',
-        { className: classes.label },
-        children
-      )
-    );
-  }
-
-  IconButton.propTypes = {
-    /**
-     * The icon element.
-     */
-    children: _propTypes2.default.node,
-    /**
-     * Useful to extend the style applied to components.
-     */
-    classes: _propTypes2.default.object.isRequired,
-    /**
-     * @ignore
-     */
-    className: _propTypes2.default.string,
-    /**
-     * The color of the component. It supports those theme colors that make sense for this component.
-     */
-    color: _propTypes2.default.oneOf(['default', 'inherit', 'primary', 'secondary']),
-    /**
-     * If `true`, the button will be disabled.
-     */
-    disabled: _propTypes2.default.bool,
-    /**
-     * If `true`, the ripple will be disabled.
-     */
-    disableRipple: _propTypes2.default.bool
-  };
-
-  IconButton.defaultProps = {
-    color: 'default',
-    disabled: false
-  };
-
-  exports.default = (0, _withStyles2.default)(styles, { name: 'MuiIconButton' })(IconButton);
-  });
-
-  unwrapExports(IconButton_1);
-  var IconButton_2 = IconButton_1.styles;
-
-  var IconButton$1 = createCommonjsModule(function (module, exports) {
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-
-
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function get() {
-      return _interopRequireDefault(IconButton_1).default;
-    }
-  });
-
-  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-  });
-
-  unwrapExports(IconButton$1);
-
   var TablePaginationActions_1 = createCommonjsModule(function (module, exports) {
 
   Object.defineProperty(exports, "__esModule", {
@@ -54823,14 +54824,15 @@
           }
         });
       }).then(response => {
-        console.log(response.data);
-        dispatch({
-          type: RECEIVE_WORKER_STATS,
-          data: {
-            minerIdentifier,
-            workerStats: response.data
-          }
-        });
+        if (isObject_1(response.data)) {
+          dispatch({
+            type: RECEIVE_WORKER_STATS,
+            data: {
+              minerIdentifier,
+              workerStats: response.data
+            }
+          });
+        }
       });
     };
   };
@@ -54962,6 +54964,86 @@
       });
     };
   };
+
+  var Done_1 = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _pure2 = _interopRequireDefault(pure_1);
+
+
+
+  var _SvgIcon2 = _interopRequireDefault(SvgIcon$1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var SvgIconCustom = commonjsGlobal.__MUI_SvgIcon__ || _SvgIcon2.default;
+
+  var _ref = _react2.default.createElement('path', { d: 'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z' });
+
+  var Done = function Done(props) {
+    return _react2.default.createElement(
+      SvgIconCustom,
+      props,
+      _ref
+    );
+  };
+
+  Done = (0, _pure2.default)(Done);
+  Done.muiName = 'SvgIcon';
+
+  exports.default = Done;
+  });
+
+  var Done = unwrapExports(Done_1);
+
+  var _Error = createCommonjsModule(function (module, exports) {
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+
+  var _react2 = _interopRequireDefault(react);
+
+
+
+  var _pure2 = _interopRequireDefault(pure_1);
+
+
+
+  var _SvgIcon2 = _interopRequireDefault(SvgIcon$1);
+
+  function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+  var SvgIconCustom = commonjsGlobal.__MUI_SvgIcon__ || _SvgIcon2.default;
+
+  var _ref = _react2.default.createElement('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z' });
+
+  var Error = function Error(props) {
+    return _react2.default.createElement(
+      SvgIconCustom,
+      props,
+      _ref
+    );
+  };
+
+  Error = (0, _pure2.default)(Error);
+  Error.muiName = 'SvgIcon';
+
+  exports.default = Error;
+  });
+
+  var Error$1 = unwrapExports(_Error);
 
   var compose_1 = createCommonjsModule(function (module, exports) {
 
@@ -55942,18 +56024,12 @@
     constructor(...args) {
       var _temp;
 
-      return _temp = super(...args), this.state = {
-        validAddress: true
-      }, this.handleChange = event => {
+      return _temp = super(...args), this.handleChange = event => {
         const { setMiningAddress: setMiningAddress$$1, miner, minerIdentifier } = this.props;
 
         const address = event.target.value;
         setMiningAddress$$1(minerIdentifier, address);
-        const validAddress = !address || miner.isValidAddress(address);
-
-        this.setState({
-          validAddress
-        });
+        const validAddress = miner.isValidAddress(address);
 
         if (validAddress) this.updateWorkerStats();
       }, this.updateWorkerStats = debounce_1(() => {
@@ -55965,15 +56041,24 @@
 
     render() {
       const { address, miner, isMining } = this.props;
-      const { validAddress } = this.state;
 
       return react.createElement(
         react_5,
         null,
         react.createElement(TextField$2, {
           disabled: isMining,
-          error: !validAddress,
           helperText: 'Your address is used in payouts and to identify your mining progress',
+          InputProps: {
+            endAdornment: react.createElement(
+              Input_2$1,
+              { position: 'end' },
+              react.createElement(
+                IconButton$2,
+                { 'aria-label': 'Valid state' },
+                miner.isValidAddress(address) ? react.createElement(Done, null) : react.createElement(Error$1, { color: 'error' })
+              )
+            )
+          },
           label: `${miner.name} address`,
           margin: 'normal',
           onChange: this.handleChange,

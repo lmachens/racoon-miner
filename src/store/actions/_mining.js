@@ -15,6 +15,7 @@ import {
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
+import isObject from 'lodash/isObject';
 import sortBy from 'lodash/sortBy';
 
 export const setMiningAddress = (minerIdentifier, address) => {
@@ -56,14 +57,15 @@ export const fetchWorkerStats = minerIdentifier => {
         });
       })
       .then(response => {
-        console.log(response.data);
-        dispatch({
-          type: RECEIVE_WORKER_STATS,
-          data: {
-            minerIdentifier,
-            workerStats: response.data
-          }
-        });
+        if (isObject(response.data)) {
+          dispatch({
+            type: RECEIVE_WORKER_STATS,
+            data: {
+              minerIdentifier,
+              workerStats: response.data
+            }
+          });
+        }
       });
   };
 };

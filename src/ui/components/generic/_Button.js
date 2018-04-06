@@ -4,6 +4,8 @@ import Button from 'material-ui/Button';
 import { Popover } from './_Popover';
 import PropTypes from 'prop-types';
 
+export { default as IconButton } from 'material-ui/IconButton';
+
 export { Button };
 
 class InfoButton extends Component {

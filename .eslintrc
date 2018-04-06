@@ -23,6 +23,11 @@
   },
   "rules": {
     "no-console": "off",
-    "react/jsx-sort-props": 2
+    "react/jsx-sort-props": [
+      2,
+      {
+        "ignoreCase": true
+      }
+    ]
   }
 }
