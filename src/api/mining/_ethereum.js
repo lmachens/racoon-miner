@@ -1,4 +1,9 @@
-import { CONNECTION_FAILED_REGEX, SPEED_REGEX, generateParser } from './_generateParser';
+import {
+  CONNECTING,
+  CONNECTION_FAILED_REGEX,
+  SPEED_REGEX,
+  generateParser
+} from './_generateParser';
 
 import localForage from 'localforage';
 
@@ -18,7 +23,8 @@ export const ethereum = {
   minimumPaymentThreshold: 0.05,
   parser: generateParser({
     [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
-    [CONNECTION_FAILED_REGEX]: /Could not resolve host/
+    [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+    [CONNECTING]: /not-connected/
   }),
   path: 'ethminer.exe',
   args: workerId =>

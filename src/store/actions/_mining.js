@@ -1,4 +1,5 @@
 import {
+  CONNECTING_POOL,
   RECEIVE_MINING_METRICS,
   RECEIVE_WORKER_STATS,
   REQUEST_MINING_METRICS,
@@ -80,9 +81,16 @@ export const startMining = minerIdentifier => {
     });
 
     handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
-      const { timestamp, errorMsg, speed } = parser(error || data);
+      const { connecting, timestamp, errorMsg, speed } = parser(error || data);
 
-      if (!isNil(speed)) {
+      if (connecting) {
+        dispatch({
+          type: CONNECTING_POOL,
+          data: {
+            minerIdentifier
+          }
+        });
+      } else if (!isNil(speed)) {
         dispatch({
           type: SET_MINING_SPEED,
           data: {
@@ -114,11 +122,12 @@ export const startMining = minerIdentifier => {
             errorMsg
           }
         });
-        storage.setItem(timestamp, { timestamp, errorMsg });
+        storage.setItem(timestamp, { timestamp, errorMsg, speed: 0 });
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
     processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
+      console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
       dispatch({
         type: SET_PROCESS_ID,
         data: {
@@ -133,13 +142,14 @@ export const startMining = minerIdentifier => {
 export const stopMining = minerIdentifier => {
   return async (dispatch, getState) => {
     const processManager = await getProcessManagerPlugin();
-    const { mining: { miners } } = getState();
+    const { activeMiners } = getState();
 
     dispatch({
       type: STOP_MINING,
       data: { minerIdentifier }
     });
-    const processId = miners[minerIdentifier].processId;
+    const processId = activeMiners[minerIdentifier].processId;
+    console.info(`%cStop mining ${processId}`, 'color: blue');
     if (processId || handleDataByIdenfier[minerIdentifier]) {
       processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
       processManager.terminateProcess(processId);

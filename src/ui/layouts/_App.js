@@ -12,6 +12,7 @@ const styles = {
     height: 'calc(100% - 64px)'
   },
   flex: {
+    marginLeft: 4,
     flex: 1
   }
 };

@@ -4071,8 +4071,24 @@
   });
   });
 
+  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
+  const STOP_TRACKING_HARDWARE_INFO = 'STOP_TRACKING_HARDWARE_INFO';
+
+  const CONNECTING_POOL = 'CONNECTING_POOL';
+  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
+  const SELECT_MINER = 'SELECT_MINER';
+  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
+  const SET_MINING_SPEED = 'SET_MINING_SPEED';
+  const SET_PROCESS_ID = 'SET_PROCESS_ID';
+  const START_MINING = 'START_MINING';
+  const STOP_MINING = 'STOP_MINING';
+  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
+  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
+  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
+
   const SPEED_REGEX = 'SPEED_REGEX';
   const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
+  const CONNECTING = 'CONNECTING';
 
   const generateParser = regex => line => {
     const result = {
@@ -4086,6 +4102,10 @@
     if (regex.CONNECTION_FAILED_REGEX) {
       const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
       if (parsed) result.errorMsg = 'Connection failed';
+    }
+    if (regex.CONNECTING) {
+      const parsed = line.match(regex.CONNECTING);
+      if (parsed) result.connecting = true;
     }
     return result;
   };
@@ -4106,7 +4126,8 @@
     minimumPaymentThreshold: 0.05,
     parser: generateParser({
       [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
-      [CONNECTION_FAILED_REGEX]: /Could not resolve host/
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
     }),
     path: 'ethminer.exe',
     args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
@@ -4159,20 +4180,6 @@
         return monero;
     }
   };
-
-  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
-  const STOP_TRACKING_HARDWARE_INFO = 'STOP_TRACKING_HARDWARE_INFO';
-
-  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
-  const SELECT_MINER = 'SELECT_MINER';
-  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
-  const SET_MINING_SPEED = 'SET_MINING_SPEED';
-  const SET_PROCESS_ID = 'SET_PROCESS_ID';
-  const START_MINING = 'START_MINING';
-  const STOP_MINING = 'STOP_MINING';
-  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
-  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
-  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
 
   /** Detect free variable `global` from Node.js. */
   var freeGlobal$1 = typeof commonjsGlobal == 'object' && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
@@ -5552,7 +5559,8 @@
     processId: null,
     isMining: false,
     currentSpeed: 0,
-    errorMsg: null
+    errorMsg: null,
+    connecting: false
   };
 
   const activeMiners = (state = {
@@ -5562,22 +5570,29 @@
     const newState = _extends$5({}, state);
 
     switch (type) {
+      case CONNECTING_POOL:
+        set_1(newState, `${data.minerIdentifier}.connecting`, true);
+        break;
       case SET_MINING_SPEED:
         set_1(newState, `${data.minerIdentifier}.currentSpeed`, data.speed);
         set_1(newState, `${data.minerIdentifier}.errorMsg`, null);
+        set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
       case SET_MINING_ERROR_MESSAGE:
         set_1(newState, `${data.minerIdentifier}.errorMsg`, data.errorMsg);
+        set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
       case SET_PROCESS_ID:
         set_1(newState, `${data.minerIdentifier}.processId`, data.processId);
         break;
       case START_MINING:
         set_1(newState, `${data.minerIdentifier}.isMining`, true);
+        set_1(newState, `${data.minerIdentifier}.connecting`, true);
         break;
       case STOP_MINING:
         set_1(newState, `${data.minerIdentifier}.isMining`, false);
         set_1(newState, `${data.minerIdentifier}.currentSpeed`, 0);
+        set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
       default:
         return state;
@@ -54710,9 +54725,16 @@
       });
 
       handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
-        const { timestamp, errorMsg, speed } = parser(error || data);
+        const { connecting, timestamp, errorMsg, speed } = parser(error || data);
 
-        if (!isNil_1(speed)) {
+        if (connecting) {
+          dispatch({
+            type: CONNECTING_POOL,
+            data: {
+              minerIdentifier
+            }
+          });
+        } else if (!isNil_1(speed)) {
           dispatch({
             type: SET_MINING_SPEED,
             data: {
@@ -54742,11 +54764,12 @@
               errorMsg
             }
           });
-          storage.setItem(timestamp, { timestamp, errorMsg });
+          storage.setItem(timestamp, { timestamp, errorMsg, speed: 0 });
         }
       };
       processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
       processManager.launchProcess(path, args(address), environmentVariables, true, ({ data }) => {
+        console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
         dispatch({
           type: SET_PROCESS_ID,
           data: {
@@ -54761,13 +54784,14 @@
   const stopMining = minerIdentifier => {
     return async (dispatch, getState) => {
       const processManager = await getProcessManagerPlugin();
-      const { mining: { miners } } = getState();
+      const { activeMiners } = getState();
 
       dispatch({
         type: STOP_MINING,
         data: { minerIdentifier }
       });
-      const processId = miners[minerIdentifier].processId;
+      const processId = activeMiners[minerIdentifier].processId;
+      console.info(`%cStop mining ${processId}`, 'color: blue');
       if (processId || handleDataByIdenfier[minerIdentifier]) {
         processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
         processManager.terminateProcess(processId);
@@ -103584,7 +103608,7 @@
     }
 
     render() {
-      const { errorMsg, miner, isMining } = this.props;
+      const { connecting, errorMsg, miner, isMining } = this.props;
 
       return react.createElement(
         react_5,
@@ -103599,7 +103623,9 @@
             variant: 'raised'
           },
           react.createElement('img', { src: '/assets/pickaxe.png', style: { width: 24, height: 24, marginRight: 2 } }),
-          isMining ? 'Stop mining' : 'Start mining'
+          isMining && connecting && 'Connecting',
+          isMining && !connecting && 'Stop mining',
+          !isMining && 'Start mining'
         ),
         errorMsg && react.createElement(
           Typography$2,
@@ -103613,6 +103639,7 @@
   }
 
   Mining.propTypes = {
+    connecting: propTypes.bool.isRequired,
     miner: propTypes.object.isRequired,
     errorMsg: propTypes.string,
     isMining: propTypes.bool.isRequired,
@@ -103624,6 +103651,7 @@
 
   const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
     return {
+      connecting: activeMiners[selectedMinerIdentifier].connecting,
       isMining: activeMiners[selectedMinerIdentifier].isMining,
       errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,
       miner: getMiner(selectedMinerIdentifier),
@@ -103676,6 +103704,7 @@
       height: 'calc(100% - 64px)'
     },
     flex: {
+      marginLeft: 4,
       flex: 1
     }
   };

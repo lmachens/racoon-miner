@@ -17,7 +17,7 @@ class Mining extends Component {
   };
 
   render() {
-    const { errorMsg, miner, isMining } = this.props;
+    const { connecting, errorMsg, miner, isMining } = this.props;
 
     return (
       <Fragment>
@@ -29,7 +29,9 @@ class Mining extends Component {
           variant="raised"
         >
           <img src="/assets/pickaxe.png" style={{ width: 24, height: 24, marginRight: 2 }} />
-          {isMining ? 'Stop mining' : 'Start mining'}
+          {isMining && connecting && 'Connecting'}
+          {isMining && !connecting && 'Stop mining'}
+          {!isMining && 'Start mining'}
         </Button>
         {errorMsg && (
           <Typography color="error" variant="caption">
@@ -43,6 +45,7 @@ class Mining extends Component {
 }
 
 Mining.propTypes = {
+  connecting: PropTypes.bool.isRequired,
   miner: PropTypes.object.isRequired,
   errorMsg: PropTypes.string,
   isMining: PropTypes.bool.isRequired,
@@ -54,6 +57,7 @@ Mining.propTypes = {
 
 const mapStateToProps = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
   return {
+    connecting: activeMiners[selectedMinerIdentifier].connecting,
     isMining: activeMiners[selectedMinerIdentifier].isMining,
     errorMsg: activeMiners[selectedMinerIdentifier].errorMsg,
     miner: getMiner(selectedMinerIdentifier),

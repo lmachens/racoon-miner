@@ -1,5 +1,5 @@
-import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
 import {
+  CONNECTING_POOL,
   RECEIVE_MINING_METRICS,
   RECEIVE_WORKER_STATS,
   REQUEST_MINING_METRICS,
@@ -11,6 +11,7 @@ import {
   START_MINING,
   STOP_MINING
 } from '../types';
+import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
 
 import set from 'lodash/set';
 
@@ -74,7 +75,8 @@ const defaultActiveMinersProps = {
   processId: null,
   isMining: false,
   currentSpeed: 0,
-  errorMsg: null
+  errorMsg: null,
+  connecting: false
 };
 
 export const activeMiners = (
@@ -87,22 +89,29 @@ export const activeMiners = (
   const newState = { ...state };
 
   switch (type) {
+    case CONNECTING_POOL:
+      set(newState, `${data.minerIdentifier}.connecting`, true);
+      break;
     case SET_MINING_SPEED:
       set(newState, `${data.minerIdentifier}.currentSpeed`, data.speed);
       set(newState, `${data.minerIdentifier}.errorMsg`, null);
+      set(newState, `${data.minerIdentifier}.connecting`, false);
       break;
     case SET_MINING_ERROR_MESSAGE:
       set(newState, `${data.minerIdentifier}.errorMsg`, data.errorMsg);
+      set(newState, `${data.minerIdentifier}.connecting`, false);
       break;
     case SET_PROCESS_ID:
       set(newState, `${data.minerIdentifier}.processId`, data.processId);
       break;
     case START_MINING:
       set(newState, `${data.minerIdentifier}.isMining`, true);
+      set(newState, `${data.minerIdentifier}.connecting`, true);
       break;
     case STOP_MINING:
       set(newState, `${data.minerIdentifier}.isMining`, false);
       set(newState, `${data.minerIdentifier}.currentSpeed`, 0);
+      set(newState, `${data.minerIdentifier}.connecting`, false);
       break;
     default:
       return state;
