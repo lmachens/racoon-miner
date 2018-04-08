@@ -97,7 +97,8 @@ export const fetchWorkerStats = minerIdentifier => {
 const handleDataByIdenfier = {};
 export const startMining = minerIdentifier => {
   return async (dispatch, getState) => {
-    const { mining: { address = 'default', miners } } = getState();
+    const { mining: { miners, selectedMinerIdentifier } } = getState();
+    const address = miners[selectedMinerIdentifier].address || 'default';
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
     const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);

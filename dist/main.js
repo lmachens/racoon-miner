@@ -4132,7 +4132,7 @@
       [CONNECTING]: /not-connected/
     }),
     path: 'ethminer.exe',
-    args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${minerGroup}.${workerId}`,
+    args: workerId => `--farm-recheck 200 -G -S eu1.ethermine.org:4444/${workerId} -SF us1.ethermine.org:4444/${workerId} -O ${minerGroup}.${workerId}`,
     environmentVariables: () => JSON.stringify({
       GPU_FORCE_64BIT_PTR: '0',
       GPU_MAX_HEAP_SIZE: '100',
@@ -56444,7 +56444,8 @@
   const handleDataByIdenfier = {};
   const startMining = minerIdentifier => {
     return async (dispatch, getState) => {
-      const { mining: { address = 'default', miners } } = getState();
+      const { mining: { miners, selectedMinerIdentifier } } = getState();
+      const address = miners[selectedMinerIdentifier].address || 'default';
       if (handleDataByIdenfier[minerIdentifier]) return;
       const processManager = await getProcessManagerPlugin();
       const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
