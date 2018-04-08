@@ -2,3 +2,4 @@
 export const APP_PATH = process.env.__APP_PATH__;
 export const LISTEN_TO_FILES = process.env.__LISTEN_TO_FILES__;
 export const TRACKING_ID = process.env.__TRACKING_ID__;
+export const API_ENDPOINT = process.env.__API_ENDPOINT__;

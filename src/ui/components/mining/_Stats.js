@@ -79,7 +79,7 @@ class Stats extends Component {
             title="Unpaid Balance"
           >
             <Typography>
-              {(0).toFixed(6)} {miner.currency}
+              {(workerStats.unpaidBalance || 0).toFixed(6)} {miner.currency}
             </Typography>
           </CardLayout>
         </Grid>

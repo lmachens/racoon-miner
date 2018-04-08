@@ -48,7 +48,11 @@
       }
     },
     "externally_connectable": {
-      "matches": ["https://*.google-analytics.com", "https://www.google-analytics.com"]
+      "matches": [
+        "https://*.google-analytics.com",
+        "https://www.google-analytics.com",
+        "http://localhost:3000"
+      ]
     }
   }
 }

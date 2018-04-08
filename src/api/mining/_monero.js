@@ -14,16 +14,14 @@ export const monero = {
   disabled: true,
   name: 'Monero',
   identifier: MONERO_MINER,
+  minerGroup,
   logo: 'assets/monero.png',
   currency: 'XMR',
   minimumPaymentThreshold: 0.1,
   parser: () => {},
   path: '',
-  args: '',
+  args: minerGroup,
   environmentVariables: () => JSON.stringify({}),
-  api: {
-    workerStats: `https://supportxmr.com/api/miner/${minerGroup}/stats/:workerId`
-  },
   storage: moneroLogsStorage,
   links: {
     wallet: 'https://getmonero.org/'

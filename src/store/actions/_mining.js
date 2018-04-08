@@ -13,6 +13,7 @@ import {
   STOP_MINING
 } from '../types';
 
+import { API_ENDPOINT } from '../../api/environment';
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
@@ -66,10 +67,9 @@ export const fetchWorkerStats = minerIdentifier => {
     const { mining: { miners } } = getState();
     const workerId = miners[minerIdentifier].address;
     if (!workerId) return;
+    const { minerGroup } = getMiner(minerIdentifier);
 
-    const { api: { workerStats } } = getMiner(minerIdentifier);
-
-    fetch(workerStats(workerId))
+    fetch(`${API_ENDPOINT}/api/miner/${minerGroup}/worker/${workerId}`)
       .then(res => res.json())
       .catch(error => {
         dispatch({
@@ -81,7 +81,7 @@ export const fetchWorkerStats = minerIdentifier => {
         });
       })
       .then(response => {
-        if (isObject(response.data)) {
+        if (response && isObject(response.data)) {
           dispatch({
             type: RECEIVE_WORKER_STATS,
             data: {

@@ -4122,6 +4122,7 @@
   const ethereum = {
     name: 'Ethereum',
     identifier: ETHEREUM_MINER,
+    minerGroup,
     logo: 'assets/ethereum.png',
     currency: 'ETH',
     minimumPaymentThreshold: 0.05,
@@ -4139,10 +4140,6 @@
       GPU_MAX_ALLOC_PERCENT: '100',
       GPU_SINGLE_ALLOC_PERCENT: '100'
     }),
-    api: {
-      workerStats: workerId => `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`,
-      workerHistory: workerId => `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/history`
-    },
     storage: ethereumLogsStorage,
     links: {
       wallet: 'https://www.myetherwallet.com/'
@@ -4164,16 +4161,14 @@
     disabled: true,
     name: 'Monero',
     identifier: MONERO_MINER,
+    minerGroup: minerGroup$1,
     logo: 'assets/monero.png',
     currency: 'XMR',
     minimumPaymentThreshold: 0.1,
     parser: () => {},
     path: '',
-    args: '',
+    args: minerGroup$1,
     environmentVariables: () => JSON.stringify({}),
-    api: {
-      workerStats: `https://supportxmr.com/api/miner/${minerGroup$1}/stats/:workerId`
-    },
     storage: moneroLogsStorage,
     links: {
       wallet: 'https://getmonero.org/'
@@ -54077,6 +54072,12 @@
     };
   };
 
+  // These envs will be replaced by rollup
+  const APP_PATH = "C:/RaccoonMiner/raccoon-miner/dist";
+  const LISTEN_TO_FILES = ["main.js"];
+  const TRACKING_ID = "UA-115959266-2";
+  const API_ENDPOINT = "http://localhost:3000";
+
   const callOverwolfWithPromise = (method, ...params) => {
     return new Promise((resolve, reject) => {
       const handleResult = result => {
@@ -56416,10 +56417,9 @@
       const { mining: { miners } } = getState();
       const workerId = miners[minerIdentifier].address;
       if (!workerId) return;
+      const { minerGroup } = getMiner(minerIdentifier);
 
-      const { api: { workerStats } } = getMiner(minerIdentifier);
-
-      fetch(workerStats(workerId)).then(res => res.json()).catch(error => {
+      fetch(`${API_ENDPOINT}/api/miner/${minerGroup}/worker/${workerId}`).then(res => res.json()).catch(error => {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,
           data: {
@@ -56428,7 +56428,7 @@
           }
         });
       }).then(response => {
-        if (isObject_1(response.data)) {
+        if (response && isObject_1(response.data)) {
           dispatch({
             type: RECEIVE_WORKER_STATS,
             data: {
@@ -104637,7 +104637,7 @@
             react.createElement(
               Typography$2,
               null,
-              0 .toFixed(6),
+              (workerStats.unpaidBalance || 0).toFixed(6),
               ' ',
               miner.currency
             )
@@ -106047,11 +106047,6 @@
   });
 
   var ReactGA = unwrapExports(reactGa);
-
-  // These envs will be replaced by rollup
-  const APP_PATH = "C:/RaccoonMiner/raccoon-miner/dist";
-  const LISTEN_TO_FILES = ["main.js"];
-  const TRACKING_ID = "UA-115959266-2";
 
   const initialize = history => {
     ReactGA.initialize(TRACKING_ID, {

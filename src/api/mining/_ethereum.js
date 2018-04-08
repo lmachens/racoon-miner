@@ -18,6 +18,7 @@ export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,
+  minerGroup,
   logo: 'assets/ethereum.png',
   currency: 'ETH',
   minimumPaymentThreshold: 0.05,
@@ -37,12 +38,6 @@ export const ethereum = {
       GPU_MAX_ALLOC_PERCENT: '100',
       GPU_SINGLE_ALLOC_PERCENT: '100'
     }),
-  api: {
-    workerStats: workerId =>
-      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/currentStats`,
-    workerHistory: workerId =>
-      `https://api.ethermine.org/miner/${minerGroup}/worker/${workerId}/history`
-  },
   storage: ethereumLogsStorage,
   links: {
     wallet: 'https://www.myetherwallet.com/'
