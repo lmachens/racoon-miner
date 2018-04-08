@@ -56585,7 +56585,7 @@
       return _temp = super(...args), this.handleChange = event => {
         const { setMiningAddress: setMiningAddress$$1, minerIdentifier } = this.props;
 
-        const address = event.target.value.replace(/0x/, '');
+        const address = event.target.value.replace(/0x/, '').toLowerCase();
         setMiningAddress$$1(minerIdentifier, address);
       }, _temp;
     }

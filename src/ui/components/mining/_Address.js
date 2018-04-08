@@ -28,7 +28,7 @@ class Address extends Component {
   handleChange = event => {
     const { setMiningAddress, minerIdentifier } = this.props;
 
-    const address = event.target.value.replace(/0x/, '');
+    const address = event.target.value.replace(/0x/, '').toLowerCase();
     setMiningAddress(minerIdentifier, address);
   };
 
