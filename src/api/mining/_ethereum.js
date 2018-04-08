@@ -42,5 +42,5 @@ export const ethereum = {
   links: {
     wallet: 'https://www.myetherwallet.com/'
   },
-  isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
+  isValidAddress: address => /^[0-9a-fA-F]{40}$/i.test(address)
 };

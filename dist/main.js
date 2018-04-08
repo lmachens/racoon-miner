@@ -4144,7 +4144,7 @@
     links: {
       wallet: 'https://www.myetherwallet.com/'
     },
-    isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
+    isValidAddress: address => /^[0-9a-fA-F]{40}$/i.test(address)
   };
 
   //import { generateParser } from './_generateParser';
@@ -56585,7 +56585,7 @@
       return _temp = super(...args), this.handleChange = event => {
         const { setMiningAddress: setMiningAddress$$1, minerIdentifier } = this.props;
 
-        const address = event.target.value;
+        const address = event.target.value.replace(/0x/, '');
         setMiningAddress$$1(minerIdentifier, address);
       }, _temp;
     }
@@ -56603,6 +56603,11 @@
             shrink: true
           },
           InputProps: {
+            startAdornment: react.createElement(
+              Input_2$1,
+              { position: 'start' },
+              '0x'
+            ),
             endAdornment: react.createElement(
               Input_2$1,
               { position: 'end' },
@@ -56618,12 +56623,13 @@
                 },
                 isValidAddress ? react.createElement(Done, null) : react.createElement(Error$1, { color: 'error' })
               )
-            )
+            ),
+            style: { width: 440 }
           },
           label: `${miner.name} address`,
           margin: 'normal',
           onChange: this.handleChange,
-          placeholder: '0x0000000000000000000000000000000000000000',
+          placeholder: '0000000000000000000000000000000000000000',
           value: address
         }),
         react.createElement('br', null),

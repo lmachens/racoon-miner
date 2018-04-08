@@ -28,7 +28,7 @@ class Address extends Component {
   handleChange = event => {
     const { setMiningAddress, minerIdentifier } = this.props;
 
-    const address = event.target.value;
+    const address = event.target.value.replace(/0x/, '');
     setMiningAddress(minerIdentifier, address);
   };
 
@@ -44,6 +44,7 @@ class Address extends Component {
             shrink: true
           }}
           InputProps={{
+            startAdornment: <InputAdornment position="start">0x</InputAdornment>,
             endAdornment: (
               <InputAdornment position="end">
                 <InfoButton
@@ -59,12 +60,13 @@ class Address extends Component {
                   {isValidAddress ? <Done /> : <Error color="error" />}
                 </InfoButton>
               </InputAdornment>
-            )
+            ),
+            style: { width: 440 }
           }}
           label={`${miner.name} address`}
           margin="normal"
           onChange={this.handleChange}
-          placeholder="0x0000000000000000000000000000000000000000"
+          placeholder="0000000000000000000000000000000000000000"
           value={address}
         />
         <br />
