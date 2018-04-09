@@ -51,7 +51,8 @@
       "matches": [
         "https://*.google-analytics.com",
         "https://www.google-analytics.com",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://raccoon-miner.now.sh"
       ]
     }
   }

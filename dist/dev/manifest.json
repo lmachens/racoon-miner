@@ -2,7 +2,7 @@
   "manifest_version": "1",
   "type": "WebApp",
   "meta": {
-    "name": "Raccoon Miner",
+    "name": "Raccoon Miner - DEV",
     "version": "0.1.0",
     "minimum-overwolf-version": "0.85.0.0",
     "author": "Leon Machens",
@@ -51,7 +51,8 @@
       "matches": [
         "https://*.google-analytics.com",
         "https://www.google-analytics.com",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://raccoon-miner.now.sh"
       ]
     }
   }

@@ -32670,7 +32670,7 @@
         o = a[e].address;
       if (o) {
         const { minerGroup: n } = Gv(e);
-        fetch(`${'http://localhost:3000'}/api/miner/${n}/worker/${o}`)
+        fetch(`${'https://raccoon-miner.now.sh'}/api/miner/${n}/worker/${o}`)
           .then(e => e.json())
           .catch(n => {
             t({ type: Nv, data: { minerIdentifier: e, errorMsg: n.message } });
