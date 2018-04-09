@@ -9,7 +9,7 @@ export default [
   {
     input: 'src/startup/main/index.js',
     output: {
-      file: 'dist/main.js',
+      file: 'dist/dev/main.js',
       format: 'iife',
       sourcemap: true
     },

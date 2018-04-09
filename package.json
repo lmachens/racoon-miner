@@ -61,6 +61,7 @@
   },
   "scripts": {
     "dev": "rollup -c -w",
+    "production": "rollup -c production.rollup.config.js",
     "test": "jest",
     "release": "standard-version",
     "github-release": "conventional-github-releaser -p angular -r 0",
