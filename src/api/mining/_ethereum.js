@@ -27,7 +27,7 @@ export const ethereum = {
     [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
     [CONNECTING]: /not-connected/
   }),
-  path: 'ethminer.exe',
+  path: 'ethereum/ethminer.exe',
   args: workerId =>
     `--farm-recheck 200 -G -S eu1.ethermine.org:4444/${workerId} -SF us1.ethermine.org:4444/${workerId} -O ${minerGroup}.${workerId}`,
   environmentVariables: () =>
