@@ -1,4 +1,9 @@
-//import { generateParser } from './_generateParser';
+import {
+  CONNECTING,
+  CONNECTION_FAILED_REGEX,
+  SPEED_REGEX,
+  generateParser
+} from './_generateParser';
 
 import localForage from 'localforage';
 
@@ -11,20 +16,25 @@ const minerGroup = process.env.__MONERO_MINER_GROUP__;
 
 export const MONERO_MINER = 'MONERO_MINER';
 export const monero = {
-  disabled: true,
   name: 'Monero',
   identifier: MONERO_MINER,
   minerGroup,
   logo: 'assets/monero.png',
   currency: 'XMR',
   minimumPaymentThreshold: 0.1,
-  parser: () => {},
-  path: '',
-  args: minerGroup,
-  environmentVariables: () => JSON.stringify({}),
+  parser: generateParser({
+    [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
+    [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+    [CONNECTING]: /not-connected/
+  }),
+  path: 'monero/xmr-stak.exe',
+  args: workerId =>
+    `-i 0 -o pool.supportxmr.com:8080 -u 47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr --currency monero7 -p ${workerId} -r raccoon`,
+  environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
   storage: moneroLogsStorage,
   links: {
     wallet: 'https://getmonero.org/'
   },
-  isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
+  isValidAddress: address =>
+    /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address)
 };

@@ -4765,7 +4765,7 @@
       [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
       [CONNECTING]: /not-connected/
     }),
-    path: 'ethminer.exe',
+    path: 'ethereum/ethminer.exe',
     args: workerId =>
       `--farm-recheck 200 -G -S eu1.ethermine.org:4444/${workerId} -SF us1.ethermine.org:4444/${workerId} -O ${minerGroup}.${workerId}`,
     environmentVariables: () =>
@@ -4783,8 +4783,6 @@
     isValidAddress: address => /^[0-9a-fA-F]{40}$/i.test(address)
   };
 
-  //import { generateParser } from './_generateParser';
-
   const moneroLogsStorage = localforage.createInstance({
     name: 'Raccoon Miner',
     storeName: 'monero-logs'
@@ -4795,22 +4793,27 @@
 
   const MONERO_MINER = 'MONERO_MINER';
   const monero = {
-    disabled: true,
     name: 'Monero',
     identifier: MONERO_MINER,
     minerGroup: minerGroup$1,
     logo: 'assets/monero.png',
     currency: 'XMR',
     minimumPaymentThreshold: 0.1,
-    parser: () => {},
-    path: '',
-    args: minerGroup$1,
-    environmentVariables: () => JSON.stringify({}),
+    parser: generateParser({
+      [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
+    }),
+    path: 'monero/xmr-stak.exe',
+    args: workerId =>
+      `-i 0 -o pool.supportxmr.com:8080 -u 47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr --currency monero7 -p ${workerId} -r raccoon`,
+    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
     storage: moneroLogsStorage,
     links: {
       wallet: 'https://getmonero.org/'
     },
-    isValidAddress: address => /^(0x){1}[0-9a-fA-F]{40}$/i.test(address)
+    isValidAddress: address =>
+      /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address)
   };
 
   const getMiner = minerIdentifier => {
@@ -60894,7 +60897,7 @@
   };
 
   // These envs will be replaced by rollup
-  const APP_PATH = 'C:/RaccoonMiner/raccoon-miner/dist';
+  const APP_PATH = 'C:/source/raccoon-miner/dist';
   const LISTEN_TO_FILES = ['main.js'];
   const TRACKING_ID = 'UA-115959266-2';
   const API_ENDPOINT = 'http://localhost:3000';
