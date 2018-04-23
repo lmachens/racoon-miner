@@ -38,6 +38,7 @@ export const ethereum = {
       GPU_MAX_ALLOC_PERCENT: '100',
       GPU_SINGLE_ALLOC_PERCENT: '100'
     }),
+  processSendText: null,
   storage: ethereumLogsStorage,
   links: {
     wallet: 'https://www.myetherwallet.com/'

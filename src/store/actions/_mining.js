@@ -64,7 +64,9 @@ export const selectMiner = minerIdentifier => {
 
 export const fetchWorkerStats = minerIdentifier => {
   return (dispatch, getState) => {
-    const { mining: { miners } } = getState();
+    const {
+      mining: { miners }
+    } = getState();
     const workerId = miners[minerIdentifier].address;
     if (!workerId) return;
     const { minerGroup } = getMiner(minerIdentifier);
@@ -95,13 +97,18 @@ export const fetchWorkerStats = minerIdentifier => {
 };
 
 const handleDataByIdenfier = {};
+let sendTextInterval = null;
 export const startMining = minerIdentifier => {
   return async (dispatch, getState) => {
-    const { mining: { miners, selectedMinerIdentifier } } = getState();
+    const {
+      mining: { miners, selectedMinerIdentifier }
+    } = getState();
     const address = miners[selectedMinerIdentifier].address || 'default';
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
-    const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
+    const { parser, path, args, processSendText, environmentVariables, storage } = getMiner(
+      minerIdentifier
+    );
 
     dispatch({
       type: START_MINING,
@@ -165,6 +172,12 @@ export const startMining = minerIdentifier => {
           processId: data
         }
       });
+      if (processSendText) {
+        sendTextInterval = setInterval(
+          () => processManager.sendTextToProcess(data, processSendText),
+          1000
+        );
+      }
     });
   };
 };
@@ -181,6 +194,10 @@ export const stopMining = minerIdentifier => {
     const processId = activeMiners[minerIdentifier].processId;
     console.info(`%cStop mining ${processId}`, 'color: blue');
     if (processId || handleDataByIdenfier[minerIdentifier]) {
+      if (sendTextInterval) {
+        clearInterval(sendTextInterval);
+        sendTextInterval = null;
+      }
       processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
       processManager.terminateProcess(processId);
       delete handleDataByIdenfier[minerIdentifier];
@@ -198,7 +215,9 @@ export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE 
     });
 
     storage.find(timestamp => timestamp > from && timestamp < to).then(newItemsInRange => {
-      const { mining: { miners } } = getState();
+      const {
+        mining: { miners }
+      } = getState();
       const { from: currentFrom, to: currentTo } = miners[minerIdentifier].metrics;
 
       if (from !== currentFrom || to !== currentTo) return;
