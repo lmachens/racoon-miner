@@ -5,7 +5,7 @@
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,
-    "dist/main.js": true,
-    "dist/main.js.map": true
+    "dist/*/main.js": true,
+    "dist/*/main.js.map": true
   }
 }
