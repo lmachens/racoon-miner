@@ -64,7 +64,7 @@
     "production": "rollup -c production.rollup.config.js",
     "test": "jest",
     "release": "standard-version",
-    "github-release": "set CONVENTIONAL_GITHUB_RELEASER_TOKEN=059ff991289433e238681d73c00f04b89c8f1627 && conventional-github-releaser -p angular -r 0",
+    "github-release": "set CONVENTIONAL_GITHUB_RELEASER_TOKEN=059ff991289433e238681d73c00f04b89c8f1627 && conventional-github-releaser -p angular",
     "precommit": "lint-staged",
     "prepush": "jest",
     "storybook": "start-storybook -p 9001 -c .storybook"
