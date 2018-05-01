@@ -71,7 +71,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postbump": "node tools/syncVersion"
+      "postbump": "node tools/syncVersion && git commit -am \"chore(overwolf): manifest version bump\""
     }
   },
   "lint-staged": {
