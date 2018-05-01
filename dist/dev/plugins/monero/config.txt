@@ -41,7 +41,7 @@
  * h_print_time - How often, in seconds, should we print a hashrate report if verbose_level is set to 4.
  *                This option has no effect if verbose_level is not 4.
  */
-"h_print_time" : 60,
+"h_print_time" : 15,
 
 /*
  * Manual hardware AES override
@@ -111,7 +111,7 @@
  * If you are running the process in the background and you don't need the keyboard reports, set this to true.
  * This should solve the hashrate problems on some emulated terminals.
  */
-"daemon_mode" : false,
+"daemon_mode" : true,
 
 /*
  * Buffered output control.
@@ -119,7 +119,7 @@
  * each output line immediately. This can cause delays when running in background.
  * Set this option to true to flush stdout after each line, so it can be read immediately.
  */
-"flush_stdout" : false,
+"flush_stdout" : true,
 
 /*
  * Output file
