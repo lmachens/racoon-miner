@@ -16,7 +16,6 @@ import {
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
-import isObject from 'lodash/isObject';
 import sortBy from 'lodash/sortBy';
 import { stats } from '../../api/stitch';
 
@@ -83,12 +82,12 @@ export const fetchWorkerStats = minerIdentifier => {
         });
       })
       .then(response => {
-        if (response && isObject(response.data)) {
+        if (response) {
           dispatch({
             type: RECEIVE_WORKER_STATS,
             data: {
               minerIdentifier,
-              workerStats: response.data
+              workerStats: response
             }
           });
         }
