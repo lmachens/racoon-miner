@@ -64,14 +64,14 @@
     "production": "rollup -c production.rollup.config.js",
     "test": "jest",
     "release": "standard-version",
-    "github-release": "conventional-github-releaser -p angular -r 0",
+    "github-release": "set CONVENTIONAL_GITHUB_RELEASER_TOKEN=059ff991289433e238681d73c00f04b89c8f1627 && conventional-github-releaser -p angular -r 0",
     "precommit": "lint-staged",
     "prepush": "jest",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "standard-version": {
     "scripts": {
-      "postbump": "node tools/syncVersion && git commit -am \"chore(overwolf): manifest version bump\""
+      "postbump": "node tools/syncVersion && git commit -am \"chore(overwolf): manifest version bump\" && npm run github-release"
     }
   },
   "lint-staged": {
