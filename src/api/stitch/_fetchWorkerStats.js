@@ -5,7 +5,6 @@ const fetchWorkerStats = async ({ minerId, workerId }) => {
     minerId,
     workerId
   });
-  console.log(worker);
   return worker;
 };
 
