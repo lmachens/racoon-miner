@@ -106,9 +106,7 @@ export const startMining = minerIdentifier => {
     const address = miners[selectedMinerIdentifier].address || 'default';
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
-    const { parser, path, args, processSendText, environmentVariables, storage } = getMiner(
-      minerIdentifier
-    );
+    const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
 
     dispatch({
       type: START_MINING,
@@ -172,12 +170,6 @@ export const startMining = minerIdentifier => {
           processId: data
         }
       });
-      if (processSendText) {
-        sendTextInterval = setInterval(
-          () => processManager.sendTextToProcess(data, processSendText),
-          1000
-        );
-      }
     });
   };
 };

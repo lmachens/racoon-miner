@@ -43,7 +43,7 @@ class Stats extends Component {
                 <InfoButton popover={<Typography>ToDo</Typography>}>Learn More</InfoButton>
               </Fragment>
             }
-            title="Ø Hashrate"
+            title="Hash Rate"
           >
             <Typography>{(workerStats.averageHashrate / 1000000 || 0).toFixed(2)} MH/s</Typography>
           </CardLayout>

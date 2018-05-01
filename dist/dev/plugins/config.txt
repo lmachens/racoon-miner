@@ -32,7 +32,7 @@
  *
  * print_motd    - Display messages from your pool operator in the hashrate result.
  */
-"verbose_level" : 3,
+"verbose_level" : 4,
 "print_motd" : true,
 
 /*
