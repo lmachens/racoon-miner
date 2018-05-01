@@ -13,12 +13,12 @@ import {
   STOP_MINING
 } from '../types';
 
-import { API_ENDPOINT } from '../../api/environment';
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
 import isObject from 'lodash/isObject';
 import sortBy from 'lodash/sortBy';
+import { stats } from '../../api/stitch';
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -71,8 +71,8 @@ export const fetchWorkerStats = minerIdentifier => {
     if (!workerId) return;
     const { minerGroup } = getMiner(minerIdentifier);
 
-    fetch(`${API_ENDPOINT}/api/miner/${minerGroup}/worker/${workerId}`)
-      .then(res => res.json())
+    stats
+      .fetchWorkerStats({ minerId: minerGroup, workerId })
       .catch(error => {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,

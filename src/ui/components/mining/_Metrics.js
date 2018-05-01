@@ -130,7 +130,7 @@ class Metrics extends Component {
 
     let infoValues = [];
     if (highlight) {
-      const speedText = `${highlight.event.get(highlight.column).toFixed(2)} MH/s`;
+      const speedText = `${highlight.event.get(highlight.column).toFixed(2)} H/s`;
       const errorMsg = highlight.event.get('errorMsg');
 
       infoValues = [{ label: 'Speed', value: speedText }];
@@ -162,7 +162,7 @@ class Metrics extends Component {
               <YAxis
                 format=".2f"
                 id="speed"
-                label="Speed (MH/s)"
+                label="Speed (H/s)"
                 max={(metricsSeries.max('speed') || 0) + 1}
                 min={0}
                 width="60"
@@ -170,7 +170,7 @@ class Metrics extends Component {
               <Charts>
                 <Baseline
                   axis="speed"
-                  label={`${currentSpeed.toFixed(2)} MH/s`}
+                  label={`${currentSpeed.toFixed(2)} H/s`}
                   position="right"
                   value={currentSpeed}
                 />

@@ -45,7 +45,7 @@ class Stats extends Component {
             }
             title="Hash Rate"
           >
-            <Typography>{(workerStats.averageHashrate / 1000000 || 0).toFixed(2)} MH/s</Typography>
+            <Typography>{(workerStats.averageHashrate / 1000000 || 0).toFixed(2)} H/s</Typography>
           </CardLayout>
         </Grid>
         <Grid item>
