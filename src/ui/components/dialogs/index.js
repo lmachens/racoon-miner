@@ -2,6 +2,7 @@ import React, { Fragment, PureComponent } from 'react';
 
 import { CryptoDialog } from './_Crypto';
 import { SettingsDialog } from './_Settings';
+import { SupportDialog } from './_Support';
 
 class Dialogs extends PureComponent {
   render() {
@@ -9,6 +10,7 @@ class Dialogs extends PureComponent {
       <Fragment>
         <CryptoDialog />
         <SettingsDialog />
+        <SupportDialog />
       </Fragment>
     );
   }

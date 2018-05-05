@@ -38567,7 +38567,7 @@
     return Component;
   }
 
-  var reactLifecyclesCompat_es = /*#__PURE__*/ Object.freeze({
+  var _reactLifecyclesCompat = /*#__PURE__*/ Object.freeze({
     polyfill: polyfill
   });
 
@@ -41089,7 +41089,7 @@
     };
 
     exports.default = (0, _withStyles2.default)(styles, { name: 'MuiButtonBase' })(
-      (0, reactLifecyclesCompat_es.polyfill)(ButtonBase)
+      (0, _reactLifecyclesCompat.polyfill)(ButtonBase)
     );
   });
 
@@ -44576,7 +44576,7 @@
     };
 
     exports.default = (0, _withStyles2.default)(styles, { flip: false, name: 'MuiModal' })(
-      (0, reactLifecyclesCompat_es.polyfill)(Modal)
+      (0, _reactLifecyclesCompat.polyfill)(Modal)
     );
   });
 
@@ -61245,7 +61245,7 @@
     return none$1(series).reverse();
   }
 
-  var d3Shape = /*#__PURE__*/ Object.freeze({
+  var _d3Shape = /*#__PURE__*/ Object.freeze({
     arc: arc,
     area: area,
     line: line,
@@ -72241,7 +72241,7 @@
     default: hooks
   });
 
-  var require$$0 = (moment && hooks) || moment;
+  var _moment = (moment && hooks) || moment;
 
   var timerange = createCommonjsModule(function(module, exports) {
     Object.defineProperty(exports, '__esModule', {
@@ -72258,7 +72258,7 @@
 
     var _immutable2 = _interopRequireDefault(immutable);
 
-    var _moment2 = _interopRequireDefault(require$$0);
+    var _moment2 = _interopRequireDefault(_moment);
 
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
@@ -72954,7 +72954,7 @@
 
     var _immutable2 = _interopRequireDefault(immutable);
 
-    var _moment2 = _interopRequireDefault(require$$0);
+    var _moment2 = _interopRequireDefault(_moment);
 
     var _timerange2 = _interopRequireDefault(timerange);
 
@@ -84553,24 +84553,24 @@
     });
 
     exports.default = {
-      curveBasisClosed: d3Shape.curveBasisClosed,
-      curveBasisOpen: d3Shape.curveBasisOpen,
-      curveBasis: d3Shape.curveBasis,
-      curveBundle: d3Shape.curveBundle,
-      curveCardinalClosed: d3Shape.curveCardinalClosed,
-      curveCardinalOpen: d3Shape.curveCardinalOpen,
-      curveCardinal: d3Shape.curveCardinal,
-      curveCatmullRomClosed: d3Shape.curveCatmullRomClosed,
-      curveCatmullRomOpen: d3Shape.curveCatmullRomOpen,
-      curveCatmullRom: d3Shape.curveCatmullRom,
-      curveLinearClosed: d3Shape.curveLinearClosed,
-      curveLinear: d3Shape.curveLinear,
-      curveMonotoneX: d3Shape.curveMonotoneX,
-      curveMonotoneY: d3Shape.curveMonotoneY,
-      curveNatural: d3Shape.curveNatural,
-      curveStep: d3Shape.curveStep,
-      curveStepAfter: d3Shape.curveStepAfter,
-      curveStepBefore: d3Shape.curveStepBefore
+      curveBasisClosed: _d3Shape.curveBasisClosed,
+      curveBasisOpen: _d3Shape.curveBasisOpen,
+      curveBasis: _d3Shape.curveBasis,
+      curveBundle: _d3Shape.curveBundle,
+      curveCardinalClosed: _d3Shape.curveCardinalClosed,
+      curveCardinalOpen: _d3Shape.curveCardinalOpen,
+      curveCardinal: _d3Shape.curveCardinal,
+      curveCatmullRomClosed: _d3Shape.curveCatmullRomClosed,
+      curveCatmullRomOpen: _d3Shape.curveCatmullRomOpen,
+      curveCatmullRom: _d3Shape.curveCatmullRom,
+      curveLinearClosed: _d3Shape.curveLinearClosed,
+      curveLinear: _d3Shape.curveLinear,
+      curveMonotoneX: _d3Shape.curveMonotoneX,
+      curveMonotoneY: _d3Shape.curveMonotoneY,
+      curveNatural: _d3Shape.curveNatural,
+      curveStep: _d3Shape.curveStep,
+      curveStepAfter: _d3Shape.curveStepAfter,
+      curveStepBefore: _d3Shape.curveStepBefore
     }; /**
      *  Copyright (c) 2017, The Regents of the University of California,
      *  through Lawrence Berkeley National Laboratory (subject to receipt
@@ -84923,7 +84923,7 @@
               }
 
               // Use D3 to build an area generation function
-              var areaGenerator = (0, d3Shape.area)()
+              var areaGenerator = (0, _d3Shape.area)()
                 .curve(_curve2.default[_this2.props.interpolation])
                 .x(function(d) {
                   return d.x0;
@@ -84940,7 +84940,7 @@
               var areaPath = areaGenerator(data);
 
               // Outline the top of the curve
-              var lineGenerator = (0, d3Shape.line)()
+              var lineGenerator = (0, _d3Shape.line)()
                 .curve(_curve2.default[_this2.props.interpolation])
                 .x(function(d) {
                   return d.x0;
@@ -91979,7 +91979,7 @@
     return d ? linear(a, d) : constant$2(isNaN(a) ? b : a);
   }
 
-  var rgb$1 = (function rgbGamma(y) {
+  var interpolateRgb = (function rgbGamma(y) {
     var color$$1 = gamma(y);
 
     function rgb$$1(start, end) {
@@ -92028,7 +92028,7 @@
     );
   }
 
-  function number$1(a, b) {
+  function interpolateNumber(a, b) {
     return (
       (a = +a),
       (b -= a),
@@ -92075,7 +92075,7 @@
     };
   }
 
-  function string(a, b) {
+  function interpolateString(a, b) {
     var bi = (reA.lastIndex = reB.lastIndex = 0), // scan index for next number in b
       am, // current match in a
       bm, // current match in b
@@ -92104,7 +92104,7 @@
       } else {
         // interpolate non-matching numbers
         s[++i] = null;
-        q.push({ i: i, x: number$1(am, bm) });
+        q.push({ i: i, x: interpolateNumber(am, bm) });
       }
       bi = reB.lastIndex;
     }
@@ -92136,13 +92136,13 @@
     return b == null || t === 'boolean'
       ? constant$2(b)
       : (t === 'number'
-          ? number$1
+          ? interpolateNumber
           : t === 'string'
             ? (c = color(b))
-              ? ((b = c), rgb$1)
-              : string
+              ? ((b = c), interpolateRgb)
+              : interpolateString
             : b instanceof color
-              ? rgb$1
+              ? interpolateRgb
               : b instanceof Date
                 ? date
                 : Array.isArray(b)
@@ -92150,7 +92150,7 @@
                   : (typeof b.valueOf !== 'function' && typeof b.toString !== 'function') ||
                     isNaN(b)
                     ? object
-                    : number$1)(a, b);
+                    : interpolateNumber)(a, b);
   }
 
   function interpolateRound(a, b) {
@@ -92224,7 +92224,10 @@
     function translate(xa, ya, xb, yb, s, q) {
       if (xa !== xb || ya !== yb) {
         var i = s.push('translate(', null, pxComma, null, pxParen);
-        q.push({ i: i - 4, x: number$1(xa, xb) }, { i: i - 2, x: number$1(ya, yb) });
+        q.push(
+          { i: i - 4, x: interpolateNumber(xa, xb) },
+          { i: i - 2, x: interpolateNumber(ya, yb) }
+        );
       } else if (xb || yb) {
         s.push('translate(' + xb + pxComma + yb + pxParen);
       }
@@ -92234,7 +92237,7 @@
       if (a !== b) {
         if (a - b > 180) b += 360;
         else if (b - a > 180) a += 360; // shortest path
-        q.push({ i: s.push(pop(s) + 'rotate(', null, degParen) - 2, x: number$1(a, b) });
+        q.push({ i: s.push(pop(s) + 'rotate(', null, degParen) - 2, x: interpolateNumber(a, b) });
       } else if (b) {
         s.push(pop(s) + 'rotate(' + b + degParen);
       }
@@ -92242,7 +92245,7 @@
 
     function skewX(a, b, s, q) {
       if (a !== b) {
-        q.push({ i: s.push(pop(s) + 'skewX(', null, degParen) - 2, x: number$1(a, b) });
+        q.push({ i: s.push(pop(s) + 'skewX(', null, degParen) - 2, x: interpolateNumber(a, b) });
       } else if (b) {
         s.push(pop(s) + 'skewX(' + b + degParen);
       }
@@ -92251,7 +92254,10 @@
     function scale(xa, ya, xb, yb, s, q) {
       if (xa !== xb || ya !== yb) {
         var i = s.push(pop(s) + 'scale(', null, ',', null, ')');
-        q.push({ i: i - 4, x: number$1(xa, xb) }, { i: i - 2, x: number$1(ya, yb) });
+        q.push(
+          { i: i - 4, x: interpolateNumber(xa, xb) },
+          { i: i - 2, x: interpolateNumber(ya, yb) }
+        );
       } else if (xb !== 1 || yb !== 1) {
         s.push(pop(s) + 'scale(' + xb + ',' + yb + ')');
       }
@@ -92314,7 +92320,7 @@
     };
   }
 
-  function number$2(x) {
+  function number$1(x) {
     return +x;
   }
 
@@ -92427,7 +92433,7 @@
     };
 
     scale.domain = function(_) {
-      return arguments.length ? ((domain = map$6.call(_, number$2)), rescale()) : domain.slice();
+      return arguments.length ? ((domain = map$6.call(_, number$1)), rescale()) : domain.slice();
     };
 
     scale.range = function(_) {
@@ -92972,7 +92978,7 @@
   }
 
   function linear$1() {
-    var scale = continuous(deinterpolateLinear, number$1);
+    var scale = continuous(deinterpolateLinear, interpolateNumber);
 
     scale.copy = function() {
       return copy(scale, linear$1());
@@ -92991,7 +92997,7 @@
     scale.invert = scale;
 
     scale.domain = scale.range = function(_) {
-      return arguments.length ? ((domain = map$6.call(_, number$2)), scale) : domain.slice();
+      return arguments.length ? ((domain = map$6.call(_, number$1)), scale) : domain.slice();
     };
 
     scale.copy = function() {
@@ -93353,7 +93359,7 @@
     return new Date(t);
   }
 
-  function number$3(t) {
+  function number$2(t) {
     return t instanceof Date ? +t : +new Date(+t);
   }
 
@@ -93368,7 +93374,7 @@
     millisecond$$1,
     format
   ) {
-    var scale = continuous(deinterpolateLinear, number$1),
+    var scale = continuous(deinterpolateLinear, interpolateNumber),
       invert = scale.invert,
       domain = scale.domain;
 
@@ -93455,7 +93461,7 @@
     };
 
     scale.domain = function(_) {
-      return arguments.length ? domain(map$6.call(_, number$3)) : domain().map(date$1);
+      return arguments.length ? domain(map$6.call(_, number$2)) : domain().map(date$1);
     };
 
     scale.ticks = function(interval, step) {
@@ -94280,7 +94286,7 @@
 
     if (typeof commonjsRequire === 'function') {
       try {
-        moment = require$$0;
+        moment = _moment;
       } catch (e) {}
     }
 
@@ -94635,7 +94641,7 @@
 
     var _underscore2 = _interopRequireDefault(underscore);
 
-    var _moment2 = _interopRequireDefault(require$$0);
+    var _moment2 = _interopRequireDefault(_moment);
 
     var _react2 = _interopRequireDefault(react);
 
@@ -96557,12 +96563,12 @@
   function interpolate(a, b) {
     var c;
     return (typeof b === 'number'
-      ? number$1
+      ? interpolateNumber
       : b instanceof color
-        ? rgb$1
+        ? interpolateRgb
         : (c = color(b))
-          ? ((b = c), rgb$1)
-          : string)(a, b);
+          ? ((b = c), interpolateRgb)
+          : interpolateString)(a, b);
   }
 
   function attrRemove$1(name) {
@@ -97159,7 +97165,7 @@
     return 'translate(0,' + (y + 0.5) + ')';
   }
 
-  function number$4(scale) {
+  function number$3(scale) {
     return function(d) {
       return +scale(d);
     };
@@ -97205,7 +97211,7 @@
         range = scale.range(),
         range0 = +range[0] + 0.5,
         range1 = +range[range.length - 1] + 0.5,
-        position = (scale.bandwidth ? center : number$4)(scale.copy()),
+        position = (scale.bandwidth ? center : number$3)(scale.copy()),
         selection = context.selection ? context.selection() : context,
         path = selection.selectAll('.domain').data([null]),
         tick = selection
@@ -99144,7 +99150,7 @@
 
     var _merge2 = _interopRequireDefault(merge);
 
-    var _moment2 = _interopRequireDefault(require$$0);
+    var _moment2 = _interopRequireDefault(_moment);
 
     var _react2 = _interopRequireDefault(react);
 
@@ -105975,7 +105981,7 @@
             };
 
             // D3 generates each path
-            var path = (0, d3Shape.line)()
+            var path = (0, _d3Shape.line)()
               .curve(_curve2.default[this.props.interpolation])
               .x(function(d) {
                 return _this2.props.timeScale(d.x);
@@ -112907,8 +112913,7 @@
   );
 
   const styles$13 = {
-    flex: {
-      display: 'flex',
+    center: {
       justifyContent: 'center'
     }
   };
@@ -112918,8 +112923,8 @@
       const { classes } = this.props;
 
       return react.createElement(
-        'div',
-        { className: classes.flex },
+        Grid$2,
+        { className: classes.center, container: true },
         react.createElement(enhance$7, null),
         react.createElement(enhance$10, null),
         react.createElement(enhance$8, null),
@@ -113231,13 +113236,84 @@
     connect(mapStateToProps$7, mapDispatchToProps$9)
   )(SettingsDialog);
 
+  const Discord = () =>
+    react.createElement('embed', {
+      height: '100%',
+      src: 'https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/',
+      width: '100%'
+    });
+
+  const styles$16 = {
+    appBar: {
+      position: 'relative'
+    },
+    flex: {
+      flex: 1
+    }
+  };
+
+  class SupportDialog extends react_2 {
+    render() {
+      const { classes, closeDialog: closeDialog$$1, open } = this.props;
+
+      return react.createElement(
+        Dialog$2,
+        { fullScreen: true, onClose: closeDialog$$1, open: open },
+        react.createElement(
+          AppBar$2,
+          { className: classes.appBar },
+          react.createElement(
+            Toolbar$2,
+            null,
+            react.createElement(
+              IconButton$2,
+              { 'aria-label': 'Close', color: 'inherit', onClick: closeDialog$$1 },
+              react.createElement(CloseIcon, null)
+            ),
+            react.createElement(
+              Typography$2,
+              { className: classes.flex, color: 'inherit', variant: 'title' },
+              'Support'
+            ),
+            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'save')
+          )
+        ),
+        react.createElement(Discord, null)
+      );
+    }
+  }
+
+  SupportDialog.propTypes = {
+    classes: propTypes.object.isRequired,
+    closeDialog: propTypes.func.isRequired,
+    open: propTypes.bool.isRequired
+  };
+
+  const mapStateToProps$8 = ({ dialogs: { supportDialogOpen } }) => {
+    return {
+      open: supportDialogOpen
+    };
+  };
+
+  const mapDispatchToProps$10 = dispatch => {
+    return {
+      closeDialog: bindActionCreators(closeDialog, dispatch)
+    };
+  };
+
+  const enhance$16 = compose$1(
+    styles_3(styles$16),
+    connect(mapStateToProps$8, mapDispatchToProps$10)
+  )(SupportDialog);
+
   class Dialogs extends react_2 {
     render() {
       return react.createElement(
         react_5,
         null,
         react.createElement(enhance$13, null),
-        react.createElement(enhance$15, null)
+        react.createElement(enhance$15, null),
+        react.createElement(enhance$16, null)
       );
     }
   }
@@ -113252,32 +113328,6 @@
       react.createElement(enhance$3, null),
       react.createElement(Dialogs, null)
     );
-
-  const Discord = () =>
-    react.createElement('embed', {
-      height: '100%',
-      src: 'https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/',
-      width: '100%'
-    });
-
-  const styles$16 = {
-    discord: {
-      height: 'calc(100% - 82px)'
-    }
-  };
-
-  const SupportPage = ({ classes }) =>
-    react.createElement(
-      enhance$2,
-      { title: 'Support' },
-      react.createElement('div', { className: classes.discord }, react.createElement(Discord, null))
-    );
-
-  SupportPage.propTypes = {
-    classes: propTypes.object.isRequired
-  };
-
-  const enhance$16 = styles_3(styles$16)(SupportPage);
 
   var _createClass = (function() {
     function defineProperties(target, props) {
