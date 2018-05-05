@@ -7,7 +7,6 @@ import {
   SET_MINING_ADDRESS,
   SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
-  SET_MINING_SPEED_LIMIT,
   SET_PROCESS_ID,
   START_MINING,
   STOP_MINING
@@ -39,15 +38,6 @@ export const setMiningAddress = (minerIdentifier, address) => {
         }
       });
     }
-  };
-};
-
-export const setMiningSpeedLimit = (minerIdentifier, speedLimit) => {
-  return dispatch => {
-    dispatch({
-      type: SET_MINING_SPEED_LIMIT,
-      data: { speedLimit, minerIdentifier }
-    });
   };
 };
 
@@ -158,7 +148,6 @@ export const startMining = minerIdentifier => {
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-    //const speedLimit = miners[minerIdentifier].speedLimit;
 
     processManager.launchProcess(path, args(address), environmentVariables(), true, ({ data }) => {
       console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');

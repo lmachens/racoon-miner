@@ -1,15 +1,17 @@
-import { Config, Metrics, Miner, Mining, Stats } from '../components/mining';
+import { Metrics, Mining, Stats } from '../components/mining';
 
+import { Actions } from '../components/actions';
+import { Dialogs } from '../components/dialogs';
 import { PageLayout } from '../layouts';
 import React from 'react';
 
 const MiningPage = () => (
   <PageLayout>
-    <Miner />
-    <Config />
+    <Actions />
     <Stats />
     <Mining />
     <Metrics />
+    <Dialogs />
   </PageLayout>
 );
 

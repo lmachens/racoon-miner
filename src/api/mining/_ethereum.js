@@ -42,5 +42,7 @@ export const ethereum = {
   links: {
     wallet: 'https://www.myetherwallet.com/'
   },
-  isValidAddress: address => /^[0-9a-fA-F]{40}$/i.test(address)
+  isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
+  addressHint: 'It should start with 0x and have 42 characters.',
+  developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
 };

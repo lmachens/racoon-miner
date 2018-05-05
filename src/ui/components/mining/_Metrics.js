@@ -12,7 +12,6 @@ import { TimeRange, TimeSeries } from 'pondjs';
 
 import { Button } from '../generic';
 import PropTypes from 'prop-types';
-import { SpeedLimit } from './_SpeedLimit';
 import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
@@ -141,7 +140,6 @@ class Metrics extends Component {
       <Fragment>
         <div className={classes.toolbar}>
           <div className={classes.flexLeft} />
-          <div>{false && <SpeedLimit />}</div>
 
           <div className={classes.flexRight}>
             <Button disabled={liveMode} onClick={this.handleLiveModeClick}>

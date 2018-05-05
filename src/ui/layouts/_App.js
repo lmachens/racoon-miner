@@ -1,9 +1,7 @@
-import { AppBar, Button, Link, Toolbar, Typography } from '../components/generic';
-import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
+import { AppBar, Toolbar } from '../components/generic';
 import React, { Fragment } from 'react';
 
 import PropTypes from 'prop-types';
-import { Status } from '../components/mining';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
@@ -14,28 +12,17 @@ const styles = {
   flex: {
     marginLeft: 4,
     flex: 1
+  },
+  textLogo: {
+    height: 18
   }
 };
 
-const AppLayout = ({ classes, children, links, title }) => (
+const AppLayout = ({ classes, children }) => (
   <Fragment>
     <AppBar color="inherit" position="sticky">
       <Toolbar>
-        <Typography color="inherit" variant="title">
-          {title}
-        </Typography>
-        <div className={classes.flex}>
-          {links.map(link => (
-            <Link key={link.title} to={link.to}>
-              <Button>{link.title}</Button>
-            </Link>
-          ))}
-        </div>
-        <div>
-          <Status minerIdentifier={ETHEREUM_MINER} />
-          <br />
-          <Status minerIdentifier={MONERO_MINER} />
-        </div>
+        <img className={classes.textLogo} src="assets/text_logo.png" />
       </Toolbar>
     </AppBar>
     <div className={classes.children}>{children}</div>
@@ -44,9 +31,7 @@ const AppLayout = ({ classes, children, links, title }) => (
 
 AppLayout.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  links: PropTypes.array.isRequired,
-  title: PropTypes.string.isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 };
 
 const enhance = withStyles(styles)(AppLayout);

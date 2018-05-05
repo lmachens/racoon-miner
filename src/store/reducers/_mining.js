@@ -7,18 +7,15 @@ import {
   SET_MINING_ADDRESS,
   SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
-  SET_MINING_SPEED_LIMIT,
   SET_PROCESS_ID,
   START_MINING,
   STOP_MINING
 } from '../types';
-import { ETHEREUM_MINER, MONERO_MINER } from '../../api/mining';
+import { ETHEREUM_MINER, MONERO_MINER, ethereum, monero } from '../../api/mining';
 
 import set from 'lodash/set';
 
 const defaultMinerProps = {
-  address: '',
-  speedLimit: 100,
   metrics: {
     fetching: false,
     from: Number.MAX_VALUE,
@@ -30,10 +27,10 @@ const defaultMinerProps = {
 
 export const mining = (
   state = {
-    selectedMinerIdentifier: ETHEREUM_MINER,
+    selectedMinerIdentifier: MONERO_MINER,
     miners: {
-      [ETHEREUM_MINER]: { ...defaultMinerProps },
-      [MONERO_MINER]: { ...defaultMinerProps }
+      [ETHEREUM_MINER]: { ...defaultMinerProps, address: ethereum.developerAddress },
+      [MONERO_MINER]: { ...defaultMinerProps, address: monero.developerAddress }
     }
   },
   { type, data }
@@ -42,9 +39,6 @@ export const mining = (
   switch (type) {
     case SET_MINING_ADDRESS:
       set(newState, `miners.${data.minerIdentifier}.address`, data.address);
-      break;
-    case SET_MINING_SPEED_LIMIT:
-      set(newState, `miners.${data.minerIdentifier}.speedLimit`, data.speedLimit);
       break;
     case SELECT_MINER:
       set(newState, `selectedMinerIdentifier`, data);

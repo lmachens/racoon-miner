@@ -52,6 +52,12 @@ export default [
             'withStyles'
           ],
           'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent'],
+          'node_modules/material-ui/Dialog/index.js': [
+            'DialogActions',
+            'DialogContent',
+            'DialogContentText',
+            'DialogTitle'
+          ],
           'node_modules/material-ui/Table/index.js': [
             'TableBody',
             'TableRow',
@@ -60,6 +66,7 @@ export default [
           ],
           'node_modules/material-ui/Form/index.js': ['FormControl', 'FormHelperText'],
           'node_modules/material-ui/Input/index.js': ['InputLabel', 'InputAdornment'],
+          'node_modules/material-ui/Menu/index.js': ['MenuItem'],
           'node_modules/material-ui/Progress/index.js': ['CircularProgress']
         }
       }),
