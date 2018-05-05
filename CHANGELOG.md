@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/lmachens/raccoon-miner/compare/v0.2.0...v0.5.0) (2018-05-05)
+
+
+### Bug Fixes
+
+* **discord:** fix widgetbot ([4e3540c](https://github.com/lmachens/raccoon-miner/commit/4e3540c))
+* **monero:** parse mining speed ([530bd22](https://github.com/lmachens/raccoon-miner/commit/530bd22))
+
+
+### Features
+
+* **balance:** add api endpoints to get unpaid balance ([f25489c](https://github.com/lmachens/raccoon-miner/commit/f25489c))
+* **balance:** show balance ([f1f2586](https://github.com/lmachens/raccoon-miner/commit/f1f2586))
+* **core:** use dialogs instead of routes ([cff4864](https://github.com/lmachens/raccoon-miner/commit/cff4864))
+* **dialogs:** add support dialog ([c024f8f](https://github.com/lmachens/raccoon-miner/commit/c024f8f))
+* **mining:** use client address instead of dev address to use mining pools directly ([47e3674](https://github.com/lmachens/raccoon-miner/commit/47e3674))
+* **monero:** inc verbose_level to get automatic hash rate result ([d305f39](https://github.com/lmachens/raccoon-miner/commit/d305f39))
+* **stats:** add link to mining pool ([a5f1c2e](https://github.com/lmachens/raccoon-miner/commit/a5f1c2e))
+* **stitch:** fetch worker stats from stitch ([1d7970b](https://github.com/lmachens/raccoon-miner/commit/1d7970b))
+* **ui:** rework ui ([029a183](https://github.com/lmachens/raccoon-miner/commit/029a183))
+* **version:** add version to title ([45c6d47](https://github.com/lmachens/raccoon-miner/commit/45c6d47))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/lmachens/raccoon-miner/compare/v0.1.0...v0.2.0) (2018-05-01)
 
