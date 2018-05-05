@@ -5,6 +5,8 @@ import {
   generateParser
 } from './_generateParser';
 
+import get from 'lodash/get';
+
 export const MONERO_MINER = 'MONERO_MINER';
 export const monero = {
   name: 'Monero',
@@ -26,6 +28,7 @@ export const monero = {
     stats: () => 'https://supportxmr.com/#/dashboard',
     api: address => `https://supportxmr.com/api/miner/${address}/stats`
   },
+  apiParser: result => ({ unpaidBalance: (get(result, 'amtDue') || 0) / 1000000000000 }),
   isValidAddress: address =>
     /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
   addressHint: 'It should have 95 characters.',

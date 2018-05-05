@@ -1,4 +1,3 @@
-import { fetchVersion, trackHardwareInfo } from '../../store/actions';
 import { persistor, store } from '../../store';
 
 import { AppLayout } from '../../ui/layouts';
@@ -13,7 +12,6 @@ import { initialize as initializeAnalytics } from '../../api/analytics';
 import { light } from '../../ui/themes';
 
 initializeAnalytics();
-store.dispatch(fetchVersion(), trackHardwareInfo());
 
 const App = (
   <Provider store={store}>

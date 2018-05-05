@@ -21,7 +21,7 @@ class BalanceCard extends Component {
     return (
       <CardLayout>
         <Typography className={classes.load} variant="display1">
-          {(workerStats.unpaidBalance / 1000000000000 || 0).toFixed(10)} {miner.currency}
+          {(workerStats.unpaidBalance || 0).toFixed(10)} {miner.currency}
         </Typography>
         <Typography variant="caption">Unpaid Balance</Typography>
       </CardLayout>

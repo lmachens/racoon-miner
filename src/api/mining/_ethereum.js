@@ -5,6 +5,8 @@ import {
   generateParser
 } from './_generateParser';
 
+import get from 'lodash/get';
+
 export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
@@ -33,6 +35,9 @@ export const ethereum = {
     stats: address => `https://ethermine.org/miners/${address}/dashboard`,
     api: address => `https://api.ethermine.org/miner/${address}/dashboard`
   },
+  apiParser: result => ({
+    unpaidBalance: (get(result, 'data.currentStatistics.unpaid') || 0) / 1000000000000000000
+  }),
   isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
   addressHint: 'It should start with 0x and have 42 characters.',
   developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'

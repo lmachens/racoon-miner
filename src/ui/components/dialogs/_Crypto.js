@@ -6,7 +6,6 @@ import {
   DialogContentText,
   ExternalLink,
   FormControl,
-  IconButton,
   InfoButton,
   InputAdornment,
   InputLabel,
@@ -16,7 +15,7 @@ import {
   Toolbar,
   Typography
 } from '../generic';
-import { CloseIcon, DoneIcon, ErrorIcon } from '../icons';
+import { DoneIcon, ErrorIcon } from '../icons';
 import React, { PureComponent } from 'react';
 import { closeDialog, selectMiner, setMiningAddress } from '../../../store/actions';
 import { ethereum, getMiner, monero } from '../../../api/mining';
@@ -71,14 +70,11 @@ class CryptoDialog extends PureComponent {
       <Dialog fullScreen onClose={closeDialog} open={open}>
         <AppBar className={classes.appBar}>
           <Toolbar>
-            <IconButton aria-label="Close" color="inherit" onClick={closeDialog}>
-              <CloseIcon />
-            </IconButton>
             <Typography className={classes.flex} color="inherit" variant="title">
               Setup
             </Typography>
             <Button color="inherit" onClick={closeDialog}>
-              save
+              Done
             </Button>
           </Toolbar>
         </AppBar>

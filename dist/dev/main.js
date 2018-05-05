@@ -1,428 +1,6 @@
 (function() {
   'use strict';
 
-  const CLOSE_DIALOG = 'CLOSE_DIALOG';
-  const OPEN_CRYPTO_DIALOG = 'OPEN_CRYPTO_DIALOG';
-  const OPEN_SETTINGS_DIALOG = 'OPEN_SETTINGS_DIALOG';
-  const OPEN_SUPPORT_DIALOG = 'OPEN_SUPPORT_DIALOG';
-
-  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
-
-  const CONNECTING_POOL = 'CONNECTING_POOL';
-  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
-  const SELECT_MINER = 'SELECT_MINER';
-  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
-  const SET_MINING_SPEED = 'SET_MINING_SPEED';
-  const SET_PROCESS_ID = 'SET_PROCESS_ID';
-  const START_MINING = 'START_MINING';
-  const STOP_MINING = 'STOP_MINING';
-  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
-  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
-  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
-
-  const RECEIVE_VERSION = 'RECEIVE_VERSION';
-
-  const closeDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: CLOSE_DIALOG
-      });
-    };
-  };
-
-  const openCryptoDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_CRYPTO_DIALOG
-      });
-    };
-  };
-
-  const openSettingsDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_SETTINGS_DIALOG
-      });
-    };
-  };
-
-  const openSupportDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_SUPPORT_DIALOG
-      });
-    };
-  };
-
-  const interval = 1000;
-
-  const requestHardwareInfo = () => {
-    console.log('request hardware info');
-    overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
-      console.log(reason);
-      if (reason === 'Permissions Required') {
-        overwolf.benchmarking.requestPermissions(({ status }) => {
-          if (status === 'success') {
-            requestHardwareInfo();
-          }
-        });
-      }
-    });
-  };
-
-  const addHardwareInfoListener = listener => {
-    overwolf.benchmarking.onHardwareInfoReady.addListener(listener);
-    requestHardwareInfo();
-  };
-
-  const trackHardwareInfo = () => {
-    return dispatch => {
-      const hardwareInfoListener = hardwareInfo => {
-        dispatch({
-          type: RECEIVE_HARDWARE_INFO,
-          data: hardwareInfo
-        });
-      };
-
-      addHardwareInfoListener(hardwareInfoListener);
-    };
-  };
-
-  const SPEED_REGEX = 'SPEED_REGEX';
-  const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
-  const CONNECTING = 'CONNECTING';
-
-  const generateParser = regex => line => {
-    const result = {
-      timestamp: Date.now()
-    };
-    //console.info(line);
-    if (regex.SPEED_REGEX) {
-      const parsed = line.match(regex.SPEED_REGEX);
-      if (parsed) result.speed = parseFloat(parsed[1]);
-    }
-    if (regex.CONNECTION_FAILED_REGEX) {
-      const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
-      if (parsed) result.errorMsg = 'Connection failed';
-    }
-    if (regex.CONNECTING) {
-      const parsed = line.match(regex.CONNECTING);
-      if (parsed) result.connecting = true;
-    }
-    return result;
-  };
-
-  const ETHEREUM_MINER = 'ETHEREUM_MINER';
-  const ethereum = {
-    name: 'Ethereum',
-    identifier: ETHEREUM_MINER,
-    logo: 'assets/ethereum.png',
-    currency: 'ETH',
-    minimumPaymentThreshold: 0.05,
-    parser: generateParser({
-      [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
-      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
-      [CONNECTING]: /not-connected/
-    }),
-    path: 'ethereum/ethminer.exe',
-    args: address =>
-      `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${address}.raccoon`,
-    environmentVariables: () =>
-      JSON.stringify({
-        GPU_FORCE_64BIT_PTR: '0',
-        GPU_MAX_HEAP_SIZE: '100',
-        GPU_USE_SYNC_OBJECTS: '1',
-        GPU_MAX_ALLOC_PERCENT: '100',
-        GPU_SINGLE_ALLOC_PERCENT: '100'
-      }),
-    links: {
-      wallet: 'https://www.myetherwallet.com/',
-      stats: address => `https://ethermine.org/miners/${address}/dashboard`,
-      api: address => `https://api.ethermine.org/miner/${address}/dashboard`
-    },
-    isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
-    addressHint: 'It should start with 0x and have 42 characters.',
-    developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
-  };
-
-  const MONERO_MINER = 'MONERO_MINER';
-  const monero = {
-    name: 'Monero',
-    identifier: MONERO_MINER,
-    logo: 'assets/monero.png',
-    currency: 'XMR',
-    minimumPaymentThreshold: 0.1,
-    parser: generateParser({
-      [SPEED_REGEX]: /Totals \(ALL\):\s+(.+)\s/,
-      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
-      [CONNECTING]: /not-connected/
-    }),
-    path: 'monero/xmr-stak.exe',
-    args: address =>
-      `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
-    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
-    links: {
-      wallet: 'https://getmonero.org/',
-      stats: () => 'https://supportxmr.com/#/dashboard',
-      api: address => `https://supportxmr.com/api/miner/${address}/stats`
-    },
-    isValidAddress: address =>
-      /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
-    addressHint: 'It should have 95 characters.',
-    developerAddress:
-      '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
-  };
-
-  const getMiner = minerIdentifier => {
-    switch (minerIdentifier) {
-      case ETHEREUM_MINER:
-        return ethereum;
-      case MONERO_MINER:
-        return monero;
-    }
-  };
-
-  const callOverwolfWithPromise = (method, ...params) => {
-    return new Promise((resolve, reject) => {
-      const handleResult = result => {
-        if (result) return resolve(result);
-        return reject(result);
-      };
-
-      console.log(method, params);
-      if (params) {
-        method(...params, handleResult);
-      } else {
-        method(handleResult);
-      }
-    });
-  };
-
-  const getVersion = () => {
-    return new Promise(async resolve => {
-      const result = await callOverwolfWithPromise(overwolf.extensions.current.getManifest);
-      resolve(result.meta.version);
-    });
-  };
-
-  let processManager = null;
-  const getProcessManagerPlugin = () => {
-    return new Promise(async resolve => {
-      if (processManager) return resolve(processManager);
-      const result = await callOverwolfWithPromise(
-        overwolf.extensions.current.getExtraObject,
-        'process-manager-plugin'
-      );
-      processManager = result.object;
-      resolve(result.object);
-    });
-  };
-
-  let simpleIoPlugin;
-  const getSimpleIoPlugin = () => {
-    return new Promise(async resolve => {
-      if (simpleIoPlugin) return resolve(simpleIoPlugin);
-      const result = await callOverwolfWithPromise(
-        overwolf.extensions.current.getExtraObject,
-        'simple-io-plugin'
-      );
-      simpleIoPlugin = result.object;
-      resolve(result.object);
-    });
-  };
-
-  /**
-   * Checks if `value` is `null` or `undefined`.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
-   * @example
-   *
-   * _.isNil(null);
-   * // => true
-   *
-   * _.isNil(void 0);
-   * // => true
-   *
-   * _.isNil(NaN);
-   * // => false
-   */
-  function isNil(value) {
-    return value == null;
-  }
-
-  var isNil_1 = isNil;
-
-  const setMiningAddress = (minerIdentifier, address) => {
-    return dispatch => {
-      dispatch({
-        type: SET_MINING_ADDRESS,
-        data: { address, minerIdentifier }
-      });
-
-      const miner = getMiner(minerIdentifier);
-      const validAddress = miner.isValidAddress(address);
-
-      if (validAddress);
-      else {
-        dispatch({
-          type: RECEIVE_WORKER_STATS,
-          data: {
-            minerIdentifier,
-            workerStats: {}
-          }
-        });
-      }
-    };
-  };
-
-  const selectMiner = minerIdentifier => {
-    return dispatch => {
-      dispatch({
-        type: SELECT_MINER,
-        data: minerIdentifier
-      });
-      dispatch(fetchWorkerStats(minerIdentifier));
-    };
-  };
-
-  const fetchWorkerStats = minerIdentifier => {
-    return (dispatch, getState) => {
-      const {
-        mining: { miners }
-      } = getState();
-      const { address } = miners[minerIdentifier];
-      if (!address) return;
-
-      /*stats
-        .fetchWorkerStats({ minerId: minerGroup, workerId })
-        .catch(error => {
-          dispatch({
-            type: SET_MINING_ERROR_MESSAGE,
-            data: {
-              minerIdentifier,
-              errorMsg: error.message
-            }
-          });
-        })
-        .then(response => {
-          if (response) {
-            dispatch({
-              type: RECEIVE_WORKER_STATS,
-              data: {
-                minerIdentifier,
-                workerStats: response
-              }
-            });
-          }
-        });*/
-    };
-  };
-
-  const handleDataByIdenfier = {};
-  let sendTextInterval = null;
-  const startMining = minerIdentifier => {
-    return async (dispatch, getState) => {
-      const {
-        mining: { miners, selectedMinerIdentifier }
-      } = getState();
-      const address = miners[selectedMinerIdentifier].address || 'default';
-      if (handleDataByIdenfier[minerIdentifier]) return;
-      const processManager = await getProcessManagerPlugin();
-      const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
-
-      dispatch({
-        type: START_MINING,
-        data: { minerIdentifier }
-      });
-
-      handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
-        const { connecting, errorMsg, speed } = parser(error || data);
-
-        if (connecting) {
-          dispatch({
-            type: CONNECTING_POOL,
-            data: {
-              minerIdentifier
-            }
-          });
-        } else if (!isNil_1(speed)) {
-          dispatch({
-            type: SET_MINING_SPEED,
-            data: {
-              minerIdentifier,
-              speed
-            }
-          });
-        } else if (!isNil_1(errorMsg)) {
-          dispatch({
-            type: SET_MINING_ERROR_MESSAGE,
-            data: {
-              minerIdentifier,
-              errorMsg
-            }
-          });
-        }
-      };
-      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-
-      processManager.launchProcess(
-        path,
-        args(address),
-        environmentVariables(),
-        true,
-        ({ data }) => {
-          console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
-          dispatch({
-            type: SET_PROCESS_ID,
-            data: {
-              minerIdentifier,
-              processId: data
-            }
-          });
-        }
-      );
-    };
-  };
-
-  const stopMining = minerIdentifier => {
-    return async (dispatch, getState) => {
-      const processManager = await getProcessManagerPlugin();
-      const { activeMiners } = getState();
-
-      dispatch({
-        type: STOP_MINING,
-        data: { minerIdentifier }
-      });
-      const processId = activeMiners[minerIdentifier].processId;
-      console.info(`%cStop mining ${processId}`, 'color: blue');
-      if (processId || handleDataByIdenfier[minerIdentifier]) {
-        if (sendTextInterval) {
-          clearInterval(sendTextInterval);
-          sendTextInterval = null;
-        }
-        processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
-        processManager.terminateProcess(processId);
-        delete handleDataByIdenfier[minerIdentifier];
-      }
-    };
-  };
-
-  const fetchVersion = () => {
-    return dispatch => {
-      getVersion().then(version => {
-        dispatch({
-          type: RECEIVE_VERSION,
-          data: version
-        });
-      });
-    };
-  };
-
   function symbolObservablePonyfill(root) {
     var result;
     var Symbol = root.Symbol;
@@ -1157,9 +735,9 @@
   }
 
   /*
-   * This is a dummy function to check if the function name has been altered by minification.
-   * If the function has been minified and NODE_ENV !== 'production', warn the user.
-   */
+	 * This is a dummy function to check if the function name has been altered by minification.
+	 * If the function has been minified and NODE_ENV !== 'production', warn the user.
+	 */
   function isCrushed() {}
 
   if (typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
@@ -1172,553 +750,143 @@
     );
   }
 
-  var KEY_PREFIX = 'persist:';
-  var FLUSH = 'persist/FLUSH';
-  var REHYDRATE = 'persist/REHYDRATE';
-  var PAUSE = 'persist/PAUSE';
-  var PERSIST = 'persist/PERSIST';
-  var PURGE = 'persist/PURGE';
-  var REGISTER = 'persist/REGISTER';
-  var DEFAULT_VERSION = -1;
+  const CLOSE_DIALOG = 'CLOSE_DIALOG';
+  const OPEN_CRYPTO_DIALOG = 'OPEN_CRYPTO_DIALOG';
+  const OPEN_SETTINGS_DIALOG = 'OPEN_SETTINGS_DIALOG';
+  const OPEN_SUPPORT_DIALOG = 'OPEN_SUPPORT_DIALOG';
 
-  var _typeof$1 =
-    typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-      ? function(obj) {
-          return typeof obj;
-        }
-      : function(obj) {
-          return obj &&
-            typeof Symbol === 'function' &&
-            obj.constructor === Symbol &&
-            obj !== Symbol.prototype
-            ? 'symbol'
-            : typeof obj;
-        };
+  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
 
-  var _extends$1 =
-    Object.assign ||
-    function(target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-      return target;
-    };
+  const CONNECTING_POOL = 'CONNECTING_POOL';
+  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
+  const SELECT_MINER = 'SELECT_MINER';
+  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
+  const SET_MINING_SPEED = 'SET_MINING_SPEED';
+  const SET_PROCESS_ID = 'SET_PROCESS_ID';
+  const START_MINING = 'START_MINING';
+  const STOP_MINING = 'STOP_MINING';
+  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
+  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
+  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
 
-  function autoMergeLevel1(inboundState, originalState, reducedState, _ref) {
-    var debug = _ref.debug;
+  const RECEIVE_VERSION = 'RECEIVE_VERSION';
 
-    var newState = _extends$1({}, reducedState);
-    // only rehydrate if inboundState exists and is an object
-    if (
-      inboundState &&
-      (typeof inboundState === 'undefined' ? 'undefined' : _typeof$1(inboundState)) === 'object'
-    ) {
-      Object.keys(inboundState).forEach(function(key) {
-        // ignore _persist data
-        if (key === '_persist') return;
-        // if reducer modifies substate, skip auto rehydration
-        if (originalState[key] !== reducedState[key]) {
-          if (debug)
-            console.log(
-              'redux-persist/stateReconciler: sub state for key `%s` modified, skipping.',
-              key
-            );
-          return;
-        }
-        // otherwise hard set the new value
-        newState[key] = inboundState[key];
+  const closeDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: CLOSE_DIALOG
       });
-    }
-
-    if (
-      debug &&
-      inboundState &&
-      (typeof inboundState === 'undefined' ? 'undefined' : _typeof$1(inboundState)) === 'object'
-    )
-      console.log(
-        "redux-persist/stateReconciler: rehydrated keys '" +
-          Object.keys(inboundState).join(', ') +
-          "'"
-      );
-
-    return newState;
-  }
-
-  /*
-    autoMergeLevel1: 
-      - merges 1 level of substate
-      - skips substate if already modified
-  */
-
-  // @TODO remove once flow < 0.63 support is no longer required.
-
-  function createPersistoid(config) {
-    // defaults
-    var blacklist = config.blacklist || null;
-    var whitelist = config.whitelist || null;
-    var transforms = config.transforms || [];
-    var throttle = config.throttle || 0;
-    var storageKey =
-      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
-    var storage = config.storage;
-    var serialize =
-      config.serialize === false
-        ? function(x) {
-            return x;
-          }
-        : defaultSerialize;
-
-    // initialize stateful values
-    var lastState = {};
-    var stagedState = {};
-    var keysToProcess = [];
-    var timeIterator = null;
-    var writePromise = null;
-
-    var update = function update(state) {
-      // add any changed keys to the queue
-      Object.keys(state).forEach(function(key) {
-        var subState = state[key];
-        if (!passWhitelistBlacklist(key)) return; // is keyspace ignored? noop
-        if (lastState[key] === state[key]) return; // value unchanged? noop
-        if (keysToProcess.indexOf(key) !== -1) return; // is key already queued? noop
-        keysToProcess.push(key); // add key to queue
-      });
-
-      // start the time iterator if not running (read: throttle)
-      if (timeIterator === null) {
-        timeIterator = setInterval(processNextKey, throttle);
-      }
-
-      lastState = state;
     };
+  };
 
-    function processNextKey() {
-      if (keysToProcess.length === 0) {
-        if (timeIterator) clearInterval(timeIterator);
-        timeIterator = null;
-        return;
-      }
+  const openCryptoDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_CRYPTO_DIALOG
+      });
+    };
+  };
 
-      var key = keysToProcess.shift();
-      var endState = transforms.reduce(function(subState, transformer) {
-        return transformer.in(subState, key, lastState);
-      }, lastState[key]);
-      if (typeof endState !== 'undefined') stagedWrite(key, endState);
-    }
+  const openSettingsDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_SETTINGS_DIALOG
+      });
+    };
+  };
 
-    function stagedWrite(key, endState) {
-      try {
-        stagedState[key] = serialize(endState);
-      } catch (err) {
-        console.error('redux-persist/createPersistoid: error serializing state', err);
-      }
-      if (keysToProcess.length === 0) {
-        // cleanup any removed keys just before write.
-        Object.keys(stagedState).forEach(function(key) {
-          if (lastState[key] === undefined) {
-            delete stagedState[key];
+  const openSupportDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_SUPPORT_DIALOG
+      });
+    };
+  };
+
+  const interval = 1000;
+
+  const requestHardwareInfo = () => {
+    console.log('request hardware info');
+    overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
+      console.log(reason);
+      if (reason === 'Permissions Required') {
+        overwolf.benchmarking.requestPermissions(({ status }) => {
+          if (status === 'success') {
+            requestHardwareInfo();
           }
         });
-
-        writePromise = storage.setItem(storageKey, serialize(stagedState)).catch(onWriteFail);
-      }
-    }
-
-    function passWhitelistBlacklist(key) {
-      if (whitelist && whitelist.indexOf(key) === -1 && key !== '_persist') return false;
-      if (blacklist && blacklist.indexOf(key) !== -1) return false;
-      return true;
-    }
-
-    function onWriteFail(err) {
-      // @TODO add fail handlers (typically storage full)
-      if (err && 'development' !== 'production') {
-        console.error('Error storing data', err);
-      }
-    }
-
-    var flush = function flush() {
-      while (keysToProcess.length !== 0) {
-        processNextKey();
-      }
-      return writePromise || Promise.resolve();
-    };
-
-    // return `persistoid`
-    return {
-      update: update,
-      flush: flush
-    };
-  }
-
-  // @NOTE in the future this may be exposed via config
-  function defaultSerialize(data) {
-    return JSON.stringify(data);
-  }
-
-  function getStoredState(config) {
-    var transforms = config.transforms || [];
-    var storageKey =
-      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
-    var storage = config.storage;
-    var debug = config.debug;
-    var deserialize =
-      config.serialize === false
-        ? function(x) {
-            return x;
-          }
-        : defaultDeserialize;
-    return storage.getItem(storageKey).then(function(serialized) {
-      if (!serialized) return undefined;
-      else {
-        try {
-          var state = {};
-          var rawState = deserialize(serialized);
-          Object.keys(rawState).forEach(function(key) {
-            state[key] = transforms.reduceRight(function(subState, transformer) {
-              return transformer.out(subState, key, rawState);
-            }, deserialize(rawState[key]));
-          });
-          return state;
-        } catch (err) {
-          if (debug)
-            console.log('redux-persist/getStoredState: Error restoring data ' + serialized, err);
-          throw err;
-        }
       }
     });
-  }
-
-  function defaultDeserialize(serial) {
-    return JSON.parse(serial);
-  }
-
-  function purgeStoredState(config) {
-    var storage = config.storage;
-    var storageKey =
-      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
-    return storage.removeItem(storageKey, warnIfRemoveError);
-  }
-
-  function warnIfRemoveError(err) {
-    if (err && 'development' !== 'production') {
-      console.error('redux-persist/purgeStoredState: Error purging data stored state', err);
-    }
-  }
-
-  var _extends$2 =
-    Object.assign ||
-    function(target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-      return target;
-    };
-
-  function _objectWithoutProperties(obj, keys) {
-    var target = {};
-    for (var i in obj) {
-      if (keys.indexOf(i) >= 0) continue;
-      if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
-      target[i] = obj[i];
-    }
-    return target;
-  }
-
-  var DEFAULT_TIMEOUT = 5000;
-  /*
-    @TODO add validation / handling for:
-    - persisting a reducer which has nested _persist
-    - handling actions that fire before reydrate is called
-  */
-  function persistReducer(config, baseReducer) {
-    {
-      if (!config) throw new Error('config is required for persistReducer');
-      if (!config.key) throw new Error('key is required in persistor config');
-      if (!config.storage)
-        throw new Error(
-          "redux-persist: config.storage is required. Try using one of the provided storage engines `import storageLocal from 'redux-persist/es/storage/local'"
-        );
-    }
-
-    var version = config.version !== undefined ? config.version : DEFAULT_VERSION;
-    var debug = config.debug || false;
-    var stateReconciler =
-      config.stateReconciler === undefined ? autoMergeLevel1 : config.stateReconciler;
-    var getStoredState$$1 = config.getStoredState || getStoredState;
-    var timeout = config.timeout !== undefined ? config.timeout : DEFAULT_TIMEOUT;
-    var _persistoid = null;
-    var _purge = false;
-    var _paused = true;
-    var conditionalUpdate = function conditionalUpdate(state) {
-      // update the persistoid only if we are rehydrated and not paused
-      state._persist.rehydrated && _persistoid && !_paused && _persistoid.update(state);
-      return state;
-    };
-
-    return function(state, action) {
-      var _ref = state || {},
-        _persist = _ref._persist,
-        rest = _objectWithoutProperties(_ref, ['_persist']);
-
-      var restState = rest;
-
-      if (action.type === PERSIST) {
-        var _sealed = false;
-        var _rehydrate = function _rehydrate(payload, err) {
-          // dev warning if we are already sealed
-          if (_sealed)
-            console.error(
-              'redux-persist: rehydrate for "' + config.key + '" called after timeout.',
-              payload,
-              err
-            );
-
-          // only rehydrate if we are not already sealed
-          if (!_sealed) {
-            action.rehydrate(config.key, payload, err);
-            _sealed = true;
-          }
-        };
-        timeout &&
-          setTimeout(function() {
-            !_sealed &&
-              _rehydrate(
-                undefined,
-                new Error('redux-persist: persist timed out for persist key "' + config.key + '"')
-              );
-          }, timeout);
-
-        // @NOTE PERSIST resumes if paused.
-        _paused = false;
-
-        // @NOTE only ever create persistoid once, ensure we call it at least once, even if _persist has already been set
-        if (!_persistoid) _persistoid = createPersistoid(config);
-
-        // @NOTE PERSIST can be called multiple times, noop after the first
-        if (_persist) return state;
-        if (typeof action.rehydrate !== 'function' || typeof action.register !== 'function')
-          throw new Error(
-            'redux-persist: either rehydrate or register is not a function on the PERSIST action. This can happen if the action is being replayed. This is an unexplored use case, please open an issue and we will figure out a resolution.'
-          );
-
-        action.register(config.key);
-
-        getStoredState$$1(config).then(
-          function(restoredState) {
-            var migrate =
-              config.migrate ||
-              function(s, v) {
-                return Promise.resolve(s);
-              };
-            migrate(restoredState, version).then(
-              function(migratedState) {
-                _rehydrate(migratedState);
-              },
-              function(migrateErr) {
-                if (migrateErr) console.error('redux-persist: migration error', migrateErr);
-                _rehydrate(undefined, migrateErr);
-              }
-            );
-          },
-          function(err) {
-            _rehydrate(undefined, err);
-          }
-        );
-
-        return _extends$2({}, baseReducer(restState, action), {
-          _persist: { version: version, rehydrated: false }
-        });
-      } else if (action.type === PURGE) {
-        _purge = true;
-        action.result(purgeStoredState(config));
-        return _extends$2({}, baseReducer(restState, action), {
-          _persist: _persist
-        });
-      } else if (action.type === FLUSH) {
-        action.result(_persistoid && _persistoid.flush());
-        return _extends$2({}, baseReducer(restState, action), {
-          _persist: _persist
-        });
-      } else if (action.type === PAUSE) {
-        _paused = true;
-      } else if (action.type === REHYDRATE) {
-        // noop on restState if purging
-        if (_purge)
-          return _extends$2({}, restState, {
-            _persist: _extends$2({}, _persist, { rehydrated: true })
-
-            // @NOTE if key does not match, will continue to default else below
-          });
-        if (action.key === config.key) {
-          var reducedState = baseReducer(restState, action);
-          var inboundState = action.payload;
-          // only reconcile state if stateReconciler and inboundState are both defined
-          var reconciledRest =
-            stateReconciler !== false && inboundState !== undefined
-              ? stateReconciler(inboundState, state, reducedState, config)
-              : reducedState;
-
-          var _newState = _extends$2({}, reconciledRest, {
-            _persist: _extends$2({}, _persist, { rehydrated: true })
-          });
-          return conditionalUpdate(_newState);
-        }
-      }
-
-      // if we have not already handled PERSIST, straight passthrough
-      if (!_persist) return baseReducer(state, action);
-
-      // run base reducer:
-      // is state modified ? return original : return updated
-      var newState = baseReducer(restState, action);
-      if (newState === restState) return state;
-      else {
-        newState._persist = _persist;
-        return conditionalUpdate(newState);
-      }
-    };
-  }
-
-  var _extends$4 =
-    Object.assign ||
-    function(target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-      return target;
-    };
-
-  function _toConsumableArray(arr) {
-    if (Array.isArray(arr)) {
-      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
-        arr2[i] = arr[i];
-      }
-      return arr2;
-    } else {
-      return Array.from(arr);
-    }
-  }
-
-  var initialState = {
-    registry: [],
-    bootstrapped: false
   };
 
-  var persistorReducer = function persistorReducer() {
-    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-    var action = arguments[1];
-
-    switch (action.type) {
-      case REGISTER:
-        return _extends$4({}, state, {
-          registry: [].concat(_toConsumableArray(state.registry), [action.key])
-        });
-      case REHYDRATE:
-        var firstIndex = state.registry.indexOf(action.key);
-        var registry = [].concat(_toConsumableArray(state.registry));
-        registry.splice(firstIndex, 1);
-        return _extends$4({}, state, { registry: registry, bootstrapped: registry.length === 0 });
-      default:
-        return state;
-    }
+  const addHardwareInfoListener = listener => {
+    overwolf.benchmarking.onHardwareInfoReady.addListener(listener);
+    requestHardwareInfo();
   };
 
-  function persistStore(store, options, cb) {
-    // help catch incorrect usage of passing PersistConfig in as PersistorOptions
-    {
-      var optionsToTest = options || {};
-      var bannedKeys = ['blacklist', 'whitelist', 'transforms', 'storage', 'keyPrefix', 'migrate'];
-      bannedKeys.forEach(function(k) {
-        if (!!optionsToTest[k])
-          console.error(
-            'redux-persist: invalid option passed to persistStore: "' +
-              k +
-              '". You may be incorrectly passing persistConfig into persistStore, whereas it should be passed into persistReducer.'
-          );
-      });
-    }
-    var boostrappedCb = cb || false;
-
-    var _pStore = createStore(
-      persistorReducer,
-      initialState,
-      options ? options.enhancer : undefined
-    );
-    var register = function register(key) {
-      _pStore.dispatch({
-        type: REGISTER,
-        key: key
-      });
-    };
-
-    var rehydrate = function rehydrate(key, payload, err) {
-      var rehydrateAction = {
-        type: REHYDRATE,
-        payload: payload,
-        err: err,
-        key: key
-        // dispatch to `store` to rehydrate and `persistor` to track result
+  const trackHardwareInfo = () => {
+    return dispatch => {
+      const hardwareInfoListener = hardwareInfo => {
+        dispatch({
+          type: RECEIVE_HARDWARE_INFO,
+          data: hardwareInfo
+        });
       };
-      store.dispatch(rehydrateAction);
-      _pStore.dispatch(rehydrateAction);
-      if (boostrappedCb && persistor.getState().bootstrapped) {
-        boostrappedCb();
-        boostrappedCb = false;
-      }
+
+      addHardwareInfoListener(hardwareInfoListener);
     };
+  };
 
-    var persistor = _extends$4({}, _pStore, {
-      purge: function purge() {
-        var results = [];
-        store.dispatch({
-          type: PURGE,
-          result: function result(purgeResult) {
-            results.push(purgeResult);
-          }
-        });
-        return Promise.all(results);
-      },
-      flush: function flush() {
-        var results = [];
-        store.dispatch({
-          type: FLUSH,
-          result: function result(flushResult) {
-            results.push(flushResult);
-          }
-        });
-        return Promise.all(results);
-      },
-      pause: function pause() {
-        store.dispatch({
-          type: PAUSE
-        });
-      },
-      persist: function persist() {
-        store.dispatch({ type: PERSIST, register: register, rehydrate: rehydrate });
-      }
-    });
+  const SPEED_REGEX = 'SPEED_REGEX';
+  const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
+  const CONNECTING = 'CONNECTING';
 
-    persistor.persist();
+  const generateParser = regex => line => {
+    const result = {
+      timestamp: Date.now()
+    };
+    //console.info(line);
+    if (regex.SPEED_REGEX) {
+      const parsed = line.match(regex.SPEED_REGEX);
+      if (parsed) result.speed = parseFloat(parsed[1]);
+    }
+    if (regex.CONNECTION_FAILED_REGEX) {
+      const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
+      if (parsed) result.errorMsg = 'Connection failed';
+    }
+    if (regex.CONNECTING) {
+      const parsed = line.match(regex.CONNECTING);
+      if (parsed) result.connecting = true;
+    }
+    return result;
+  };
 
-    return persistor;
-  }
+  /**
+   * Checks if `value` is classified as an `Array` object.
+   *
+   * @static
+   * @memberOf _
+   * @since 0.1.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is an array, else `false`.
+   * @example
+   *
+   * _.isArray([1, 2, 3]);
+   * // => true
+   *
+   * _.isArray(document.body.children);
+   * // => false
+   *
+   * _.isArray('abc');
+   * // => false
+   *
+   * _.isArray(_.noop);
+   * // => false
+   */
+  var isArray = Array.isArray;
+
+  var isArray_1 = isArray;
 
   var commonjsGlobal =
     typeof window !== 'undefined'
@@ -1729,10 +897,6 @@
           ? self
           : {};
 
-  function commonjsRequire() {
-    throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
-  }
-
   function unwrapExports(x) {
     return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, 'default')
       ? x['default']
@@ -1742,3280 +906,6 @@
   function createCommonjsModule(fn, module) {
     return (module = { exports: {} }), fn(module, module.exports), module.exports;
   }
-
-  var localforageFind = createCommonjsModule(function(module) {
-    (function(global) {
-      // commonjs environment
-      if (module.exports) {
-        module.exports = addFind;
-      } else {
-        // plain old <script> tag
-        global.localforageFind = addFind;
-      }
-
-      var UNLIMITED = -1;
-
-      function addFind(localforage) {
-        var prototype = Object.getPrototypeOf(localforage);
-        prototype.find = function find(criteria, callbackOrLimit, maybeCallback) {
-          var limit, callback;
-
-          // limit was specified
-          if (typeof callbackOrLimit == 'number') {
-            limit = callbackOrLimit;
-            callback = maybeCallback;
-          } else {
-            // no limit
-            limit = UNLIMITED;
-            callback = callbackOrLimit;
-          }
-
-          var lf = this;
-          var promise = lf.keys().then(function(keys) {
-            // no data stored
-            if (!keys.length) return [];
-            // asked for no results
-            if (!limit) return [];
-
-            var results = [],
-              pairsSeen = 0,
-              pairsExpected = keys.length;
-
-            return lf.iterate(function(value, key) {
-              if (criteria(key, value)) {
-                results.push(value);
-              }
-
-              pairsSeen += 1;
-
-              // Stop iterating and return results if we...
-
-              // have checked every key/value pair
-              if (pairsSeen == pairsExpected) return results;
-              // or have found enough results
-              if (limit != UNLIMITED && results.length == limit) return results;
-            });
-          });
-
-          return chainCallback(promise, callback);
-        };
-      }
-
-      /**
-       * Hook callback into a promise.
-       *
-       * @param promise Promise to chain onto
-       * @param callback Optional error-first callback to invoke with promise
-       * @return a promise
-       */
-      function chainCallback(promise, callback) {
-        if (callback) {
-          return promise.then(
-            function fulfilled(result) {
-              callback(null, result);
-            },
-            function rejected(reason) {
-              callback(reason);
-            }
-          );
-        } else {
-          return promise;
-        }
-      }
-    })(commonjsGlobal);
-  });
-
-  var localforage = createCommonjsModule(function(module, exports) {
-    /*!
-      localForage -- Offline Storage, Improved
-      Version 1.7.1
-      https://localforage.github.io/localForage
-      (c) 2013-2017 Mozilla, Apache License 2.0
-  */
-    (function(f) {
-      {
-        module.exports = f();
-      }
-    })(function() {
-      return (function e(t, n, r) {
-        function s(o, u) {
-          if (!n[o]) {
-            if (!t[o]) {
-              var a = typeof commonjsRequire == 'function' && commonjsRequire;
-              if (!u && a) return a(o, !0);
-              if (i) return i(o, !0);
-              var f = new Error("Cannot find module '" + o + "'");
-              throw ((f.code = 'MODULE_NOT_FOUND'), f);
-            }
-            var l = (n[o] = { exports: {} });
-            t[o][0].call(
-              l.exports,
-              function(e) {
-                var n = t[o][1][e];
-                return s(n ? n : e);
-              },
-              l,
-              l.exports,
-              e,
-              t,
-              n,
-              r
-            );
-          }
-          return n[o].exports;
-        }
-        var i = typeof commonjsRequire == 'function' && commonjsRequire;
-        for (var o = 0; o < r.length; o++) s(r[o]);
-        return s;
-      })(
-        {
-          1: [
-            function(_dereq_, module, exports) {
-              (function(global) {
-                var Mutation = global.MutationObserver || global.WebKitMutationObserver;
-
-                var scheduleDrain;
-
-                {
-                  if (Mutation) {
-                    var called = 0;
-                    var observer = new Mutation(nextTick);
-                    var element = global.document.createTextNode('');
-                    observer.observe(element, {
-                      characterData: true
-                    });
-                    scheduleDrain = function() {
-                      element.data = called = ++called % 2;
-                    };
-                  } else if (!global.setImmediate && typeof global.MessageChannel !== 'undefined') {
-                    var channel = new global.MessageChannel();
-                    channel.port1.onmessage = nextTick;
-                    scheduleDrain = function() {
-                      channel.port2.postMessage(0);
-                    };
-                  } else if (
-                    'document' in global &&
-                    'onreadystatechange' in global.document.createElement('script')
-                  ) {
-                    scheduleDrain = function() {
-                      // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
-                      // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-                      var scriptEl = global.document.createElement('script');
-                      scriptEl.onreadystatechange = function() {
-                        nextTick();
-
-                        scriptEl.onreadystatechange = null;
-                        scriptEl.parentNode.removeChild(scriptEl);
-                        scriptEl = null;
-                      };
-                      global.document.documentElement.appendChild(scriptEl);
-                    };
-                  } else {
-                    scheduleDrain = function() {
-                      setTimeout(nextTick, 0);
-                    };
-                  }
-                }
-
-                var draining;
-                var queue = [];
-                //named nextTick for less confusing stack traces
-                function nextTick() {
-                  draining = true;
-                  var i, oldQueue;
-                  var len = queue.length;
-                  while (len) {
-                    oldQueue = queue;
-                    queue = [];
-                    i = -1;
-                    while (++i < len) {
-                      oldQueue[i]();
-                    }
-                    len = queue.length;
-                  }
-                  draining = false;
-                }
-
-                module.exports = immediate;
-                function immediate(task) {
-                  if (queue.push(task) === 1 && !draining) {
-                    scheduleDrain();
-                  }
-                }
-              }.call(
-                this,
-                typeof commonjsGlobal !== 'undefined'
-                  ? commonjsGlobal
-                  : typeof self !== 'undefined'
-                    ? self
-                    : typeof window !== 'undefined'
-                      ? window
-                      : {}
-              ));
-            },
-            {}
-          ],
-          2: [
-            function(_dereq_, module, exports) {
-              var immediate = _dereq_(1);
-
-              /* istanbul ignore next */
-              function INTERNAL() {}
-
-              var handlers = {};
-
-              var REJECTED = ['REJECTED'];
-              var FULFILLED = ['FULFILLED'];
-              var PENDING = ['PENDING'];
-
-              module.exports = Promise;
-
-              function Promise(resolver) {
-                if (typeof resolver !== 'function') {
-                  throw new TypeError('resolver must be a function');
-                }
-                this.state = PENDING;
-                this.queue = [];
-                this.outcome = void 0;
-                if (resolver !== INTERNAL) {
-                  safelyResolveThenable(this, resolver);
-                }
-              }
-
-              Promise.prototype['catch'] = function(onRejected) {
-                return this.then(null, onRejected);
-              };
-              Promise.prototype.then = function(onFulfilled, onRejected) {
-                if (
-                  (typeof onFulfilled !== 'function' && this.state === FULFILLED) ||
-                  (typeof onRejected !== 'function' && this.state === REJECTED)
-                ) {
-                  return this;
-                }
-                var promise = new this.constructor(INTERNAL);
-                if (this.state !== PENDING) {
-                  var resolver = this.state === FULFILLED ? onFulfilled : onRejected;
-                  unwrap(promise, resolver, this.outcome);
-                } else {
-                  this.queue.push(new QueueItem(promise, onFulfilled, onRejected));
-                }
-
-                return promise;
-              };
-              function QueueItem(promise, onFulfilled, onRejected) {
-                this.promise = promise;
-                if (typeof onFulfilled === 'function') {
-                  this.onFulfilled = onFulfilled;
-                  this.callFulfilled = this.otherCallFulfilled;
-                }
-                if (typeof onRejected === 'function') {
-                  this.onRejected = onRejected;
-                  this.callRejected = this.otherCallRejected;
-                }
-              }
-              QueueItem.prototype.callFulfilled = function(value) {
-                handlers.resolve(this.promise, value);
-              };
-              QueueItem.prototype.otherCallFulfilled = function(value) {
-                unwrap(this.promise, this.onFulfilled, value);
-              };
-              QueueItem.prototype.callRejected = function(value) {
-                handlers.reject(this.promise, value);
-              };
-              QueueItem.prototype.otherCallRejected = function(value) {
-                unwrap(this.promise, this.onRejected, value);
-              };
-
-              function unwrap(promise, func, value) {
-                immediate(function() {
-                  var returnValue;
-                  try {
-                    returnValue = func(value);
-                  } catch (e) {
-                    return handlers.reject(promise, e);
-                  }
-                  if (returnValue === promise) {
-                    handlers.reject(promise, new TypeError('Cannot resolve promise with itself'));
-                  } else {
-                    handlers.resolve(promise, returnValue);
-                  }
-                });
-              }
-
-              handlers.resolve = function(self, value) {
-                var result = tryCatch(getThen, value);
-                if (result.status === 'error') {
-                  return handlers.reject(self, result.value);
-                }
-                var thenable = result.value;
-
-                if (thenable) {
-                  safelyResolveThenable(self, thenable);
-                } else {
-                  self.state = FULFILLED;
-                  self.outcome = value;
-                  var i = -1;
-                  var len = self.queue.length;
-                  while (++i < len) {
-                    self.queue[i].callFulfilled(value);
-                  }
-                }
-                return self;
-              };
-              handlers.reject = function(self, error) {
-                self.state = REJECTED;
-                self.outcome = error;
-                var i = -1;
-                var len = self.queue.length;
-                while (++i < len) {
-                  self.queue[i].callRejected(error);
-                }
-                return self;
-              };
-
-              function getThen(obj) {
-                // Make sure we only access the accessor once as required by the spec
-                var then = obj && obj.then;
-                if (
-                  obj &&
-                  (typeof obj === 'object' || typeof obj === 'function') &&
-                  typeof then === 'function'
-                ) {
-                  return function appyThen() {
-                    then.apply(obj, arguments);
-                  };
-                }
-              }
-
-              function safelyResolveThenable(self, thenable) {
-                // Either fulfill, reject or reject with error
-                var called = false;
-                function onError(value) {
-                  if (called) {
-                    return;
-                  }
-                  called = true;
-                  handlers.reject(self, value);
-                }
-
-                function onSuccess(value) {
-                  if (called) {
-                    return;
-                  }
-                  called = true;
-                  handlers.resolve(self, value);
-                }
-
-                function tryToUnwrap() {
-                  thenable(onSuccess, onError);
-                }
-
-                var result = tryCatch(tryToUnwrap);
-                if (result.status === 'error') {
-                  onError(result.value);
-                }
-              }
-
-              function tryCatch(func, value) {
-                var out = {};
-                try {
-                  out.value = func(value);
-                  out.status = 'success';
-                } catch (e) {
-                  out.status = 'error';
-                  out.value = e;
-                }
-                return out;
-              }
-
-              Promise.resolve = resolve;
-              function resolve(value) {
-                if (value instanceof this) {
-                  return value;
-                }
-                return handlers.resolve(new this(INTERNAL), value);
-              }
-
-              Promise.reject = reject;
-              function reject(reason) {
-                var promise = new this(INTERNAL);
-                return handlers.reject(promise, reason);
-              }
-
-              Promise.all = all;
-              function all(iterable) {
-                var self = this;
-                if (Object.prototype.toString.call(iterable) !== '[object Array]') {
-                  return this.reject(new TypeError('must be an array'));
-                }
-
-                var len = iterable.length;
-                var called = false;
-                if (!len) {
-                  return this.resolve([]);
-                }
-
-                var values = new Array(len);
-                var resolved = 0;
-                var i = -1;
-                var promise = new this(INTERNAL);
-
-                while (++i < len) {
-                  allResolver(iterable[i], i);
-                }
-                return promise;
-                function allResolver(value, i) {
-                  self.resolve(value).then(resolveFromAll, function(error) {
-                    if (!called) {
-                      called = true;
-                      handlers.reject(promise, error);
-                    }
-                  });
-                  function resolveFromAll(outValue) {
-                    values[i] = outValue;
-                    if (++resolved === len && !called) {
-                      called = true;
-                      handlers.resolve(promise, values);
-                    }
-                  }
-                }
-              }
-
-              Promise.race = race;
-              function race(iterable) {
-                var self = this;
-                if (Object.prototype.toString.call(iterable) !== '[object Array]') {
-                  return this.reject(new TypeError('must be an array'));
-                }
-
-                var len = iterable.length;
-                var called = false;
-                if (!len) {
-                  return this.resolve([]);
-                }
-
-                var i = -1;
-                var promise = new this(INTERNAL);
-
-                while (++i < len) {
-                  resolver(iterable[i]);
-                }
-                return promise;
-                function resolver(value) {
-                  self.resolve(value).then(
-                    function(response) {
-                      if (!called) {
-                        called = true;
-                        handlers.resolve(promise, response);
-                      }
-                    },
-                    function(error) {
-                      if (!called) {
-                        called = true;
-                        handlers.reject(promise, error);
-                      }
-                    }
-                  );
-                }
-              }
-            },
-            { '1': 1 }
-          ],
-          3: [
-            function(_dereq_, module, exports) {
-              (function(global) {
-                if (typeof global.Promise !== 'function') {
-                  global.Promise = _dereq_(2);
-                }
-              }.call(
-                this,
-                typeof commonjsGlobal !== 'undefined'
-                  ? commonjsGlobal
-                  : typeof self !== 'undefined'
-                    ? self
-                    : typeof window !== 'undefined'
-                      ? window
-                      : {}
-              ));
-            },
-            { '2': 2 }
-          ],
-          4: [
-            function(_dereq_, module, exports) {
-              var _typeof =
-                typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-                  ? function(obj) {
-                      return typeof obj;
-                    }
-                  : function(obj) {
-                      return obj &&
-                        typeof Symbol === 'function' &&
-                        obj.constructor === Symbol &&
-                        obj !== Symbol.prototype
-                        ? 'symbol'
-                        : typeof obj;
-                    };
-
-              function _classCallCheck(instance, Constructor) {
-                if (!(instance instanceof Constructor)) {
-                  throw new TypeError('Cannot call a class as a function');
-                }
-              }
-
-              function getIDB() {
-                /* global indexedDB,webkitIndexedDB,mozIndexedDB,OIndexedDB,msIndexedDB */
-                try {
-                  if (typeof indexedDB !== 'undefined') {
-                    return indexedDB;
-                  }
-                  if (typeof webkitIndexedDB !== 'undefined') {
-                    return webkitIndexedDB;
-                  }
-                  if (typeof mozIndexedDB !== 'undefined') {
-                    return mozIndexedDB;
-                  }
-                  if (typeof OIndexedDB !== 'undefined') {
-                    return OIndexedDB;
-                  }
-                  if (typeof msIndexedDB !== 'undefined') {
-                    return msIndexedDB;
-                  }
-                } catch (e) {
-                  return;
-                }
-              }
-
-              var idb = getIDB();
-
-              function isIndexedDBValid() {
-                try {
-                  // Initialize IndexedDB; fall back to vendor-prefixed versions
-                  // if needed.
-                  if (!idb) {
-                    return false;
-                  }
-                  // We mimic PouchDB here;
-                  //
-                  // We test for openDatabase because IE Mobile identifies itself
-                  // as Safari. Oh the lulz...
-                  var isSafari =
-                    typeof openDatabase !== 'undefined' &&
-                    /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) &&
-                    !/Chrome/.test(navigator.userAgent) &&
-                    !/BlackBerry/.test(navigator.platform);
-
-                  var hasFetch =
-                    typeof fetch === 'function' && fetch.toString().indexOf('[native code') !== -1;
-
-                  // Safari <10.1 does not meet our requirements for IDB support (#5572)
-                  // since Safari 10.1 shipped with fetch, we can use that to detect it
-                  return (
-                    (!isSafari || hasFetch) &&
-                    typeof indexedDB !== 'undefined' &&
-                    // some outdated implementations of IDB that appear on Samsung
-                    // and HTC Android devices <4.4 are missing IDBKeyRange
-                    // See: https://github.com/mozilla/localForage/issues/128
-                    // See: https://github.com/mozilla/localForage/issues/272
-                    typeof IDBKeyRange !== 'undefined'
-                  );
-                } catch (e) {
-                  return false;
-                }
-              }
-
-              // Abstracts constructing a Blob object, so it also works in older
-              // browsers that don't support the native Blob constructor. (i.e.
-              // old QtWebKit versions, at least).
-              // Abstracts constructing a Blob object, so it also works in older
-              // browsers that don't support the native Blob constructor. (i.e.
-              // old QtWebKit versions, at least).
-              function createBlob(parts, properties) {
-                /* global BlobBuilder,MSBlobBuilder,MozBlobBuilder,WebKitBlobBuilder */
-                parts = parts || [];
-                properties = properties || {};
-                try {
-                  return new Blob(parts, properties);
-                } catch (e) {
-                  if (e.name !== 'TypeError') {
-                    throw e;
-                  }
-                  var Builder =
-                    typeof BlobBuilder !== 'undefined'
-                      ? BlobBuilder
-                      : typeof MSBlobBuilder !== 'undefined'
-                        ? MSBlobBuilder
-                        : typeof MozBlobBuilder !== 'undefined'
-                          ? MozBlobBuilder
-                          : WebKitBlobBuilder;
-                  var builder = new Builder();
-                  for (var i = 0; i < parts.length; i += 1) {
-                    builder.append(parts[i]);
-                  }
-                  return builder.getBlob(properties.type);
-                }
-              }
-
-              // This is CommonJS because lie is an external dependency, so Rollup
-              // can just ignore it.
-              if (typeof Promise === 'undefined') {
-                // In the "nopromises" build this will just throw if you don't have
-                // a global promise object, but it would throw anyway later.
-                _dereq_(3);
-              }
-              var Promise$1 = Promise;
-
-              function executeCallback(promise, callback) {
-                if (callback) {
-                  promise.then(
-                    function(result) {
-                      callback(null, result);
-                    },
-                    function(error) {
-                      callback(error);
-                    }
-                  );
-                }
-              }
-
-              function executeTwoCallbacks(promise, callback, errorCallback) {
-                if (typeof callback === 'function') {
-                  promise.then(callback);
-                }
-
-                if (typeof errorCallback === 'function') {
-                  promise['catch'](errorCallback);
-                }
-              }
-
-              function normalizeKey(key) {
-                // Cast the key to a string, as that's all we can set as a key.
-                if (typeof key !== 'string') {
-                  console.warn(key + ' used as a key, but it is not a string.');
-                  key = String(key);
-                }
-
-                return key;
-              }
-
-              function getCallback() {
-                if (arguments.length && typeof arguments[arguments.length - 1] === 'function') {
-                  return arguments[arguments.length - 1];
-                }
-              }
-
-              // Some code originally from async_storage.js in
-              // [Gaia](https://github.com/mozilla-b2g/gaia).
-
-              var DETECT_BLOB_SUPPORT_STORE = 'local-forage-detect-blob-support';
-              var supportsBlobs = void 0;
-              var dbContexts = {};
-              var toString = Object.prototype.toString;
-
-              // Transaction Modes
-              var READ_ONLY = 'readonly';
-              var READ_WRITE = 'readwrite';
-
-              // Transform a binary string to an array buffer, because otherwise
-              // weird stuff happens when you try to work with the binary string directly.
-              // It is known.
-              // From http://stackoverflow.com/questions/14967647/ (continues on next line)
-              // encode-decode-image-with-base64-breaks-image (2013-04-21)
-              function _binStringToArrayBuffer(bin) {
-                var length = bin.length;
-                var buf = new ArrayBuffer(length);
-                var arr = new Uint8Array(buf);
-                for (var i = 0; i < length; i++) {
-                  arr[i] = bin.charCodeAt(i);
-                }
-                return buf;
-              }
-
-              //
-              // Blobs are not supported in all versions of IndexedDB, notably
-              // Chrome <37 and Android <5. In those versions, storing a blob will throw.
-              //
-              // Various other blob bugs exist in Chrome v37-42 (inclusive).
-              // Detecting them is expensive and confusing to users, and Chrome 37-42
-              // is at very low usage worldwide, so we do a hacky userAgent check instead.
-              //
-              // content-type bug: https://code.google.com/p/chromium/issues/detail?id=408120
-              // 404 bug: https://code.google.com/p/chromium/issues/detail?id=447916
-              // FileReader bug: https://code.google.com/p/chromium/issues/detail?id=447836
-              //
-              // Code borrowed from PouchDB. See:
-              // https://github.com/pouchdb/pouchdb/blob/master/packages/node_modules/pouchdb-adapter-idb/src/blobSupport.js
-              //
-              function _checkBlobSupportWithoutCaching(idb) {
-                return new Promise$1(function(resolve) {
-                  var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);
-                  var blob = createBlob(['']);
-                  txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, 'key');
-
-                  txn.onabort = function(e) {
-                    // If the transaction aborts now its due to not being able to
-                    // write to the database, likely due to the disk being full
-                    e.preventDefault();
-                    e.stopPropagation();
-                    resolve(false);
-                  };
-
-                  txn.oncomplete = function() {
-                    var matchedChrome = navigator.userAgent.match(/Chrome\/(\d+)/);
-                    var matchedEdge = navigator.userAgent.match(/Edge\//);
-                    // MS Edge pretends to be Chrome 42:
-                    // https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx
-                    resolve(matchedEdge || !matchedChrome || parseInt(matchedChrome[1], 10) >= 43);
-                  };
-                })['catch'](function() {
-                  return false; // error, so assume unsupported
-                });
-              }
-
-              function _checkBlobSupport(idb) {
-                if (typeof supportsBlobs === 'boolean') {
-                  return Promise$1.resolve(supportsBlobs);
-                }
-                return _checkBlobSupportWithoutCaching(idb).then(function(value) {
-                  supportsBlobs = value;
-                  return supportsBlobs;
-                });
-              }
-
-              function _deferReadiness(dbInfo) {
-                var dbContext = dbContexts[dbInfo.name];
-
-                // Create a deferred object representing the current database operation.
-                var deferredOperation = {};
-
-                deferredOperation.promise = new Promise$1(function(resolve, reject) {
-                  deferredOperation.resolve = resolve;
-                  deferredOperation.reject = reject;
-                });
-
-                // Enqueue the deferred operation.
-                dbContext.deferredOperations.push(deferredOperation);
-
-                // Chain its promise to the database readiness.
-                if (!dbContext.dbReady) {
-                  dbContext.dbReady = deferredOperation.promise;
-                } else {
-                  dbContext.dbReady = dbContext.dbReady.then(function() {
-                    return deferredOperation.promise;
-                  });
-                }
-              }
-
-              function _advanceReadiness(dbInfo) {
-                var dbContext = dbContexts[dbInfo.name];
-
-                // Dequeue a deferred operation.
-                var deferredOperation = dbContext.deferredOperations.pop();
-
-                // Resolve its promise (which is part of the database readiness
-                // chain of promises).
-                if (deferredOperation) {
-                  deferredOperation.resolve();
-                  return deferredOperation.promise;
-                }
-              }
-
-              function _rejectReadiness(dbInfo, err) {
-                var dbContext = dbContexts[dbInfo.name];
-
-                // Dequeue a deferred operation.
-                var deferredOperation = dbContext.deferredOperations.pop();
-
-                // Reject its promise (which is part of the database readiness
-                // chain of promises).
-                if (deferredOperation) {
-                  deferredOperation.reject(err);
-                  return deferredOperation.promise;
-                }
-              }
-
-              function _getConnection(dbInfo, upgradeNeeded) {
-                return new Promise$1(function(resolve, reject) {
-                  dbContexts[dbInfo.name] = dbContexts[dbInfo.name] || createDbContext();
-
-                  if (dbInfo.db) {
-                    if (upgradeNeeded) {
-                      _deferReadiness(dbInfo);
-                      dbInfo.db.close();
-                    } else {
-                      return resolve(dbInfo.db);
-                    }
-                  }
-
-                  var dbArgs = [dbInfo.name];
-
-                  if (upgradeNeeded) {
-                    dbArgs.push(dbInfo.version);
-                  }
-
-                  var openreq = idb.open.apply(idb, dbArgs);
-
-                  if (upgradeNeeded) {
-                    openreq.onupgradeneeded = function(e) {
-                      var db = openreq.result;
-                      try {
-                        db.createObjectStore(dbInfo.storeName);
-                        if (e.oldVersion <= 1) {
-                          // Added when support for blob shims was added
-                          db.createObjectStore(DETECT_BLOB_SUPPORT_STORE);
-                        }
-                      } catch (ex) {
-                        if (ex.name === 'ConstraintError') {
-                          console.warn(
-                            'The database "' +
-                              dbInfo.name +
-                              '"' +
-                              ' has been upgraded from version ' +
-                              e.oldVersion +
-                              ' to version ' +
-                              e.newVersion +
-                              ', but the storage "' +
-                              dbInfo.storeName +
-                              '" already exists.'
-                          );
-                        } else {
-                          throw ex;
-                        }
-                      }
-                    };
-                  }
-
-                  openreq.onerror = function(e) {
-                    e.preventDefault();
-                    reject(openreq.error);
-                  };
-
-                  openreq.onsuccess = function() {
-                    resolve(openreq.result);
-                    _advanceReadiness(dbInfo);
-                  };
-                });
-              }
-
-              function _getOriginalConnection(dbInfo) {
-                return _getConnection(dbInfo, false);
-              }
-
-              function _getUpgradedConnection(dbInfo) {
-                return _getConnection(dbInfo, true);
-              }
-
-              function _isUpgradeNeeded(dbInfo, defaultVersion) {
-                if (!dbInfo.db) {
-                  return true;
-                }
-
-                var isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);
-                var isDowngrade = dbInfo.version < dbInfo.db.version;
-                var isUpgrade = dbInfo.version > dbInfo.db.version;
-
-                if (isDowngrade) {
-                  // If the version is not the default one
-                  // then warn for impossible downgrade.
-                  if (dbInfo.version !== defaultVersion) {
-                    console.warn(
-                      'The database "' +
-                        dbInfo.name +
-                        '"' +
-                        " can't be downgraded from version " +
-                        dbInfo.db.version +
-                        ' to version ' +
-                        dbInfo.version +
-                        '.'
-                    );
-                  }
-                  // Align the versions to prevent errors.
-                  dbInfo.version = dbInfo.db.version;
-                }
-
-                if (isUpgrade || isNewStore) {
-                  // If the store is new then increment the version (if needed).
-                  // This will trigger an "upgradeneeded" event which is required
-                  // for creating a store.
-                  if (isNewStore) {
-                    var incVersion = dbInfo.db.version + 1;
-                    if (incVersion > dbInfo.version) {
-                      dbInfo.version = incVersion;
-                    }
-                  }
-
-                  return true;
-                }
-
-                return false;
-              }
-
-              // encode a blob for indexeddb engines that don't support blobs
-              function _encodeBlob(blob) {
-                return new Promise$1(function(resolve, reject) {
-                  var reader = new FileReader();
-                  reader.onerror = reject;
-                  reader.onloadend = function(e) {
-                    var base64 = btoa(e.target.result || '');
-                    resolve({
-                      __local_forage_encoded_blob: true,
-                      data: base64,
-                      type: blob.type
-                    });
-                  };
-                  reader.readAsBinaryString(blob);
-                });
-              }
-
-              // decode an encoded blob
-              function _decodeBlob(encodedBlob) {
-                var arrayBuff = _binStringToArrayBuffer(atob(encodedBlob.data));
-                return createBlob([arrayBuff], { type: encodedBlob.type });
-              }
-
-              // is this one of our fancy encoded blobs?
-              function _isEncodedBlob(value) {
-                return value && value.__local_forage_encoded_blob;
-              }
-
-              // Specialize the default `ready()` function by making it dependent
-              // on the current database operations. Thus, the driver will be actually
-              // ready when it's been initialized (default) *and* there are no pending
-              // operations on the database (initiated by some other instances).
-              function _fullyReady(callback) {
-                var self = this;
-
-                var promise = self._initReady().then(function() {
-                  var dbContext = dbContexts[self._dbInfo.name];
-
-                  if (dbContext && dbContext.dbReady) {
-                    return dbContext.dbReady;
-                  }
-                });
-
-                executeTwoCallbacks(promise, callback, callback);
-                return promise;
-              }
-
-              // Try to establish a new db connection to replace the
-              // current one which is broken (i.e. experiencing
-              // InvalidStateError while creating a transaction).
-              function _tryReconnect(dbInfo) {
-                _deferReadiness(dbInfo);
-
-                var dbContext = dbContexts[dbInfo.name];
-                var forages = dbContext.forages;
-
-                for (var i = 0; i < forages.length; i++) {
-                  var forage = forages[i];
-                  if (forage._dbInfo.db) {
-                    forage._dbInfo.db.close();
-                    forage._dbInfo.db = null;
-                  }
-                }
-                dbInfo.db = null;
-
-                return _getOriginalConnection(dbInfo)
-                  .then(function(db) {
-                    dbInfo.db = db;
-                    if (_isUpgradeNeeded(dbInfo)) {
-                      // Reopen the database for upgrading.
-                      return _getUpgradedConnection(dbInfo);
-                    }
-                    return db;
-                  })
-                  .then(function(db) {
-                    // store the latest db reference
-                    // in case the db was upgraded
-                    dbInfo.db = dbContext.db = db;
-                    for (var i = 0; i < forages.length; i++) {
-                      forages[i]._dbInfo.db = db;
-                    }
-                  })
-                  ['catch'](function(err) {
-                    _rejectReadiness(dbInfo, err);
-                    throw err;
-                  });
-              }
-
-              // FF doesn't like Promises (micro-tasks) and IDDB store operations,
-              // so we have to do it with callbacks
-              function createTransaction(dbInfo, mode, callback, retries) {
-                if (retries === undefined) {
-                  retries = 1;
-                }
-
-                try {
-                  var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
-                  callback(null, tx);
-                } catch (err) {
-                  if (
-                    retries > 0 &&
-                    (!dbInfo.db || err.name === 'InvalidStateError' || err.name === 'NotFoundError')
-                  ) {
-                    return Promise$1.resolve()
-                      .then(function() {
-                        if (
-                          !dbInfo.db ||
-                          (err.name === 'NotFoundError' &&
-                            !dbInfo.db.objectStoreNames.contains(dbInfo.storeName) &&
-                            dbInfo.version <= dbInfo.db.version)
-                        ) {
-                          // increase the db version, to create the new ObjectStore
-                          if (dbInfo.db) {
-                            dbInfo.version = dbInfo.db.version + 1;
-                          }
-                          // Reopen the database for upgrading.
-                          return _getUpgradedConnection(dbInfo);
-                        }
-                      })
-                      .then(function() {
-                        return _tryReconnect(dbInfo).then(function() {
-                          createTransaction(dbInfo, mode, callback, retries - 1);
-                        });
-                      })
-                      ['catch'](callback);
-                  }
-
-                  callback(err);
-                }
-              }
-
-              function createDbContext() {
-                return {
-                  // Running localForages sharing a database.
-                  forages: [],
-                  // Shared database.
-                  db: null,
-                  // Database readiness (promise).
-                  dbReady: null,
-                  // Deferred operations on the database.
-                  deferredOperations: []
-                };
-              }
-
-              // Open the IndexedDB database (automatically creates one if one didn't
-              // previously exist), using any options set in the config.
-              function _initStorage(options) {
-                var self = this;
-                var dbInfo = {
-                  db: null
-                };
-
-                if (options) {
-                  for (var i in options) {
-                    dbInfo[i] = options[i];
-                  }
-                }
-
-                // Get the current context of the database;
-                var dbContext = dbContexts[dbInfo.name];
-
-                // ...or create a new context.
-                if (!dbContext) {
-                  dbContext = createDbContext();
-                  // Register the new context in the global container.
-                  dbContexts[dbInfo.name] = dbContext;
-                }
-
-                // Register itself as a running localForage in the current context.
-                dbContext.forages.push(self);
-
-                // Replace the default `ready()` function with the specialized one.
-                if (!self._initReady) {
-                  self._initReady = self.ready;
-                  self.ready = _fullyReady;
-                }
-
-                // Create an array of initialization states of the related localForages.
-                var initPromises = [];
-
-                function ignoreErrors() {
-                  // Don't handle errors here,
-                  // just makes sure related localForages aren't pending.
-                  return Promise$1.resolve();
-                }
-
-                for (var j = 0; j < dbContext.forages.length; j++) {
-                  var forage = dbContext.forages[j];
-                  if (forage !== self) {
-                    // Don't wait for itself...
-                    initPromises.push(forage._initReady()['catch'](ignoreErrors));
-                  }
-                }
-
-                // Take a snapshot of the related localForages.
-                var forages = dbContext.forages.slice(0);
-
-                // Initialize the connection process only when
-                // all the related localForages aren't pending.
-                return Promise$1.all(initPromises)
-                  .then(function() {
-                    dbInfo.db = dbContext.db;
-                    // Get the connection or open a new one without upgrade.
-                    return _getOriginalConnection(dbInfo);
-                  })
-                  .then(function(db) {
-                    dbInfo.db = db;
-                    if (_isUpgradeNeeded(dbInfo, self._defaultConfig.version)) {
-                      // Reopen the database for upgrading.
-                      return _getUpgradedConnection(dbInfo);
-                    }
-                    return db;
-                  })
-                  .then(function(db) {
-                    dbInfo.db = dbContext.db = db;
-                    self._dbInfo = dbInfo;
-                    // Share the final connection amongst related localForages.
-                    for (var k = 0; k < forages.length; k++) {
-                      var forage = forages[k];
-                      if (forage !== self) {
-                        // Self is already up-to-date.
-                        forage._dbInfo.db = dbInfo.db;
-                        forage._dbInfo.version = dbInfo.version;
-                      }
-                    }
-                  });
-              }
-
-              function getItem(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var req = store.get(key);
-
-                          req.onsuccess = function() {
-                            var value = req.result;
-                            if (value === undefined) {
-                              value = null;
-                            }
-                            if (_isEncodedBlob(value)) {
-                              value = _decodeBlob(value);
-                            }
-                            resolve(value);
-                          };
-
-                          req.onerror = function() {
-                            reject(req.error);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Iterate over all items stored in database.
-              function iterate(iterator, callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var req = store.openCursor();
-                          var iterationNumber = 1;
-
-                          req.onsuccess = function() {
-                            var cursor = req.result;
-
-                            if (cursor) {
-                              var value = cursor.value;
-                              if (_isEncodedBlob(value)) {
-                                value = _decodeBlob(value);
-                              }
-                              var result = iterator(value, cursor.key, iterationNumber++);
-
-                              // when the iterator callback retuns any
-                              // (non-`undefined`) value, then we stop
-                              // the iteration immediately
-                              if (result !== void 0) {
-                                resolve(result);
-                              } else {
-                                cursor['continue']();
-                              }
-                            } else {
-                              resolve();
-                            }
-                          };
-
-                          req.onerror = function() {
-                            reject(req.error);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-
-                return promise;
-              }
-
-              function setItem(key, value, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  var dbInfo;
-                  self
-                    .ready()
-                    .then(function() {
-                      dbInfo = self._dbInfo;
-                      if (toString.call(value) === '[object Blob]') {
-                        return _checkBlobSupport(dbInfo.db).then(function(blobSupport) {
-                          if (blobSupport) {
-                            return value;
-                          }
-                          return _encodeBlob(value);
-                        });
-                      }
-                      return value;
-                    })
-                    .then(function(value) {
-                      createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-
-                          // The reason we don't _save_ null is because IE 10 does
-                          // not support saving the `null` type in IndexedDB. How
-                          // ironic, given the bug below!
-                          // See: https://github.com/mozilla/localForage/issues/161
-                          if (value === null) {
-                            value = undefined;
-                          }
-
-                          var req = store.put(value, key);
-
-                          transaction.oncomplete = function() {
-                            // Cast to undefined so the value passed to
-                            // callback/promise is the same as what one would get out
-                            // of `getItem()` later. This leads to some weirdness
-                            // (setItem('foo', undefined) will return `null`), but
-                            // it's not my fault localStorage is our baseline and that
-                            // it's weird.
-                            if (value === undefined) {
-                              value = null;
-                            }
-
-                            resolve(value);
-                          };
-                          transaction.onabort = transaction.onerror = function() {
-                            var err = req.error ? req.error : req.transaction.error;
-                            reject(err);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function removeItem(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          // We use a Grunt task to make this safe for IE and some
-                          // versions of Android (including those used by Cordova).
-                          // Normally IE won't like `.delete()` and will insist on
-                          // using `['delete']()`, but we have a build step that
-                          // fixes this for us now.
-                          var req = store['delete'](key);
-                          transaction.oncomplete = function() {
-                            resolve();
-                          };
-
-                          transaction.onerror = function() {
-                            reject(req.error);
-                          };
-
-                          // The request will be also be aborted if we've exceeded our storage
-                          // space.
-                          transaction.onabort = function() {
-                            var err = req.error ? req.error : req.transaction.error;
-                            reject(err);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function clear(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var req = store.clear();
-
-                          transaction.oncomplete = function() {
-                            resolve();
-                          };
-
-                          transaction.onabort = transaction.onerror = function() {
-                            var err = req.error ? req.error : req.transaction.error;
-                            reject(err);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function length(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var req = store.count();
-
-                          req.onsuccess = function() {
-                            resolve(req.result);
-                          };
-
-                          req.onerror = function() {
-                            reject(req.error);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function key(n, callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  if (n < 0) {
-                    resolve(null);
-
-                    return;
-                  }
-
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var advanced = false;
-                          var req = store.openCursor();
-
-                          req.onsuccess = function() {
-                            var cursor = req.result;
-                            if (!cursor) {
-                              // this means there weren't enough keys
-                              resolve(null);
-
-                              return;
-                            }
-
-                            if (n === 0) {
-                              // We have the first key, return it if that's what they
-                              // wanted.
-                              resolve(cursor.key);
-                            } else {
-                              if (!advanced) {
-                                // Otherwise, ask the cursor to skip ahead n
-                                // records.
-                                advanced = true;
-                                cursor.advance(n);
-                              } else {
-                                // When we get here, we've got the nth key.
-                                resolve(cursor.key);
-                              }
-                            }
-                          };
-
-                          req.onerror = function() {
-                            reject(req.error);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function keys(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
-                        if (err) {
-                          return reject(err);
-                        }
-
-                        try {
-                          var store = transaction.objectStore(self._dbInfo.storeName);
-                          var req = store.openCursor();
-                          var keys = [];
-
-                          req.onsuccess = function() {
-                            var cursor = req.result;
-
-                            if (!cursor) {
-                              resolve(keys);
-                              return;
-                            }
-
-                            keys.push(cursor.key);
-                            cursor['continue']();
-                          };
-
-                          req.onerror = function() {
-                            reject(req.error);
-                          };
-                        } catch (e) {
-                          reject(e);
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function dropInstance(options, callback) {
-                callback = getCallback.apply(this, arguments);
-
-                var currentConfig = this.config();
-                options = (typeof options !== 'function' && options) || {};
-                if (!options.name) {
-                  options.name = options.name || currentConfig.name;
-                  options.storeName = options.storeName || currentConfig.storeName;
-                }
-
-                var self = this;
-                var promise;
-                if (!options.name) {
-                  promise = Promise$1.reject('Invalid arguments');
-                } else {
-                  var isCurrentDb = options.name === currentConfig.name && self._dbInfo.db;
-
-                  var dbPromise = isCurrentDb
-                    ? Promise$1.resolve(self._dbInfo.db)
-                    : _getOriginalConnection(options).then(function(db) {
-                        var dbContext = dbContexts[options.name];
-                        var forages = dbContext.forages;
-                        dbContext.db = db;
-                        for (var i = 0; i < forages.length; i++) {
-                          forages[i]._dbInfo.db = db;
-                        }
-                        return db;
-                      });
-
-                  if (!options.storeName) {
-                    promise = dbPromise.then(function(db) {
-                      _deferReadiness(options);
-
-                      var dbContext = dbContexts[options.name];
-                      var forages = dbContext.forages;
-
-                      db.close();
-                      for (var i = 0; i < forages.length; i++) {
-                        var forage = forages[i];
-                        forage._dbInfo.db = null;
-                      }
-
-                      var dropDBPromise = new Promise$1(function(resolve, reject) {
-                        var req = idb.deleteDatabase(options.name);
-
-                        req.onerror = req.onblocked = function(err) {
-                          var db = req.result;
-                          if (db) {
-                            db.close();
-                          }
-                          reject(err);
-                        };
-
-                        req.onsuccess = function() {
-                          var db = req.result;
-                          if (db) {
-                            db.close();
-                          }
-                          resolve(db);
-                        };
-                      });
-
-                      return dropDBPromise
-                        .then(function(db) {
-                          dbContext.db = db;
-                          for (var i = 0; i < forages.length; i++) {
-                            var _forage = forages[i];
-                            _advanceReadiness(_forage._dbInfo);
-                          }
-                        })
-                        ['catch'](function(err) {
-                          (_rejectReadiness(options, err) || Promise$1.resolve())['catch'](
-                            function() {}
-                          );
-                          throw err;
-                        });
-                    });
-                  } else {
-                    promise = dbPromise.then(function(db) {
-                      if (!db.objectStoreNames.contains(options.storeName)) {
-                        return;
-                      }
-
-                      var newVersion = db.version + 1;
-
-                      _deferReadiness(options);
-
-                      var dbContext = dbContexts[options.name];
-                      var forages = dbContext.forages;
-
-                      db.close();
-                      for (var i = 0; i < forages.length; i++) {
-                        var forage = forages[i];
-                        forage._dbInfo.db = null;
-                        forage._dbInfo.version = newVersion;
-                      }
-
-                      var dropObjectPromise = new Promise$1(function(resolve, reject) {
-                        var req = idb.open(options.name, newVersion);
-
-                        req.onerror = function(err) {
-                          var db = req.result;
-                          db.close();
-                          reject(err);
-                        };
-
-                        req.onupgradeneeded = function() {
-                          var db = req.result;
-                          db.deleteObjectStore(options.storeName);
-                        };
-
-                        req.onsuccess = function() {
-                          var db = req.result;
-                          db.close();
-                          resolve(db);
-                        };
-                      });
-
-                      return dropObjectPromise
-                        .then(function(db) {
-                          dbContext.db = db;
-                          for (var j = 0; j < forages.length; j++) {
-                            var _forage2 = forages[j];
-                            _forage2._dbInfo.db = db;
-                            _advanceReadiness(_forage2._dbInfo);
-                          }
-                        })
-                        ['catch'](function(err) {
-                          (_rejectReadiness(options, err) || Promise$1.resolve())['catch'](
-                            function() {}
-                          );
-                          throw err;
-                        });
-                    });
-                  }
-                }
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              var asyncStorage = {
-                _driver: 'asyncStorage',
-                _initStorage: _initStorage,
-                _support: isIndexedDBValid(),
-                iterate: iterate,
-                getItem: getItem,
-                setItem: setItem,
-                removeItem: removeItem,
-                clear: clear,
-                length: length,
-                key: key,
-                keys: keys,
-                dropInstance: dropInstance
-              };
-
-              function isWebSQLValid() {
-                return typeof openDatabase === 'function';
-              }
-
-              // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
-              // it to Base64, so this is how we store it to prevent very strange errors with less
-              // verbose ways of binary <-> string data storage.
-              var BASE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-              var BLOB_TYPE_PREFIX = '~~local_forage_type~';
-              var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
-
-              var SERIALIZED_MARKER = '__lfsc__:';
-              var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
-
-              // OMG the serializations!
-              var TYPE_ARRAYBUFFER = 'arbf';
-              var TYPE_BLOB = 'blob';
-              var TYPE_INT8ARRAY = 'si08';
-              var TYPE_UINT8ARRAY = 'ui08';
-              var TYPE_UINT8CLAMPEDARRAY = 'uic8';
-              var TYPE_INT16ARRAY = 'si16';
-              var TYPE_INT32ARRAY = 'si32';
-              var TYPE_UINT16ARRAY = 'ur16';
-              var TYPE_UINT32ARRAY = 'ui32';
-              var TYPE_FLOAT32ARRAY = 'fl32';
-              var TYPE_FLOAT64ARRAY = 'fl64';
-              var TYPE_SERIALIZED_MARKER_LENGTH =
-                SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
-
-              var toString$1 = Object.prototype.toString;
-
-              function stringToBuffer(serializedString) {
-                // Fill the string into a ArrayBuffer.
-                var bufferLength = serializedString.length * 0.75;
-                var len = serializedString.length;
-                var i;
-                var p = 0;
-                var encoded1, encoded2, encoded3, encoded4;
-
-                if (serializedString[serializedString.length - 1] === '=') {
-                  bufferLength--;
-                  if (serializedString[serializedString.length - 2] === '=') {
-                    bufferLength--;
-                  }
-                }
-
-                var buffer = new ArrayBuffer(bufferLength);
-                var bytes = new Uint8Array(buffer);
-
-                for (i = 0; i < len; i += 4) {
-                  encoded1 = BASE_CHARS.indexOf(serializedString[i]);
-                  encoded2 = BASE_CHARS.indexOf(serializedString[i + 1]);
-                  encoded3 = BASE_CHARS.indexOf(serializedString[i + 2]);
-                  encoded4 = BASE_CHARS.indexOf(serializedString[i + 3]);
-
-                  /*jslint bitwise: true */
-                  bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-                  bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-                  bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
-                }
-                return buffer;
-              }
-
-              // Converts a buffer to a string to store, serialized, in the backend
-              // storage library.
-              function bufferToString(buffer) {
-                // base64-arraybuffer
-                var bytes = new Uint8Array(buffer);
-                var base64String = '';
-                var i;
-
-                for (i = 0; i < bytes.length; i += 3) {
-                  /*jslint bitwise: true */
-                  base64String += BASE_CHARS[bytes[i] >> 2];
-                  base64String += BASE_CHARS[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
-                  base64String += BASE_CHARS[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
-                  base64String += BASE_CHARS[bytes[i + 2] & 63];
-                }
-
-                if (bytes.length % 3 === 2) {
-                  base64String = base64String.substring(0, base64String.length - 1) + '=';
-                } else if (bytes.length % 3 === 1) {
-                  base64String = base64String.substring(0, base64String.length - 2) + '==';
-                }
-
-                return base64String;
-              }
-
-              // Serialize a value, afterwards executing a callback (which usually
-              // instructs the `setItem()` callback/promise to be executed). This is how
-              // we store binary data with localStorage.
-              function serialize(value, callback) {
-                var valueType = '';
-                if (value) {
-                  valueType = toString$1.call(value);
-                }
-
-                // Cannot use `value instanceof ArrayBuffer` or such here, as these
-                // checks fail when running the tests using casper.js...
-                //
-                // TODO: See why those tests fail and use a better solution.
-                if (
-                  value &&
-                  (valueType === '[object ArrayBuffer]' ||
-                    (value.buffer && toString$1.call(value.buffer) === '[object ArrayBuffer]'))
-                ) {
-                  // Convert binary arrays to a string and prefix the string with
-                  // a special marker.
-                  var buffer;
-                  var marker = SERIALIZED_MARKER;
-
-                  if (value instanceof ArrayBuffer) {
-                    buffer = value;
-                    marker += TYPE_ARRAYBUFFER;
-                  } else {
-                    buffer = value.buffer;
-
-                    if (valueType === '[object Int8Array]') {
-                      marker += TYPE_INT8ARRAY;
-                    } else if (valueType === '[object Uint8Array]') {
-                      marker += TYPE_UINT8ARRAY;
-                    } else if (valueType === '[object Uint8ClampedArray]') {
-                      marker += TYPE_UINT8CLAMPEDARRAY;
-                    } else if (valueType === '[object Int16Array]') {
-                      marker += TYPE_INT16ARRAY;
-                    } else if (valueType === '[object Uint16Array]') {
-                      marker += TYPE_UINT16ARRAY;
-                    } else if (valueType === '[object Int32Array]') {
-                      marker += TYPE_INT32ARRAY;
-                    } else if (valueType === '[object Uint32Array]') {
-                      marker += TYPE_UINT32ARRAY;
-                    } else if (valueType === '[object Float32Array]') {
-                      marker += TYPE_FLOAT32ARRAY;
-                    } else if (valueType === '[object Float64Array]') {
-                      marker += TYPE_FLOAT64ARRAY;
-                    } else {
-                      callback(new Error('Failed to get type for BinaryArray'));
-                    }
-                  }
-
-                  callback(marker + bufferToString(buffer));
-                } else if (valueType === '[object Blob]') {
-                  // Conver the blob to a binaryArray and then to a string.
-                  var fileReader = new FileReader();
-
-                  fileReader.onload = function() {
-                    // Backwards-compatible prefix for the blob type.
-                    var str = BLOB_TYPE_PREFIX + value.type + '~' + bufferToString(this.result);
-
-                    callback(SERIALIZED_MARKER + TYPE_BLOB + str);
-                  };
-
-                  fileReader.readAsArrayBuffer(value);
-                } else {
-                  try {
-                    callback(JSON.stringify(value));
-                  } catch (e) {
-                    console.error("Couldn't convert value into a JSON string: ", value);
-
-                    callback(null, e);
-                  }
-                }
-              }
-
-              // Deserialize data we've inserted into a value column/field. We place
-              // special markers into our strings to mark them as encoded; this isn't
-              // as nice as a meta field, but it's the only sane thing we can do whilst
-              // keeping localStorage support intact.
-              //
-              // Oftentimes this will just deserialize JSON content, but if we have a
-              // special marker (SERIALIZED_MARKER, defined above), we will extract
-              // some kind of arraybuffer/binary data/typed array out of the string.
-              function deserialize(value) {
-                // If we haven't marked this string as being specially serialized (i.e.
-                // something other than serialized JSON), we can just return it and be
-                // done with it.
-                if (value.substring(0, SERIALIZED_MARKER_LENGTH) !== SERIALIZED_MARKER) {
-                  return JSON.parse(value);
-                }
-
-                // The following code deals with deserializing some kind of Blob or
-                // TypedArray. First we separate out the type of data we're dealing
-                // with from the data itself.
-                var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-                var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
-
-                var blobType;
-                // Backwards-compatible blob type serialization strategy.
-                // DBs created with older versions of localForage will simply not have the blob type.
-                if (type === TYPE_BLOB && BLOB_TYPE_PREFIX_REGEX.test(serializedString)) {
-                  var matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);
-                  blobType = matcher[1];
-                  serializedString = serializedString.substring(matcher[0].length);
-                }
-                var buffer = stringToBuffer(serializedString);
-
-                // Return the right type based on the code/type set during
-                // serialization.
-                switch (type) {
-                  case TYPE_ARRAYBUFFER:
-                    return buffer;
-                  case TYPE_BLOB:
-                    return createBlob([buffer], { type: blobType });
-                  case TYPE_INT8ARRAY:
-                    return new Int8Array(buffer);
-                  case TYPE_UINT8ARRAY:
-                    return new Uint8Array(buffer);
-                  case TYPE_UINT8CLAMPEDARRAY:
-                    return new Uint8ClampedArray(buffer);
-                  case TYPE_INT16ARRAY:
-                    return new Int16Array(buffer);
-                  case TYPE_UINT16ARRAY:
-                    return new Uint16Array(buffer);
-                  case TYPE_INT32ARRAY:
-                    return new Int32Array(buffer);
-                  case TYPE_UINT32ARRAY:
-                    return new Uint32Array(buffer);
-                  case TYPE_FLOAT32ARRAY:
-                    return new Float32Array(buffer);
-                  case TYPE_FLOAT64ARRAY:
-                    return new Float64Array(buffer);
-                  default:
-                    throw new Error('Unkown type: ' + type);
-                }
-              }
-
-              var localforageSerializer = {
-                serialize: serialize,
-                deserialize: deserialize,
-                stringToBuffer: stringToBuffer,
-                bufferToString: bufferToString
-              };
-
-              /*
-   * Includes code from:
-   *
-   * base64-arraybuffer
-   * https://github.com/niklasvh/base64-arraybuffer
-   *
-   * Copyright (c) 2012 Niklas von Hertzen
-   * Licensed under the MIT license.
-   */
-
-              function createDbTable(t, dbInfo, callback, errorCallback) {
-                t.executeSql(
-                  'CREATE TABLE IF NOT EXISTS ' +
-                    dbInfo.storeName +
-                    ' ' +
-                    '(id INTEGER PRIMARY KEY, key unique, value)',
-                  [],
-                  callback,
-                  errorCallback
-                );
-              }
-
-              // Open the WebSQL database (automatically creates one if one didn't
-              // previously exist), using any options set in the config.
-              function _initStorage$1(options) {
-                var self = this;
-                var dbInfo = {
-                  db: null
-                };
-
-                if (options) {
-                  for (var i in options) {
-                    dbInfo[i] = typeof options[i] !== 'string' ? options[i].toString() : options[i];
-                  }
-                }
-
-                var dbInfoPromise = new Promise$1(function(resolve, reject) {
-                  // Open the database; the openDatabase API will automatically
-                  // create it for us if it doesn't exist.
-                  try {
-                    dbInfo.db = openDatabase(
-                      dbInfo.name,
-                      String(dbInfo.version),
-                      dbInfo.description,
-                      dbInfo.size
-                    );
-                  } catch (e) {
-                    return reject(e);
-                  }
-
-                  // Create our key/value table if it doesn't exist.
-                  dbInfo.db.transaction(function(t) {
-                    createDbTable(
-                      t,
-                      dbInfo,
-                      function() {
-                        self._dbInfo = dbInfo;
-                        resolve();
-                      },
-                      function(t, error) {
-                        reject(error);
-                      }
-                    );
-                  }, reject);
-                });
-
-                dbInfo.serializer = localforageSerializer;
-                return dbInfoPromise;
-              }
-
-              function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
-                t.executeSql(
-                  sqlStatement,
-                  args,
-                  callback,
-                  function(t, error) {
-                    if (error.code === error.SYNTAX_ERR) {
-                      t.executeSql(
-                        'SELECT name FROM sqlite_master ' + "WHERE type='table' AND name = ?",
-                        [name],
-                        function(t, results) {
-                          if (!results.rows.length) {
-                            // if the table is missing (was deleted)
-                            // re-create it table and retry
-                            createDbTable(
-                              t,
-                              dbInfo,
-                              function() {
-                                t.executeSql(sqlStatement, args, callback, errorCallback);
-                              },
-                              errorCallback
-                            );
-                          } else {
-                            errorCallback(t, error);
-                          }
-                        },
-                        errorCallback
-                      );
-                    } else {
-                      errorCallback(t, error);
-                    }
-                  },
-                  errorCallback
-                );
-              }
-
-              function getItem$1(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'SELECT * FROM ' + dbInfo.storeName + ' WHERE key = ? LIMIT 1',
-                          [key],
-                          function(t, results) {
-                            var result = results.rows.length ? results.rows.item(0).value : null;
-
-                            // Check to see if this is serialized content we need to
-                            // unpack.
-                            if (result) {
-                              result = dbInfo.serializer.deserialize(result);
-                            }
-
-                            resolve(result);
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function iterate$1(iterator, callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'SELECT * FROM ' + dbInfo.storeName,
-                          [],
-                          function(t, results) {
-                            var rows = results.rows;
-                            var length = rows.length;
-
-                            for (var i = 0; i < length; i++) {
-                              var item = rows.item(i);
-                              var result = item.value;
-
-                              // Check to see if this is serialized content
-                              // we need to unpack.
-                              if (result) {
-                                result = dbInfo.serializer.deserialize(result);
-                              }
-
-                              result = iterator(result, item.key, i + 1);
-
-                              // void(0) prevents problems with redefinition
-                              // of `undefined`.
-                              if (result !== void 0) {
-                                resolve(result);
-                                return;
-                              }
-                            }
-
-                            resolve();
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function _setItem(key, value, callback, retriesLeft) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      // The localStorage API doesn't return undefined values in an
-                      // "expected" way, so undefined is always cast to null in all
-                      // drivers. See: https://github.com/mozilla/localForage/pull/42
-                      if (value === undefined) {
-                        value = null;
-                      }
-
-                      // Save the original value to pass to the callback.
-                      var originalValue = value;
-
-                      var dbInfo = self._dbInfo;
-                      dbInfo.serializer.serialize(value, function(value, error) {
-                        if (error) {
-                          reject(error);
-                        } else {
-                          dbInfo.db.transaction(
-                            function(t) {
-                              tryExecuteSql(
-                                t,
-                                dbInfo,
-                                'INSERT OR REPLACE INTO ' +
-                                  dbInfo.storeName +
-                                  ' ' +
-                                  '(key, value) VALUES (?, ?)',
-                                [key, value],
-                                function() {
-                                  resolve(originalValue);
-                                },
-                                function(t, error) {
-                                  reject(error);
-                                }
-                              );
-                            },
-                            function(sqlError) {
-                              // The transaction failed; check
-                              // to see if it's a quota error.
-                              if (sqlError.code === sqlError.QUOTA_ERR) {
-                                // We reject the callback outright for now, but
-                                // it's worth trying to re-run the transaction.
-                                // Even if the user accepts the prompt to use
-                                // more storage on Safari, this error will
-                                // be called.
-                                //
-                                // Try to re-run the transaction.
-                                if (retriesLeft > 0) {
-                                  resolve(
-                                    _setItem.apply(self, [
-                                      key,
-                                      originalValue,
-                                      callback,
-                                      retriesLeft - 1
-                                    ])
-                                  );
-                                  return;
-                                }
-                                reject(sqlError);
-                              }
-                            }
-                          );
-                        }
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function setItem$1(key, value, callback) {
-                return _setItem.apply(this, [key, value, callback, 1]);
-              }
-
-              function removeItem$1(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'DELETE FROM ' + dbInfo.storeName + ' WHERE key = ?',
-                          [key],
-                          function() {
-                            resolve();
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Deletes every item in the table.
-              // TODO: Find out if this resets the AUTO_INCREMENT number.
-              function clear$1(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'DELETE FROM ' + dbInfo.storeName,
-                          [],
-                          function() {
-                            resolve();
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Does a simple `COUNT(key)` to get the number of items stored in
-              // localForage.
-              function length$1(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        // Ahhh, SQL makes this one soooooo easy.
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'SELECT COUNT(key) as c FROM ' + dbInfo.storeName,
-                          [],
-                          function(t, results) {
-                            var result = results.rows.item(0).c;
-                            resolve(result);
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Return the key located at key index X; essentially gets the key from a
-              // `WHERE id = ?`. This is the most efficient way I can think to implement
-              // this rarely-used (in my experience) part of the API, but it can seem
-              // inconsistent, because we do `INSERT OR REPLACE INTO` on `setItem()`, so
-              // the ID of each key will change every time it's updated. Perhaps a stored
-              // procedure for the `setItem()` SQL would solve this problem?
-              // TODO: Don't change ID on `setItem()`.
-              function key$1(n, callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'SELECT key FROM ' + dbInfo.storeName + ' WHERE id = ? LIMIT 1',
-                          [n + 1],
-                          function(t, results) {
-                            var result = results.rows.length ? results.rows.item(0).key : null;
-                            resolve(result);
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function keys$1(callback) {
-                var self = this;
-
-                var promise = new Promise$1(function(resolve, reject) {
-                  self
-                    .ready()
-                    .then(function() {
-                      var dbInfo = self._dbInfo;
-                      dbInfo.db.transaction(function(t) {
-                        tryExecuteSql(
-                          t,
-                          dbInfo,
-                          'SELECT key FROM ' + dbInfo.storeName,
-                          [],
-                          function(t, results) {
-                            var keys = [];
-
-                            for (var i = 0; i < results.rows.length; i++) {
-                              keys.push(results.rows.item(i).key);
-                            }
-
-                            resolve(keys);
-                          },
-                          function(t, error) {
-                            reject(error);
-                          }
-                        );
-                      });
-                    })
-                    ['catch'](reject);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // https://www.w3.org/TR/webdatabase/#databases
-              // > There is no way to enumerate or delete the databases available for an origin from this API.
-              function getAllStoreNames(db) {
-                return new Promise$1(function(resolve, reject) {
-                  db.transaction(
-                    function(t) {
-                      t.executeSql(
-                        'SELECT name FROM sqlite_master ' +
-                          "WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'",
-                        [],
-                        function(t, results) {
-                          var storeNames = [];
-
-                          for (var i = 0; i < results.rows.length; i++) {
-                            storeNames.push(results.rows.item(i).name);
-                          }
-
-                          resolve({
-                            db: db,
-                            storeNames: storeNames
-                          });
-                        },
-                        function(t, error) {
-                          reject(error);
-                        }
-                      );
-                    },
-                    function(sqlError) {
-                      reject(sqlError);
-                    }
-                  );
-                });
-              }
-
-              function dropInstance$1(options, callback) {
-                callback = getCallback.apply(this, arguments);
-
-                var currentConfig = this.config();
-                options = (typeof options !== 'function' && options) || {};
-                if (!options.name) {
-                  options.name = options.name || currentConfig.name;
-                  options.storeName = options.storeName || currentConfig.storeName;
-                }
-
-                var self = this;
-                var promise;
-                if (!options.name) {
-                  promise = Promise$1.reject('Invalid arguments');
-                } else {
-                  promise = new Promise$1(function(resolve) {
-                    var db;
-                    if (options.name === currentConfig.name) {
-                      // use the db reference of the current instance
-                      db = self._dbInfo.db;
-                    } else {
-                      db = openDatabase(options.name, '', '', 0);
-                    }
-
-                    if (!options.storeName) {
-                      // drop all database tables
-                      resolve(getAllStoreNames(db));
-                    } else {
-                      resolve({
-                        db: db,
-                        storeNames: [options.storeName]
-                      });
-                    }
-                  }).then(function(operationInfo) {
-                    return new Promise$1(function(resolve, reject) {
-                      operationInfo.db.transaction(
-                        function(t) {
-                          function dropTable(storeName) {
-                            return new Promise$1(function(resolve, reject) {
-                              t.executeSql(
-                                'DROP TABLE IF EXISTS ' + storeName,
-                                [],
-                                function() {
-                                  resolve();
-                                },
-                                function(t, error) {
-                                  reject(error);
-                                }
-                              );
-                            });
-                          }
-
-                          var operations = [];
-                          for (var i = 0, len = operationInfo.storeNames.length; i < len; i++) {
-                            operations.push(dropTable(operationInfo.storeNames[i]));
-                          }
-
-                          Promise$1.all(operations)
-                            .then(function() {
-                              resolve();
-                            })
-                            ['catch'](function(e) {
-                              reject(e);
-                            });
-                        },
-                        function(sqlError) {
-                          reject(sqlError);
-                        }
-                      );
-                    });
-                  });
-                }
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              var webSQLStorage = {
-                _driver: 'webSQLStorage',
-                _initStorage: _initStorage$1,
-                _support: isWebSQLValid(),
-                iterate: iterate$1,
-                getItem: getItem$1,
-                setItem: setItem$1,
-                removeItem: removeItem$1,
-                clear: clear$1,
-                length: length$1,
-                key: key$1,
-                keys: keys$1,
-                dropInstance: dropInstance$1
-              };
-
-              function isLocalStorageValid() {
-                try {
-                  return (
-                    typeof localStorage !== 'undefined' &&
-                    'setItem' in localStorage &&
-                    // in IE8 typeof localStorage.setItem === 'object'
-                    !!localStorage.setItem
-                  );
-                } catch (e) {
-                  return false;
-                }
-              }
-
-              function _getKeyPrefix(options, defaultConfig) {
-                var keyPrefix = options.name + '/';
-
-                if (options.storeName !== defaultConfig.storeName) {
-                  keyPrefix += options.storeName + '/';
-                }
-                return keyPrefix;
-              }
-
-              // Check if localStorage throws when saving an item
-              function checkIfLocalStorageThrows() {
-                var localStorageTestKey = '_localforage_support_test';
-
-                try {
-                  localStorage.setItem(localStorageTestKey, true);
-                  localStorage.removeItem(localStorageTestKey);
-
-                  return false;
-                } catch (e) {
-                  return true;
-                }
-              }
-
-              // Check if localStorage is usable and allows to save an item
-              // This method checks if localStorage is usable in Safari Private Browsing
-              // mode, or in any other case where the available quota for localStorage
-              // is 0 and there wasn't any saved items yet.
-              function _isLocalStorageUsable() {
-                return !checkIfLocalStorageThrows() || localStorage.length > 0;
-              }
-
-              // Config the localStorage backend, using options set in the config.
-              function _initStorage$2(options) {
-                var self = this;
-                var dbInfo = {};
-                if (options) {
-                  for (var i in options) {
-                    dbInfo[i] = options[i];
-                  }
-                }
-
-                dbInfo.keyPrefix = _getKeyPrefix(options, self._defaultConfig);
-
-                if (!_isLocalStorageUsable()) {
-                  return Promise$1.reject();
-                }
-
-                self._dbInfo = dbInfo;
-                dbInfo.serializer = localforageSerializer;
-
-                return Promise$1.resolve();
-              }
-
-              // Remove all keys from the datastore, effectively destroying all data in
-              // the app's key/value store!
-              function clear$2(callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                  var keyPrefix = self._dbInfo.keyPrefix;
-
-                  for (var i = localStorage.length - 1; i >= 0; i--) {
-                    var key = localStorage.key(i);
-
-                    if (key.indexOf(keyPrefix) === 0) {
-                      localStorage.removeItem(key);
-                    }
-                  }
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Retrieve an item from the store. Unlike the original async_storage
-              // library in Gaia, we don't modify return values at all. If a key's value
-              // is `undefined`, we pass that value to the callback function.
-              function getItem$2(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = self.ready().then(function() {
-                  var dbInfo = self._dbInfo;
-                  var result = localStorage.getItem(dbInfo.keyPrefix + key);
-
-                  // If a result was found, parse it from the serialized
-                  // string into a JS object. If result isn't truthy, the key
-                  // is likely undefined and we'll pass it straight to the
-                  // callback.
-                  if (result) {
-                    result = dbInfo.serializer.deserialize(result);
-                  }
-
-                  return result;
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Iterate over all items in the store.
-              function iterate$2(iterator, callback) {
-                var self = this;
-
-                var promise = self.ready().then(function() {
-                  var dbInfo = self._dbInfo;
-                  var keyPrefix = dbInfo.keyPrefix;
-                  var keyPrefixLength = keyPrefix.length;
-                  var length = localStorage.length;
-
-                  // We use a dedicated iterator instead of the `i` variable below
-                  // so other keys we fetch in localStorage aren't counted in
-                  // the `iterationNumber` argument passed to the `iterate()`
-                  // callback.
-                  //
-                  // See: github.com/mozilla/localForage/pull/435#discussion_r38061530
-                  var iterationNumber = 1;
-
-                  for (var i = 0; i < length; i++) {
-                    var key = localStorage.key(i);
-                    if (key.indexOf(keyPrefix) !== 0) {
-                      continue;
-                    }
-                    var value = localStorage.getItem(key);
-
-                    // If a result was found, parse it from the serialized
-                    // string into a JS object. If result isn't truthy, the
-                    // key is likely undefined and we'll pass it straight
-                    // to the iterator.
-                    if (value) {
-                      value = dbInfo.serializer.deserialize(value);
-                    }
-
-                    value = iterator(value, key.substring(keyPrefixLength), iterationNumber++);
-
-                    if (value !== void 0) {
-                      return value;
-                    }
-                  }
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Same as localStorage's key() method, except takes a callback.
-              function key$2(n, callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                  var dbInfo = self._dbInfo;
-                  var result;
-                  try {
-                    result = localStorage.key(n);
-                  } catch (error) {
-                    result = null;
-                  }
-
-                  // Remove the prefix from the key, if a key is found.
-                  if (result) {
-                    result = result.substring(dbInfo.keyPrefix.length);
-                  }
-
-                  return result;
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function keys$2(callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                  var dbInfo = self._dbInfo;
-                  var length = localStorage.length;
-                  var keys = [];
-
-                  for (var i = 0; i < length; i++) {
-                    var itemKey = localStorage.key(i);
-                    if (itemKey.indexOf(dbInfo.keyPrefix) === 0) {
-                      keys.push(itemKey.substring(dbInfo.keyPrefix.length));
-                    }
-                  }
-
-                  return keys;
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Supply the number of keys in the datastore to the callback function.
-              function length$2(callback) {
-                var self = this;
-                var promise = self.keys().then(function(keys) {
-                  return keys.length;
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Remove an item from the store, nice and simple.
-              function removeItem$2(key, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = self.ready().then(function() {
-                  var dbInfo = self._dbInfo;
-                  localStorage.removeItem(dbInfo.keyPrefix + key);
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              // Set a key's value and run an optional callback once the value is set.
-              // Unlike Gaia's implementation, the callback function is passed the value,
-              // in case you want to operate on that value only after you're sure it
-              // saved, or something like that.
-              function setItem$2(key, value, callback) {
-                var self = this;
-
-                key = normalizeKey(key);
-
-                var promise = self.ready().then(function() {
-                  // Convert undefined values to null.
-                  // https://github.com/mozilla/localForage/pull/42
-                  if (value === undefined) {
-                    value = null;
-                  }
-
-                  // Save the original value to pass to the callback.
-                  var originalValue = value;
-
-                  return new Promise$1(function(resolve, reject) {
-                    var dbInfo = self._dbInfo;
-                    dbInfo.serializer.serialize(value, function(value, error) {
-                      if (error) {
-                        reject(error);
-                      } else {
-                        try {
-                          localStorage.setItem(dbInfo.keyPrefix + key, value);
-                          resolve(originalValue);
-                        } catch (e) {
-                          // localStorage capacity exceeded.
-                          // TODO: Make this a specific error/event.
-                          if (
-                            e.name === 'QuotaExceededError' ||
-                            e.name === 'NS_ERROR_DOM_QUOTA_REACHED'
-                          ) {
-                            reject(e);
-                          }
-                          reject(e);
-                        }
-                      }
-                    });
-                  });
-                });
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              function dropInstance$2(options, callback) {
-                callback = getCallback.apply(this, arguments);
-
-                options = (typeof options !== 'function' && options) || {};
-                if (!options.name) {
-                  var currentConfig = this.config();
-                  options.name = options.name || currentConfig.name;
-                  options.storeName = options.storeName || currentConfig.storeName;
-                }
-
-                var self = this;
-                var promise;
-                if (!options.name) {
-                  promise = Promise$1.reject('Invalid arguments');
-                } else {
-                  promise = new Promise$1(function(resolve) {
-                    if (!options.storeName) {
-                      resolve(options.name + '/');
-                    } else {
-                      resolve(_getKeyPrefix(options, self._defaultConfig));
-                    }
-                  }).then(function(keyPrefix) {
-                    for (var i = localStorage.length - 1; i >= 0; i--) {
-                      var key = localStorage.key(i);
-
-                      if (key.indexOf(keyPrefix) === 0) {
-                        localStorage.removeItem(key);
-                      }
-                    }
-                  });
-                }
-
-                executeCallback(promise, callback);
-                return promise;
-              }
-
-              var localStorageWrapper = {
-                _driver: 'localStorageWrapper',
-                _initStorage: _initStorage$2,
-                _support: isLocalStorageValid(),
-                iterate: iterate$2,
-                getItem: getItem$2,
-                setItem: setItem$2,
-                removeItem: removeItem$2,
-                clear: clear$2,
-                length: length$2,
-                key: key$2,
-                keys: keys$2,
-                dropInstance: dropInstance$2
-              };
-
-              var sameValue = function sameValue(x, y) {
-                return (
-                  x === y ||
-                  (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y))
-                );
-              };
-
-              var includes = function includes(array, searchElement) {
-                var len = array.length;
-                var i = 0;
-                while (i < len) {
-                  if (sameValue(array[i], searchElement)) {
-                    return true;
-                  }
-                  i++;
-                }
-
-                return false;
-              };
-
-              var isArray =
-                Array.isArray ||
-                function(arg) {
-                  return Object.prototype.toString.call(arg) === '[object Array]';
-                };
-
-              // Drivers are stored here when `defineDriver()` is called.
-              // They are shared across all instances of localForage.
-              var DefinedDrivers = {};
-
-              var DriverSupport = {};
-
-              var DefaultDrivers = {
-                INDEXEDDB: asyncStorage,
-                WEBSQL: webSQLStorage,
-                LOCALSTORAGE: localStorageWrapper
-              };
-
-              var DefaultDriverOrder = [
-                DefaultDrivers.INDEXEDDB._driver,
-                DefaultDrivers.WEBSQL._driver,
-                DefaultDrivers.LOCALSTORAGE._driver
-              ];
-
-              var OptionalDriverMethods = ['dropInstance'];
-
-              var LibraryMethods = [
-                'clear',
-                'getItem',
-                'iterate',
-                'key',
-                'keys',
-                'length',
-                'removeItem',
-                'setItem'
-              ].concat(OptionalDriverMethods);
-
-              var DefaultConfig = {
-                description: '',
-                driver: DefaultDriverOrder.slice(),
-                name: 'localforage',
-                // Default DB size is _JUST UNDER_ 5MB, as it's the highest size
-                // we can use without a prompt.
-                size: 4980736,
-                storeName: 'keyvaluepairs',
-                version: 1.0
-              };
-
-              function callWhenReady(localForageInstance, libraryMethod) {
-                localForageInstance[libraryMethod] = function() {
-                  var _args = arguments;
-                  return localForageInstance.ready().then(function() {
-                    return localForageInstance[libraryMethod].apply(localForageInstance, _args);
-                  });
-                };
-              }
-
-              function extend() {
-                for (var i = 1; i < arguments.length; i++) {
-                  var arg = arguments[i];
-
-                  if (arg) {
-                    for (var _key in arg) {
-                      if (arg.hasOwnProperty(_key)) {
-                        if (isArray(arg[_key])) {
-                          arguments[0][_key] = arg[_key].slice();
-                        } else {
-                          arguments[0][_key] = arg[_key];
-                        }
-                      }
-                    }
-                  }
-                }
-
-                return arguments[0];
-              }
-
-              var LocalForage = (function() {
-                function LocalForage(options) {
-                  _classCallCheck(this, LocalForage);
-
-                  for (var driverTypeKey in DefaultDrivers) {
-                    if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {
-                      var driver = DefaultDrivers[driverTypeKey];
-                      var driverName = driver._driver;
-                      this[driverTypeKey] = driverName;
-
-                      if (!DefinedDrivers[driverName]) {
-                        // we don't need to wait for the promise,
-                        // since the default drivers can be defined
-                        // in a blocking manner
-                        this.defineDriver(driver);
-                      }
-                    }
-                  }
-
-                  this._defaultConfig = extend({}, DefaultConfig);
-                  this._config = extend({}, this._defaultConfig, options);
-                  this._driverSet = null;
-                  this._initDriver = null;
-                  this._ready = false;
-                  this._dbInfo = null;
-
-                  this._wrapLibraryMethodsWithReady();
-                  this.setDriver(this._config.driver)['catch'](function() {});
-                }
-
-                // Set any config values for localForage; can be called anytime before
-                // the first API call (e.g. `getItem`, `setItem`).
-                // We loop through options so we don't overwrite existing config
-                // values.
-
-                LocalForage.prototype.config = function config(options) {
-                  // If the options argument is an object, we use it to set values.
-                  // Otherwise, we return either a specified config value or all
-                  // config values.
-                  if (
-                    (typeof options === 'undefined' ? 'undefined' : _typeof(options)) === 'object'
-                  ) {
-                    // If localforage is ready and fully initialized, we can't set
-                    // any new configuration values. Instead, we return an error.
-                    if (this._ready) {
-                      return new Error("Can't call config() after localforage " + 'has been used.');
-                    }
-
-                    for (var i in options) {
-                      if (i === 'storeName') {
-                        options[i] = options[i].replace(/\W/g, '_');
-                      }
-
-                      if (i === 'version' && typeof options[i] !== 'number') {
-                        return new Error('Database version must be a number.');
-                      }
-
-                      this._config[i] = options[i];
-                    }
-
-                    // after all config options are set and
-                    // the driver option is used, try setting it
-                    if ('driver' in options && options.driver) {
-                      return this.setDriver(this._config.driver);
-                    }
-
-                    return true;
-                  } else if (typeof options === 'string') {
-                    return this._config[options];
-                  } else {
-                    return this._config;
-                  }
-                };
-
-                // Used to define a custom driver, shared across all instances of
-                // localForage.
-
-                LocalForage.prototype.defineDriver = function defineDriver(
-                  driverObject,
-                  callback,
-                  errorCallback
-                ) {
-                  var promise = new Promise$1(function(resolve, reject) {
-                    try {
-                      var driverName = driverObject._driver;
-                      var complianceError = new Error(
-                        'Custom driver not compliant; see ' +
-                          'https://mozilla.github.io/localForage/#definedriver'
-                      );
-
-                      // A driver name should be defined and not overlap with the
-                      // library-defined, default drivers.
-                      if (!driverObject._driver) {
-                        reject(complianceError);
-                        return;
-                      }
-
-                      var driverMethods = LibraryMethods.concat('_initStorage');
-                      for (var i = 0, len = driverMethods.length; i < len; i++) {
-                        var driverMethodName = driverMethods[i];
-
-                        // when the property is there,
-                        // it should be a method even when optional
-                        var isRequired = !includes(OptionalDriverMethods, driverMethodName);
-                        if (
-                          (isRequired || driverObject[driverMethodName]) &&
-                          typeof driverObject[driverMethodName] !== 'function'
-                        ) {
-                          reject(complianceError);
-                          return;
-                        }
-                      }
-
-                      var configureMissingMethods = function configureMissingMethods() {
-                        var methodNotImplementedFactory = function methodNotImplementedFactory(
-                          methodName
-                        ) {
-                          return function() {
-                            var error = new Error(
-                              'Method ' + methodName + ' is not implemented by the current driver'
-                            );
-                            var promise = Promise$1.reject(error);
-                            executeCallback(promise, arguments[arguments.length - 1]);
-                            return promise;
-                          };
-                        };
-
-                        for (var _i = 0, _len = OptionalDriverMethods.length; _i < _len; _i++) {
-                          var optionalDriverMethod = OptionalDriverMethods[_i];
-                          if (!driverObject[optionalDriverMethod]) {
-                            driverObject[optionalDriverMethod] = methodNotImplementedFactory(
-                              optionalDriverMethod
-                            );
-                          }
-                        }
-                      };
-
-                      configureMissingMethods();
-
-                      var setDriverSupport = function setDriverSupport(support) {
-                        if (DefinedDrivers[driverName]) {
-                          console.info('Redefining LocalForage driver: ' + driverName);
-                        }
-                        DefinedDrivers[driverName] = driverObject;
-                        DriverSupport[driverName] = support;
-                        // don't use a then, so that we can define
-                        // drivers that have simple _support methods
-                        // in a blocking manner
-                        resolve();
-                      };
-
-                      if ('_support' in driverObject) {
-                        if (driverObject._support && typeof driverObject._support === 'function') {
-                          driverObject._support().then(setDriverSupport, reject);
-                        } else {
-                          setDriverSupport(!!driverObject._support);
-                        }
-                      } else {
-                        setDriverSupport(true);
-                      }
-                    } catch (e) {
-                      reject(e);
-                    }
-                  });
-
-                  executeTwoCallbacks(promise, callback, errorCallback);
-                  return promise;
-                };
-
-                LocalForage.prototype.driver = function driver() {
-                  return this._driver || null;
-                };
-
-                LocalForage.prototype.getDriver = function getDriver(
-                  driverName,
-                  callback,
-                  errorCallback
-                ) {
-                  var getDriverPromise = DefinedDrivers[driverName]
-                    ? Promise$1.resolve(DefinedDrivers[driverName])
-                    : Promise$1.reject(new Error('Driver not found.'));
-
-                  executeTwoCallbacks(getDriverPromise, callback, errorCallback);
-                  return getDriverPromise;
-                };
-
-                LocalForage.prototype.getSerializer = function getSerializer(callback) {
-                  var serializerPromise = Promise$1.resolve(localforageSerializer);
-                  executeTwoCallbacks(serializerPromise, callback);
-                  return serializerPromise;
-                };
-
-                LocalForage.prototype.ready = function ready(callback) {
-                  var self = this;
-
-                  var promise = self._driverSet.then(function() {
-                    if (self._ready === null) {
-                      self._ready = self._initDriver();
-                    }
-
-                    return self._ready;
-                  });
-
-                  executeTwoCallbacks(promise, callback, callback);
-                  return promise;
-                };
-
-                LocalForage.prototype.setDriver = function setDriver(
-                  drivers,
-                  callback,
-                  errorCallback
-                ) {
-                  var self = this;
-
-                  if (!isArray(drivers)) {
-                    drivers = [drivers];
-                  }
-
-                  var supportedDrivers = this._getSupportedDrivers(drivers);
-
-                  function setDriverToConfig() {
-                    self._config.driver = self.driver();
-                  }
-
-                  function extendSelfWithDriver(driver) {
-                    self._extend(driver);
-                    setDriverToConfig();
-
-                    self._ready = self._initStorage(self._config);
-                    return self._ready;
-                  }
-
-                  function initDriver(supportedDrivers) {
-                    return function() {
-                      var currentDriverIndex = 0;
-
-                      function driverPromiseLoop() {
-                        while (currentDriverIndex < supportedDrivers.length) {
-                          var driverName = supportedDrivers[currentDriverIndex];
-                          currentDriverIndex++;
-
-                          self._dbInfo = null;
-                          self._ready = null;
-
-                          return self
-                            .getDriver(driverName)
-                            .then(extendSelfWithDriver)
-                            ['catch'](driverPromiseLoop);
-                        }
-
-                        setDriverToConfig();
-                        var error = new Error('No available storage method found.');
-                        self._driverSet = Promise$1.reject(error);
-                        return self._driverSet;
-                      }
-
-                      return driverPromiseLoop();
-                    };
-                  }
-
-                  // There might be a driver initialization in progress
-                  // so wait for it to finish in order to avoid a possible
-                  // race condition to set _dbInfo
-                  var oldDriverSetDone =
-                    this._driverSet !== null
-                      ? this._driverSet['catch'](function() {
-                          return Promise$1.resolve();
-                        })
-                      : Promise$1.resolve();
-
-                  this._driverSet = oldDriverSetDone
-                    .then(function() {
-                      var driverName = supportedDrivers[0];
-                      self._dbInfo = null;
-                      self._ready = null;
-
-                      return self.getDriver(driverName).then(function(driver) {
-                        self._driver = driver._driver;
-                        setDriverToConfig();
-                        self._wrapLibraryMethodsWithReady();
-                        self._initDriver = initDriver(supportedDrivers);
-                      });
-                    })
-                    ['catch'](function() {
-                      setDriverToConfig();
-                      var error = new Error('No available storage method found.');
-                      self._driverSet = Promise$1.reject(error);
-                      return self._driverSet;
-                    });
-
-                  executeTwoCallbacks(this._driverSet, callback, errorCallback);
-                  return this._driverSet;
-                };
-
-                LocalForage.prototype.supports = function supports(driverName) {
-                  return !!DriverSupport[driverName];
-                };
-
-                LocalForage.prototype._extend = function _extend(libraryMethodsAndProperties) {
-                  extend(this, libraryMethodsAndProperties);
-                };
-
-                LocalForage.prototype._getSupportedDrivers = function _getSupportedDrivers(
-                  drivers
-                ) {
-                  var supportedDrivers = [];
-                  for (var i = 0, len = drivers.length; i < len; i++) {
-                    var driverName = drivers[i];
-                    if (this.supports(driverName)) {
-                      supportedDrivers.push(driverName);
-                    }
-                  }
-                  return supportedDrivers;
-                };
-
-                LocalForage.prototype._wrapLibraryMethodsWithReady = function _wrapLibraryMethodsWithReady() {
-                  // Add a stub for each driver API method that delays the call to the
-                  // corresponding driver method until localForage is ready. These stubs
-                  // will be replaced by the driver methods as soon as the driver is
-                  // loaded, so there is no performance impact.
-                  for (var i = 0, len = LibraryMethods.length; i < len; i++) {
-                    callWhenReady(this, LibraryMethods[i]);
-                  }
-                };
-
-                LocalForage.prototype.createInstance = function createInstance(options) {
-                  return new LocalForage(options);
-                };
-
-                return LocalForage;
-              })();
-
-              // The actual localForage object that we expose as a module or via a
-              // global. It's extended by pulling in one of our other libraries.
-
-              var localforage_js = new LocalForage();
-
-              module.exports = localforage_js;
-            },
-            { '3': 3 }
-          ]
-        },
-        {},
-        [4]
-      )(4);
-    });
-  });
 
   /** Detect free variable `global` from Node.js. */
   var freeGlobal =
@@ -5131,6 +1021,97 @@
   }
 
   var _baseGetTag = baseGetTag;
+
+  /**
+   * Checks if `value` is object-like. A value is object-like if it's not `null`
+   * and has a `typeof` result of "object".
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+   * @example
+   *
+   * _.isObjectLike({});
+   * // => true
+   *
+   * _.isObjectLike([1, 2, 3]);
+   * // => true
+   *
+   * _.isObjectLike(_.noop);
+   * // => false
+   *
+   * _.isObjectLike(null);
+   * // => false
+   */
+  function isObjectLike(value) {
+    return value != null && typeof value == 'object';
+  }
+
+  var isObjectLike_1 = isObjectLike;
+
+  /** `Object#toString` result references. */
+  var symbolTag = '[object Symbol]';
+
+  /**
+   * Checks if `value` is classified as a `Symbol` primitive or object.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+   * @example
+   *
+   * _.isSymbol(Symbol.iterator);
+   * // => true
+   *
+   * _.isSymbol('abc');
+   * // => false
+   */
+  function isSymbol(value) {
+    return typeof value == 'symbol' || (isObjectLike_1(value) && _baseGetTag(value) == symbolTag);
+  }
+
+  var isSymbol_1 = isSymbol;
+
+  /** Used to match property names within property paths. */
+  var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
+    reIsPlainProp = /^\w*$/;
+
+  /**
+   * Checks if `value` is a property name and not a property path.
+   *
+   * @private
+   * @param {*} value The value to check.
+   * @param {Object} [object] The object to query keys on.
+   * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
+   */
+  function isKey(value, object) {
+    if (isArray_1(value)) {
+      return false;
+    }
+    var type = typeof value;
+    if (
+      type == 'number' ||
+      type == 'symbol' ||
+      type == 'boolean' ||
+      value == null ||
+      isSymbol_1(value)
+    ) {
+      return true;
+    }
+    return (
+      reIsPlainProp.test(value) ||
+      !reIsDeepProp.test(value) ||
+      (object != null && value in Object(object))
+    );
+  }
+
+  var _isKey = isKey;
 
   /**
    * Checks if `value` is the
@@ -5326,224 +1307,6 @@
 
   var _getNative = getNative;
 
-  var defineProperty = (function() {
-    try {
-      var func = _getNative(Object, 'defineProperty');
-      func({}, '', {});
-      return func;
-    } catch (e) {}
-  })();
-
-  var _defineProperty = defineProperty;
-
-  /**
-   * The base implementation of `assignValue` and `assignMergeValue` without
-   * value checks.
-   *
-   * @private
-   * @param {Object} object The object to modify.
-   * @param {string} key The key of the property to assign.
-   * @param {*} value The value to assign.
-   */
-  function baseAssignValue(object, key, value) {
-    if (key == '__proto__' && _defineProperty) {
-      _defineProperty(object, key, {
-        configurable: true,
-        enumerable: true,
-        value: value,
-        writable: true
-      });
-    } else {
-      object[key] = value;
-    }
-  }
-
-  var _baseAssignValue = baseAssignValue;
-
-  /**
-   * Performs a
-   * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
-   * comparison between two values to determine if they are equivalent.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to compare.
-   * @param {*} other The other value to compare.
-   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
-   * @example
-   *
-   * var object = { 'a': 1 };
-   * var other = { 'a': 1 };
-   *
-   * _.eq(object, object);
-   * // => true
-   *
-   * _.eq(object, other);
-   * // => false
-   *
-   * _.eq('a', 'a');
-   * // => true
-   *
-   * _.eq('a', Object('a'));
-   * // => false
-   *
-   * _.eq(NaN, NaN);
-   * // => true
-   */
-  function eq(value, other) {
-    return value === other || (value !== value && other !== other);
-  }
-
-  var eq_1 = eq;
-
-  /** Used for built-in method references. */
-  var objectProto$3 = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty$2 = objectProto$3.hasOwnProperty;
-
-  /**
-   * Assigns `value` to `key` of `object` if the existing value is not equivalent
-   * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
-   * for equality comparisons.
-   *
-   * @private
-   * @param {Object} object The object to modify.
-   * @param {string} key The key of the property to assign.
-   * @param {*} value The value to assign.
-   */
-  function assignValue(object, key, value) {
-    var objValue = object[key];
-    if (
-      !(hasOwnProperty$2.call(object, key) && eq_1(objValue, value)) ||
-      (value === undefined && !(key in object))
-    ) {
-      _baseAssignValue(object, key, value);
-    }
-  }
-
-  var _assignValue = assignValue;
-
-  /**
-   * Checks if `value` is classified as an `Array` object.
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is an array, else `false`.
-   * @example
-   *
-   * _.isArray([1, 2, 3]);
-   * // => true
-   *
-   * _.isArray(document.body.children);
-   * // => false
-   *
-   * _.isArray('abc');
-   * // => false
-   *
-   * _.isArray(_.noop);
-   * // => false
-   */
-  var isArray = Array.isArray;
-
-  var isArray_1 = isArray;
-
-  /**
-   * Checks if `value` is object-like. A value is object-like if it's not `null`
-   * and has a `typeof` result of "object".
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
-   * @example
-   *
-   * _.isObjectLike({});
-   * // => true
-   *
-   * _.isObjectLike([1, 2, 3]);
-   * // => true
-   *
-   * _.isObjectLike(_.noop);
-   * // => false
-   *
-   * _.isObjectLike(null);
-   * // => false
-   */
-  function isObjectLike(value) {
-    return value != null && typeof value == 'object';
-  }
-
-  var isObjectLike_1 = isObjectLike;
-
-  /** `Object#toString` result references. */
-  var symbolTag = '[object Symbol]';
-
-  /**
-   * Checks if `value` is classified as a `Symbol` primitive or object.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
-   * @example
-   *
-   * _.isSymbol(Symbol.iterator);
-   * // => true
-   *
-   * _.isSymbol('abc');
-   * // => false
-   */
-  function isSymbol(value) {
-    return typeof value == 'symbol' || (isObjectLike_1(value) && _baseGetTag(value) == symbolTag);
-  }
-
-  var isSymbol_1 = isSymbol;
-
-  /** Used to match property names within property paths. */
-  var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
-    reIsPlainProp = /^\w*$/;
-
-  /**
-   * Checks if `value` is a property name and not a property path.
-   *
-   * @private
-   * @param {*} value The value to check.
-   * @param {Object} [object] The object to query keys on.
-   * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
-   */
-  function isKey(value, object) {
-    if (isArray_1(value)) {
-      return false;
-    }
-    var type = typeof value;
-    if (
-      type == 'number' ||
-      type == 'symbol' ||
-      type == 'boolean' ||
-      value == null ||
-      isSymbol_1(value)
-    ) {
-      return true;
-    }
-    return (
-      reIsPlainProp.test(value) ||
-      !reIsDeepProp.test(value) ||
-      (object != null && value in Object(object))
-    );
-  }
-
-  var _isKey = isKey;
-
   /* Built-in method references that are verified to be native. */
   var nativeCreate = _getNative(Object, 'create');
 
@@ -5585,10 +1348,10 @@
   var HASH_UNDEFINED = '__lodash_hash_undefined__';
 
   /** Used for built-in method references. */
-  var objectProto$4 = Object.prototype;
+  var objectProto$3 = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
+  var hasOwnProperty$2 = objectProto$3.hasOwnProperty;
 
   /**
    * Gets the hash value for `key`.
@@ -5605,16 +1368,16 @@
       var result = data[key];
       return result === HASH_UNDEFINED ? undefined : result;
     }
-    return hasOwnProperty$3.call(data, key) ? data[key] : undefined;
+    return hasOwnProperty$2.call(data, key) ? data[key] : undefined;
   }
 
   var _hashGet = hashGet;
 
   /** Used for built-in method references. */
-  var objectProto$5 = Object.prototype;
+  var objectProto$4 = Object.prototype;
 
   /** Used to check objects for own properties. */
-  var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
+  var hasOwnProperty$3 = objectProto$4.hasOwnProperty;
 
   /**
    * Checks if a hash value for `key` exists.
@@ -5627,7 +1390,7 @@
    */
   function hashHas(key) {
     var data = this.__data__;
-    return _nativeCreate ? data[key] !== undefined : hasOwnProperty$4.call(data, key);
+    return _nativeCreate ? data[key] !== undefined : hasOwnProperty$3.call(data, key);
   }
 
   var _hashHas = hashHas;
@@ -5694,6 +1457,44 @@
   }
 
   var _listCacheClear = listCacheClear;
+
+  /**
+   * Performs a
+   * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+   * comparison between two values to determine if they are equivalent.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to compare.
+   * @param {*} other The other value to compare.
+   * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+   * @example
+   *
+   * var object = { 'a': 1 };
+   * var other = { 'a': 1 };
+   *
+   * _.eq(object, object);
+   * // => true
+   *
+   * _.eq(object, other);
+   * // => false
+   *
+   * _.eq('a', 'a');
+   * // => true
+   *
+   * _.eq('a', Object('a'));
+   * // => false
+   *
+   * _.eq(NaN, NaN);
+   * // => true
+   */
+  function eq(value, other) {
+    return value === other || (value !== value && other !== other);
+  }
+
+  var eq_1 = eq;
 
   /**
    * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -6206,6 +2007,1016 @@
   var _castPath = castPath;
 
   /** Used as references for various `Number` constants. */
+  var INFINITY$1 = 1 / 0;
+
+  /**
+   * Converts `value` to a string key if it's not a string or symbol.
+   *
+   * @private
+   * @param {*} value The value to inspect.
+   * @returns {string|symbol} Returns the key.
+   */
+  function toKey(value) {
+    if (typeof value == 'string' || isSymbol_1(value)) {
+      return value;
+    }
+    var result = value + '';
+    return result == '0' && 1 / value == -INFINITY$1 ? '-0' : result;
+  }
+
+  var _toKey = toKey;
+
+  /**
+   * The base implementation of `_.get` without support for default values.
+   *
+   * @private
+   * @param {Object} object The object to query.
+   * @param {Array|string} path The path of the property to get.
+   * @returns {*} Returns the resolved value.
+   */
+  function baseGet(object, path) {
+    path = _castPath(path, object);
+
+    var index = 0,
+      length = path.length;
+
+    while (object != null && index < length) {
+      object = object[_toKey(path[index++])];
+    }
+    return index && index == length ? object : undefined;
+  }
+
+  var _baseGet = baseGet;
+
+  /**
+   * Gets the value at `path` of `object`. If the resolved value is
+   * `undefined`, the `defaultValue` is returned in its place.
+   *
+   * @static
+   * @memberOf _
+   * @since 3.7.0
+   * @category Object
+   * @param {Object} object The object to query.
+   * @param {Array|string} path The path of the property to get.
+   * @param {*} [defaultValue] The value returned for `undefined` resolved values.
+   * @returns {*} Returns the resolved value.
+   * @example
+   *
+   * var object = { 'a': [{ 'b': { 'c': 3 } }] };
+   *
+   * _.get(object, 'a[0].b.c');
+   * // => 3
+   *
+   * _.get(object, ['a', '0', 'b', 'c']);
+   * // => 3
+   *
+   * _.get(object, 'a.b.c', 'default');
+   * // => 'default'
+   */
+  function get(object, path, defaultValue) {
+    var result = object == null ? undefined : _baseGet(object, path);
+    return result === undefined ? defaultValue : result;
+  }
+
+  var get_1 = get;
+
+  const ETHEREUM_MINER = 'ETHEREUM_MINER';
+  const ethereum = {
+    name: 'Ethereum',
+    identifier: ETHEREUM_MINER,
+    logo: 'assets/ethereum.png',
+    currency: 'ETH',
+    minimumPaymentThreshold: 0.05,
+    parser: generateParser({
+      [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
+    }),
+    path: 'ethereum/ethminer.exe',
+    args: address =>
+      `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${address}.raccoon`,
+    environmentVariables: () =>
+      JSON.stringify({
+        GPU_FORCE_64BIT_PTR: '0',
+        GPU_MAX_HEAP_SIZE: '100',
+        GPU_USE_SYNC_OBJECTS: '1',
+        GPU_MAX_ALLOC_PERCENT: '100',
+        GPU_SINGLE_ALLOC_PERCENT: '100'
+      }),
+    links: {
+      wallet: 'https://www.myetherwallet.com/',
+      stats: address => `https://ethermine.org/miners/${address}/dashboard`,
+      api: address => `https://api.ethermine.org/miner/${address}/dashboard`
+    },
+    apiParser: result => ({
+      unpaidBalance: (get_1(result, 'data.currentStatistics.unpaid') || 0) / 1000000000000000000
+    }),
+    isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
+    addressHint: 'It should start with 0x and have 42 characters.',
+    developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
+  };
+
+  const MONERO_MINER = 'MONERO_MINER';
+  const monero = {
+    name: 'Monero',
+    identifier: MONERO_MINER,
+    logo: 'assets/monero.png',
+    currency: 'XMR',
+    minimumPaymentThreshold: 0.1,
+    parser: generateParser({
+      [SPEED_REGEX]: /Totals \(ALL\):\s+(.+)\s/,
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
+    }),
+    path: 'monero/xmr-stak.exe',
+    args: address =>
+      `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
+    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
+    links: {
+      wallet: 'https://getmonero.org/',
+      stats: () => 'https://supportxmr.com/#/dashboard',
+      api: address => `https://supportxmr.com/api/miner/${address}/stats`
+    },
+    apiParser: result => ({ unpaidBalance: (get_1(result, 'amtDue') || 0) / 1000000000000 }),
+    isValidAddress: address =>
+      /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
+    addressHint: 'It should have 95 characters.',
+    developerAddress:
+      '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
+  };
+
+  const getMiner = minerIdentifier => {
+    switch (minerIdentifier) {
+      case ETHEREUM_MINER:
+        return ethereum;
+      case MONERO_MINER:
+        return monero;
+    }
+  };
+
+  const callOverwolfWithPromise = (method, ...params) => {
+    return new Promise((resolve, reject) => {
+      const handleResult = result => {
+        if (result) return resolve(result);
+        return reject(result);
+      };
+
+      console.log(method, params);
+      if (params) {
+        method(...params, handleResult);
+      } else {
+        method(handleResult);
+      }
+    });
+  };
+
+  const getVersion = () => {
+    return new Promise(async resolve => {
+      const result = await callOverwolfWithPromise(overwolf.extensions.current.getManifest);
+      resolve(result.meta.version);
+    });
+  };
+
+  let processManager = null;
+  const getProcessManagerPlugin = () => {
+    return new Promise(async resolve => {
+      if (processManager) return resolve(processManager);
+      const result = await callOverwolfWithPromise(
+        overwolf.extensions.current.getExtraObject,
+        'process-manager-plugin'
+      );
+      processManager = result.object;
+      resolve(result.object);
+    });
+  };
+
+  let simpleIoPlugin;
+  const getSimpleIoPlugin = () => {
+    return new Promise(async resolve => {
+      if (simpleIoPlugin) return resolve(simpleIoPlugin);
+      const result = await callOverwolfWithPromise(
+        overwolf.extensions.current.getExtraObject,
+        'simple-io-plugin'
+      );
+      simpleIoPlugin = result.object;
+      resolve(result.object);
+    });
+  };
+
+  /**
+   * Checks if `value` is `null` or `undefined`.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
+   * @example
+   *
+   * _.isNil(null);
+   * // => true
+   *
+   * _.isNil(void 0);
+   * // => true
+   *
+   * _.isNil(NaN);
+   * // => false
+   */
+  function isNil(value) {
+    return value == null;
+  }
+
+  var isNil_1 = isNil;
+
+  const setMiningAddress = (minerIdentifier, address) => {
+    return dispatch => {
+      dispatch({
+        type: SET_MINING_ADDRESS,
+        data: { address, minerIdentifier }
+      });
+
+      const miner = getMiner(minerIdentifier);
+      const validAddress = miner.isValidAddress(address);
+
+      if (validAddress);
+      else {
+        dispatch({
+          type: RECEIVE_WORKER_STATS,
+          data: {
+            minerIdentifier,
+            workerStats: {}
+          }
+        });
+      }
+    };
+  };
+
+  const selectMiner = minerIdentifier => {
+    return dispatch => {
+      dispatch({
+        type: SELECT_MINER,
+        data: minerIdentifier
+      });
+      dispatch(trackWorkerStats());
+    };
+  };
+
+  const trackWorkerStats = () => {
+    return dispatch => {
+      dispatch(fetchWorkerStats());
+      setInterval(() => {
+        dispatch(fetchWorkerStats());
+      }, 60000);
+    };
+  };
+
+  const fetchWorkerStats = () => {
+    return (dispatch, getState) => {
+      const {
+        mining: { miners, selectedMinerIdentifier: minerIdentifier }
+      } = getState();
+      const { address } = miners[minerIdentifier];
+      const {
+        links: { api },
+        apiParser
+      } = getMiner(minerIdentifier);
+
+      fetch(api(address))
+        .then(response => response.json())
+        .then(result => {
+          console.log(minerIdentifier, result);
+          dispatch({
+            type: RECEIVE_WORKER_STATS,
+            data: {
+              minerIdentifier,
+              workerStats: apiParser(result)
+            }
+          });
+        })
+        .catch(errorMsg => {
+          dispatch({
+            type: SET_MINING_ERROR_MESSAGE,
+            data: {
+              minerIdentifier,
+              errorMsg
+            }
+          });
+        });
+    };
+  };
+
+  const handleDataByIdenfier = {};
+  let sendTextInterval = null;
+  const startMining = minerIdentifier => {
+    return async (dispatch, getState) => {
+      const {
+        mining: { miners, selectedMinerIdentifier }
+      } = getState();
+      const address = miners[selectedMinerIdentifier].address || 'default';
+      if (handleDataByIdenfier[minerIdentifier]) return;
+      const processManager = await getProcessManagerPlugin();
+      const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
+
+      dispatch({
+        type: START_MINING,
+        data: { minerIdentifier }
+      });
+
+      handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
+        const { connecting, errorMsg, speed } = parser(error || data);
+
+        if (connecting) {
+          dispatch({
+            type: CONNECTING_POOL,
+            data: {
+              minerIdentifier
+            }
+          });
+        } else if (!isNil_1(speed)) {
+          dispatch({
+            type: SET_MINING_SPEED,
+            data: {
+              minerIdentifier,
+              speed
+            }
+          });
+        } else if (!isNil_1(errorMsg)) {
+          dispatch({
+            type: SET_MINING_ERROR_MESSAGE,
+            data: {
+              minerIdentifier,
+              errorMsg
+            }
+          });
+        }
+      };
+      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
+
+      processManager.launchProcess(
+        path,
+        args(address),
+        environmentVariables(),
+        true,
+        ({ data }) => {
+          console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
+          dispatch({
+            type: SET_PROCESS_ID,
+            data: {
+              minerIdentifier,
+              processId: data
+            }
+          });
+        }
+      );
+    };
+  };
+
+  const stopMining = minerIdentifier => {
+    return async (dispatch, getState) => {
+      const processManager = await getProcessManagerPlugin();
+      const { activeMiners } = getState();
+
+      dispatch({
+        type: STOP_MINING,
+        data: { minerIdentifier }
+      });
+      const processId = activeMiners[minerIdentifier].processId;
+      console.info(`%cStop mining ${processId}`, 'color: blue');
+      if (processId || handleDataByIdenfier[minerIdentifier]) {
+        if (sendTextInterval) {
+          clearInterval(sendTextInterval);
+          sendTextInterval = null;
+        }
+        processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
+        processManager.terminateProcess(processId);
+        delete handleDataByIdenfier[minerIdentifier];
+      }
+    };
+  };
+
+  const fetchVersion = () => {
+    return dispatch => {
+      getVersion().then(version => {
+        dispatch({
+          type: RECEIVE_VERSION,
+          data: version
+        });
+      });
+    };
+  };
+
+  var KEY_PREFIX = 'persist:';
+  var FLUSH = 'persist/FLUSH';
+  var REHYDRATE = 'persist/REHYDRATE';
+  var PAUSE = 'persist/PAUSE';
+  var PERSIST = 'persist/PERSIST';
+  var PURGE = 'persist/PURGE';
+  var REGISTER = 'persist/REGISTER';
+  var DEFAULT_VERSION = -1;
+
+  var _typeof$1 =
+    typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+      ? function(obj) {
+          return typeof obj;
+        }
+      : function(obj) {
+          return obj &&
+            typeof Symbol === 'function' &&
+            obj.constructor === Symbol &&
+            obj !== Symbol.prototype
+            ? 'symbol'
+            : typeof obj;
+        };
+
+  var _extends$1 =
+    Object.assign ||
+    function(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+
+  function autoMergeLevel1(inboundState, originalState, reducedState, _ref) {
+    var debug = _ref.debug;
+
+    var newState = _extends$1({}, reducedState);
+    // only rehydrate if inboundState exists and is an object
+    if (
+      inboundState &&
+      (typeof inboundState === 'undefined' ? 'undefined' : _typeof$1(inboundState)) === 'object'
+    ) {
+      Object.keys(inboundState).forEach(function(key) {
+        // ignore _persist data
+        if (key === '_persist') return;
+        // if reducer modifies substate, skip auto rehydration
+        if (originalState[key] !== reducedState[key]) {
+          if (debug)
+            console.log(
+              'redux-persist/stateReconciler: sub state for key `%s` modified, skipping.',
+              key
+            );
+          return;
+        }
+        // otherwise hard set the new value
+        newState[key] = inboundState[key];
+      });
+    }
+
+    if (
+      debug &&
+      inboundState &&
+      (typeof inboundState === 'undefined' ? 'undefined' : _typeof$1(inboundState)) === 'object'
+    )
+      console.log(
+        "redux-persist/stateReconciler: rehydrated keys '" +
+          Object.keys(inboundState).join(', ') +
+          "'"
+      );
+
+    return newState;
+  }
+
+  /*
+	  autoMergeLevel1: 
+	    - merges 1 level of substate
+	    - skips substate if already modified
+	*/
+
+  // @TODO remove once flow < 0.63 support is no longer required.
+
+  function createPersistoid(config) {
+    // defaults
+    var blacklist = config.blacklist || null;
+    var whitelist = config.whitelist || null;
+    var transforms = config.transforms || [];
+    var throttle = config.throttle || 0;
+    var storageKey =
+      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
+    var storage = config.storage;
+    var serialize =
+      config.serialize === false
+        ? function(x) {
+            return x;
+          }
+        : defaultSerialize;
+
+    // initialize stateful values
+    var lastState = {};
+    var stagedState = {};
+    var keysToProcess = [];
+    var timeIterator = null;
+    var writePromise = null;
+
+    var update = function update(state) {
+      // add any changed keys to the queue
+      Object.keys(state).forEach(function(key) {
+        var subState = state[key];
+        if (!passWhitelistBlacklist(key)) return; // is keyspace ignored? noop
+        if (lastState[key] === state[key]) return; // value unchanged? noop
+        if (keysToProcess.indexOf(key) !== -1) return; // is key already queued? noop
+        keysToProcess.push(key); // add key to queue
+      });
+
+      // start the time iterator if not running (read: throttle)
+      if (timeIterator === null) {
+        timeIterator = setInterval(processNextKey, throttle);
+      }
+
+      lastState = state;
+    };
+
+    function processNextKey() {
+      if (keysToProcess.length === 0) {
+        if (timeIterator) clearInterval(timeIterator);
+        timeIterator = null;
+        return;
+      }
+
+      var key = keysToProcess.shift();
+      var endState = transforms.reduce(function(subState, transformer) {
+        return transformer.in(subState, key, lastState);
+      }, lastState[key]);
+      if (typeof endState !== 'undefined') stagedWrite(key, endState);
+    }
+
+    function stagedWrite(key, endState) {
+      try {
+        stagedState[key] = serialize(endState);
+      } catch (err) {
+        console.error('redux-persist/createPersistoid: error serializing state', err);
+      }
+      if (keysToProcess.length === 0) {
+        // cleanup any removed keys just before write.
+        Object.keys(stagedState).forEach(function(key) {
+          if (lastState[key] === undefined) {
+            delete stagedState[key];
+          }
+        });
+
+        writePromise = storage.setItem(storageKey, serialize(stagedState)).catch(onWriteFail);
+      }
+    }
+
+    function passWhitelistBlacklist(key) {
+      if (whitelist && whitelist.indexOf(key) === -1 && key !== '_persist') return false;
+      if (blacklist && blacklist.indexOf(key) !== -1) return false;
+      return true;
+    }
+
+    function onWriteFail(err) {
+      // @TODO add fail handlers (typically storage full)
+      if (err && 'development' !== 'production') {
+        console.error('Error storing data', err);
+      }
+    }
+
+    var flush = function flush() {
+      while (keysToProcess.length !== 0) {
+        processNextKey();
+      }
+      return writePromise || Promise.resolve();
+    };
+
+    // return `persistoid`
+    return {
+      update: update,
+      flush: flush
+    };
+  }
+
+  // @NOTE in the future this may be exposed via config
+  function defaultSerialize(data) {
+    return JSON.stringify(data);
+  }
+
+  function getStoredState(config) {
+    var transforms = config.transforms || [];
+    var storageKey =
+      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
+    var storage = config.storage;
+    var debug = config.debug;
+    var deserialize =
+      config.serialize === false
+        ? function(x) {
+            return x;
+          }
+        : defaultDeserialize;
+    return storage.getItem(storageKey).then(function(serialized) {
+      if (!serialized) return undefined;
+      else {
+        try {
+          var state = {};
+          var rawState = deserialize(serialized);
+          Object.keys(rawState).forEach(function(key) {
+            state[key] = transforms.reduceRight(function(subState, transformer) {
+              return transformer.out(subState, key, rawState);
+            }, deserialize(rawState[key]));
+          });
+          return state;
+        } catch (err) {
+          if (debug)
+            console.log('redux-persist/getStoredState: Error restoring data ' + serialized, err);
+          throw err;
+        }
+      }
+    });
+  }
+
+  function defaultDeserialize(serial) {
+    return JSON.parse(serial);
+  }
+
+  function purgeStoredState(config) {
+    var storage = config.storage;
+    var storageKey =
+      '' + (config.keyPrefix !== undefined ? config.keyPrefix : KEY_PREFIX) + config.key;
+    return storage.removeItem(storageKey, warnIfRemoveError);
+  }
+
+  function warnIfRemoveError(err) {
+    if (err && 'development' !== 'production') {
+      console.error('redux-persist/purgeStoredState: Error purging data stored state', err);
+    }
+  }
+
+  var _extends$2 =
+    Object.assign ||
+    function(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+
+  function _objectWithoutProperties(obj, keys) {
+    var target = {};
+    for (var i in obj) {
+      if (keys.indexOf(i) >= 0) continue;
+      if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+      target[i] = obj[i];
+    }
+    return target;
+  }
+
+  var DEFAULT_TIMEOUT = 5000;
+  /*
+	  @TODO add validation / handling for:
+	  - persisting a reducer which has nested _persist
+	  - handling actions that fire before reydrate is called
+	*/
+  function persistReducer(config, baseReducer) {
+    {
+      if (!config) throw new Error('config is required for persistReducer');
+      if (!config.key) throw new Error('key is required in persistor config');
+      if (!config.storage)
+        throw new Error(
+          "redux-persist: config.storage is required. Try using one of the provided storage engines `import storageLocal from 'redux-persist/es/storage/local'"
+        );
+    }
+
+    var version = config.version !== undefined ? config.version : DEFAULT_VERSION;
+    var debug = config.debug || false;
+    var stateReconciler =
+      config.stateReconciler === undefined ? autoMergeLevel1 : config.stateReconciler;
+    var getStoredState$$1 = config.getStoredState || getStoredState;
+    var timeout = config.timeout !== undefined ? config.timeout : DEFAULT_TIMEOUT;
+    var _persistoid = null;
+    var _purge = false;
+    var _paused = true;
+    var conditionalUpdate = function conditionalUpdate(state) {
+      // update the persistoid only if we are rehydrated and not paused
+      state._persist.rehydrated && _persistoid && !_paused && _persistoid.update(state);
+      return state;
+    };
+
+    return function(state, action) {
+      var _ref = state || {},
+        _persist = _ref._persist,
+        rest = _objectWithoutProperties(_ref, ['_persist']);
+
+      var restState = rest;
+
+      if (action.type === PERSIST) {
+        var _sealed = false;
+        var _rehydrate = function _rehydrate(payload, err) {
+          // dev warning if we are already sealed
+          if (_sealed)
+            console.error(
+              'redux-persist: rehydrate for "' + config.key + '" called after timeout.',
+              payload,
+              err
+            );
+
+          // only rehydrate if we are not already sealed
+          if (!_sealed) {
+            action.rehydrate(config.key, payload, err);
+            _sealed = true;
+          }
+        };
+        timeout &&
+          setTimeout(function() {
+            !_sealed &&
+              _rehydrate(
+                undefined,
+                new Error('redux-persist: persist timed out for persist key "' + config.key + '"')
+              );
+          }, timeout);
+
+        // @NOTE PERSIST resumes if paused.
+        _paused = false;
+
+        // @NOTE only ever create persistoid once, ensure we call it at least once, even if _persist has already been set
+        if (!_persistoid) _persistoid = createPersistoid(config);
+
+        // @NOTE PERSIST can be called multiple times, noop after the first
+        if (_persist) return state;
+        if (typeof action.rehydrate !== 'function' || typeof action.register !== 'function')
+          throw new Error(
+            'redux-persist: either rehydrate or register is not a function on the PERSIST action. This can happen if the action is being replayed. This is an unexplored use case, please open an issue and we will figure out a resolution.'
+          );
+
+        action.register(config.key);
+
+        getStoredState$$1(config).then(
+          function(restoredState) {
+            var migrate =
+              config.migrate ||
+              function(s, v) {
+                return Promise.resolve(s);
+              };
+            migrate(restoredState, version).then(
+              function(migratedState) {
+                _rehydrate(migratedState);
+              },
+              function(migrateErr) {
+                if (migrateErr) console.error('redux-persist: migration error', migrateErr);
+                _rehydrate(undefined, migrateErr);
+              }
+            );
+          },
+          function(err) {
+            _rehydrate(undefined, err);
+          }
+        );
+
+        return _extends$2({}, baseReducer(restState, action), {
+          _persist: { version: version, rehydrated: false }
+        });
+      } else if (action.type === PURGE) {
+        _purge = true;
+        action.result(purgeStoredState(config));
+        return _extends$2({}, baseReducer(restState, action), {
+          _persist: _persist
+        });
+      } else if (action.type === FLUSH) {
+        action.result(_persistoid && _persistoid.flush());
+        return _extends$2({}, baseReducer(restState, action), {
+          _persist: _persist
+        });
+      } else if (action.type === PAUSE) {
+        _paused = true;
+      } else if (action.type === REHYDRATE) {
+        // noop on restState if purging
+        if (_purge)
+          return _extends$2({}, restState, {
+            _persist: _extends$2({}, _persist, { rehydrated: true })
+
+            // @NOTE if key does not match, will continue to default else below
+          });
+        if (action.key === config.key) {
+          var reducedState = baseReducer(restState, action);
+          var inboundState = action.payload;
+          // only reconcile state if stateReconciler and inboundState are both defined
+          var reconciledRest =
+            stateReconciler !== false && inboundState !== undefined
+              ? stateReconciler(inboundState, state, reducedState, config)
+              : reducedState;
+
+          var _newState = _extends$2({}, reconciledRest, {
+            _persist: _extends$2({}, _persist, { rehydrated: true })
+          });
+          return conditionalUpdate(_newState);
+        }
+      }
+
+      // if we have not already handled PERSIST, straight passthrough
+      if (!_persist) return baseReducer(state, action);
+
+      // run base reducer:
+      // is state modified ? return original : return updated
+      var newState = baseReducer(restState, action);
+      if (newState === restState) return state;
+      else {
+        newState._persist = _persist;
+        return conditionalUpdate(newState);
+      }
+    };
+  }
+
+  var _extends$4 =
+    Object.assign ||
+    function(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+      return target;
+    };
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var initialState = {
+    registry: [],
+    bootstrapped: false
+  };
+
+  var persistorReducer = function persistorReducer() {
+    var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    var action = arguments[1];
+
+    switch (action.type) {
+      case REGISTER:
+        return _extends$4({}, state, {
+          registry: [].concat(_toConsumableArray(state.registry), [action.key])
+        });
+      case REHYDRATE:
+        var firstIndex = state.registry.indexOf(action.key);
+        var registry = [].concat(_toConsumableArray(state.registry));
+        registry.splice(firstIndex, 1);
+        return _extends$4({}, state, { registry: registry, bootstrapped: registry.length === 0 });
+      default:
+        return state;
+    }
+  };
+
+  function persistStore(store, options, cb) {
+    // help catch incorrect usage of passing PersistConfig in as PersistorOptions
+    {
+      var optionsToTest = options || {};
+      var bannedKeys = ['blacklist', 'whitelist', 'transforms', 'storage', 'keyPrefix', 'migrate'];
+      bannedKeys.forEach(function(k) {
+        if (!!optionsToTest[k])
+          console.error(
+            'redux-persist: invalid option passed to persistStore: "' +
+              k +
+              '". You may be incorrectly passing persistConfig into persistStore, whereas it should be passed into persistReducer.'
+          );
+      });
+    }
+    var boostrappedCb = cb || false;
+
+    var _pStore = createStore(
+      persistorReducer,
+      initialState,
+      options ? options.enhancer : undefined
+    );
+    var register = function register(key) {
+      _pStore.dispatch({
+        type: REGISTER,
+        key: key
+      });
+    };
+
+    var rehydrate = function rehydrate(key, payload, err) {
+      var rehydrateAction = {
+        type: REHYDRATE,
+        payload: payload,
+        err: err,
+        key: key
+        // dispatch to `store` to rehydrate and `persistor` to track result
+      };
+      store.dispatch(rehydrateAction);
+      _pStore.dispatch(rehydrateAction);
+      if (boostrappedCb && persistor.getState().bootstrapped) {
+        boostrappedCb();
+        boostrappedCb = false;
+      }
+    };
+
+    var persistor = _extends$4({}, _pStore, {
+      purge: function purge() {
+        var results = [];
+        store.dispatch({
+          type: PURGE,
+          result: function result(purgeResult) {
+            results.push(purgeResult);
+          }
+        });
+        return Promise.all(results);
+      },
+      flush: function flush() {
+        var results = [];
+        store.dispatch({
+          type: FLUSH,
+          result: function result(flushResult) {
+            results.push(flushResult);
+          }
+        });
+        return Promise.all(results);
+      },
+      pause: function pause() {
+        store.dispatch({
+          type: PAUSE
+        });
+      },
+      persist: function persist() {
+        store.dispatch({ type: PERSIST, register: register, rehydrate: rehydrate });
+      }
+    });
+
+    persistor.persist();
+
+    return persistor;
+  }
+
+  var defineProperty = (function() {
+    try {
+      var func = _getNative(Object, 'defineProperty');
+      func({}, '', {});
+      return func;
+    } catch (e) {}
+  })();
+
+  var _defineProperty = defineProperty;
+
+  /**
+   * The base implementation of `assignValue` and `assignMergeValue` without
+   * value checks.
+   *
+   * @private
+   * @param {Object} object The object to modify.
+   * @param {string} key The key of the property to assign.
+   * @param {*} value The value to assign.
+   */
+  function baseAssignValue(object, key, value) {
+    if (key == '__proto__' && _defineProperty) {
+      _defineProperty(object, key, {
+        configurable: true,
+        enumerable: true,
+        value: value,
+        writable: true
+      });
+    } else {
+      object[key] = value;
+    }
+  }
+
+  var _baseAssignValue = baseAssignValue;
+
+  /** Used for built-in method references. */
+  var objectProto$5 = Object.prototype;
+
+  /** Used to check objects for own properties. */
+  var hasOwnProperty$4 = objectProto$5.hasOwnProperty;
+
+  /**
+   * Assigns `value` to `key` of `object` if the existing value is not equivalent
+   * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
+   * for equality comparisons.
+   *
+   * @private
+   * @param {Object} object The object to modify.
+   * @param {string} key The key of the property to assign.
+   * @param {*} value The value to assign.
+   */
+  function assignValue(object, key, value) {
+    var objValue = object[key];
+    if (
+      !(hasOwnProperty$4.call(object, key) && eq_1(objValue, value)) ||
+      (value === undefined && !(key in object))
+    ) {
+      _baseAssignValue(object, key, value);
+    }
+  }
+
+  var _assignValue = assignValue;
+
+  /** Used as references for various `Number` constants. */
   var MAX_SAFE_INTEGER = 9007199254740991;
 
   /** Used to detect unsigned integer values. */
@@ -6231,26 +3042,6 @@
   }
 
   var _isIndex = isIndex;
-
-  /** Used as references for various `Number` constants. */
-  var INFINITY$1 = 1 / 0;
-
-  /**
-   * Converts `value` to a string key if it's not a string or symbol.
-   *
-   * @private
-   * @param {*} value The value to inspect.
-   * @returns {string|symbol} Returns the key.
-   */
-  function toKey(value) {
-    if (typeof value == 'string' || isSymbol_1(value)) {
-      return value;
-    }
-    var result = value + '';
-    return result == '0' && 1 / value == -INFINITY$1 ? '-0' : result;
-  }
-
-  var _toKey = toKey;
 
   /**
    * The base implementation of `_.set`.
@@ -6361,7 +3152,9 @@
       to: 0,
       data: []
     },
-    workerStats: {}
+    workerStats: {
+      unpaidBalance: 0
+    }
   };
 
   const mining = (
@@ -6519,6 +3312,120 @@
     utilities
   });
 
+  var getStorage_1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _typeof =
+      typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+        ? function(obj) {
+            return typeof obj;
+          }
+        : function(obj) {
+            return obj &&
+              typeof Symbol === 'function' &&
+              obj.constructor === Symbol &&
+              obj !== Symbol.prototype
+              ? 'symbol'
+              : typeof obj;
+          };
+
+    exports.default = getStorage;
+
+    function noop() {}
+
+    var noopStorage = {
+      getItem: noop,
+      setItem: noop,
+      removeItem: noop
+    };
+
+    function hasStorage(storageType) {
+      if (
+        (typeof self === 'undefined' ? 'undefined' : _typeof(self)) !== 'object' ||
+        !(storageType in self)
+      ) {
+        return false;
+      }
+
+      try {
+        var storage = self[storageType];
+        var testKey = 'redux-persist ' + storageType + ' test';
+        storage.setItem(testKey, 'test');
+        storage.getItem(testKey);
+        storage.removeItem(testKey);
+      } catch (e) {
+        console.warn(
+          'redux-persist ' + storageType + ' test failed, persistence will be disabled.'
+        );
+        return false;
+      }
+      return true;
+    }
+
+    function getStorage(type) {
+      var storageType = type + 'Storage';
+      if (hasStorage(storageType)) return self[storageType];
+      else {
+        {
+          console.error(
+            'redux-persist failed to create sync storage. falling back to memory storage.'
+          );
+        }
+        return noopStorage;
+      }
+    }
+  });
+
+  unwrapExports(getStorage_1);
+
+  var createWebStorage_1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+    exports.default = createWebStorage;
+
+    var _getStorage2 = _interopRequireDefault(getStorage_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function createWebStorage(type) {
+      var storage = (0, _getStorage2.default)(type);
+      return {
+        getItem: function getItem(key) {
+          return new Promise(function(resolve, reject) {
+            resolve(storage.getItem(key));
+          });
+        },
+        setItem: function setItem(key, item) {
+          return new Promise(function(resolve, reject) {
+            resolve(storage.setItem(key, item));
+          });
+        },
+        removeItem: function removeItem(key) {
+          return new Promise(function(resolve, reject) {
+            resolve(storage.removeItem(key));
+          });
+        }
+      };
+    }
+  });
+
+  unwrapExports(createWebStorage_1);
+
+  var storage = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _createWebStorage2 = _interopRequireDefault(createWebStorage_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createWebStorage2.default)('local');
+  });
+
+  var storage$1 = unwrapExports(storage);
+
   function createThunkMiddleware(extraArgument) {
     return function(_ref) {
       var dispatch = _ref.dispatch,
@@ -6538,16 +3445,9 @@
   var thunk = createThunkMiddleware();
   thunk.withExtraArgument = createThunkMiddleware;
 
-  localforageFind(localforage);
-
-  const reduxStorage = localforage.createInstance({
-    name: 'Raccoon Miner',
-    storeName: 'redux'
-  });
-
   const persistConfig = {
     key: 'root',
-    storage: reduxStorage,
+    storage: storage$1,
     blacklist: ['activeMiners', 'hardwareInfo']
   };
   const persistedReducer = persistReducer(persistConfig, reducers);
@@ -6557,7 +3457,11 @@
     createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
   }
   const store = createStoreWithMiddleware(persistedReducer);
-  const persistor = persistStore(store);
+  const persistor = persistStore(store, null, () => {
+    store.dispatch(fetchVersion());
+    store.dispatch(trackHardwareInfo());
+    store.dispatch(trackWorkerStats());
+  });
 
   var _global = createCommonjsModule(function(module) {
     // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
@@ -7062,10 +3966,10 @@
   unwrapExports(objectWithoutProperties$1);
 
   /*
-  object-assign
-  (c) Sindre Sorhus
-  @license MIT
-  */
+	object-assign
+	(c) Sindre Sorhus
+	@license MIT
+	*/
   /* eslint-disable no-unused-vars */
   var getOwnPropertySymbols = Object.getOwnPropertySymbols;
   var hasOwnProperty$6 = Object.prototype.hasOwnProperty;
@@ -9751,10 +6655,10 @@
 
   var classnames = createCommonjsModule(function(module) {
     /*!
-    Copyright (c) 2016 Jed Watson.
-    Licensed under the MIT License (MIT), see
-    http://jedwatson.github.io/classnames
-  */
+	  Copyright (c) 2016 Jed Watson.
+	  Licensed under the MIT License (MIT), see
+	  http://jedwatson.github.io/classnames
+	*/
     /* global define */
 
     (function() {
@@ -29413,23 +26317,23 @@
           }
 
           /*
-    function reuseChildrenEffects(returnFiber : Fiber, firstChild : Fiber) {
-      let child = firstChild;
-      do {
-        // Ensure that the first and last effect of the parent corresponds
-        // to the children's first and last effect.
-        if (!returnFiber.firstEffect) {
-          returnFiber.firstEffect = child.firstEffect;
-        }
-        if (child.lastEffect) {
-          if (returnFiber.lastEffect) {
-            returnFiber.lastEffect.nextEffect = child.firstEffect;
-          }
-          returnFiber.lastEffect = child.lastEffect;
-        }
-      } while (child = child.sibling);
-    }
-    */
+	  function reuseChildrenEffects(returnFiber : Fiber, firstChild : Fiber) {
+	    let child = firstChild;
+	    do {
+	      // Ensure that the first and last effect of the parent corresponds
+	      // to the children's first and last effect.
+	      if (!returnFiber.firstEffect) {
+	        returnFiber.firstEffect = child.firstEffect;
+	      }
+	      if (child.lastEffect) {
+	        if (returnFiber.lastEffect) {
+	          returnFiber.lastEffect.nextEffect = child.firstEffect;
+	        }
+	        returnFiber.lastEffect = child.lastEffect;
+	      }
+	    } while (child = child.sibling);
+	  }
+	  */
 
           function bailoutOnAlreadyFinishedWork(current, workInProgress) {
             cancelWorkTimer(workInProgress);
@@ -38687,8 +35591,8 @@
     });
 
     /*!
-   * Programatically add the following
-   */
+	 * Programatically add the following
+	 */
 
     // lower case chars
     for (i = 97; i < 123; i++) codes[String.fromCharCode(i)] = i - 32;
@@ -48465,8 +45369,8 @@
        */
       label: _propTypes2.default.node,
       /*
-     * @ignore
-     */
+	   * @ignore
+	   */
       name: _propTypes2.default.string,
       /**
        * Callback fired when the state is changed.
@@ -50563,9 +47467,9 @@
         left: _propTypes2.default.number
       }),
       /*
-     * This determines which anchor prop to refer to to set
-     * the position of the popover.
-     */
+	   * This determines which anchor prop to refer to to set
+	   * the position of the popover.
+	   */
       anchorReference: _propTypes2.default.oneOf(['anchorEl', 'anchorPosition', 'none']),
       /**
        * The content of the component.
@@ -57868,19 +54772,19 @@
 
   function connectAdvanced(
     /*
-    selectorFactory is a func that is responsible for returning the selector function used to
-    compute new props from state, props, and dispatch. For example:
-       export default connectAdvanced((dispatch, options) => (state, props) => ({
-        thing: state.things[props.thingId],
-        saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
-      }))(YourComponent)
-     Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
-    outside of their selector as an optimization. Options passed to connectAdvanced are passed to
-    the selectorFactory, along with displayName and WrappedComponent, as the second argument.
-     Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
-    props. Do not use connectAdvanced directly without memoizing results between calls to your
-    selector, otherwise the Connect component will re-render on every state or props change.
-  */
+	  selectorFactory is a func that is responsible for returning the selector function used to
+	  compute new props from state, props, and dispatch. For example:
+	     export default connectAdvanced((dispatch, options) => (state, props) => ({
+	      thing: state.things[props.thingId],
+	      saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
+	    }))(YourComponent)
+	   Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
+	  outside of their selector as an optimization. Options passed to connectAdvanced are passed to
+	  the selectorFactory, along with displayName and WrappedComponent, as the second argument.
+	   Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
+	  props. Do not use connectAdvanced directly without memoizing results between calls to your
+	  selector, otherwise the Connect component will re-render on every state or props change.
+	*/
     selectorFactory
   ) {
     var _contextTypes, _childContextTypes;
@@ -58762,21 +55666,21 @@
   }
 
   /*
-    connect is a facade over connectAdvanced. It turns its args into a compatible
-    selectorFactory, which has the signature:
+	  connect is a facade over connectAdvanced. It turns its args into a compatible
+	  selectorFactory, which has the signature:
 
-      (dispatch, options) => (nextState, nextOwnProps) => nextFinalProps
-    
-    connect passes its args to connectAdvanced as options, which will in turn pass them to
-    selectorFactory each time a Connect component instance is instantiated or hot reloaded.
+	    (dispatch, options) => (nextState, nextOwnProps) => nextFinalProps
+	  
+	  connect passes its args to connectAdvanced as options, which will in turn pass them to
+	  selectorFactory each time a Connect component instance is instantiated or hot reloaded.
 
-    selectorFactory returns a final props selector from its mapStateToProps,
-    mapStateToPropsFactories, mapDispatchToProps, mapDispatchToPropsFactories, mergeProps,
-    mergePropsFactories, and pure args.
+	  selectorFactory returns a final props selector from its mapStateToProps,
+	  mapStateToPropsFactories, mapDispatchToProps, mapDispatchToPropsFactories, mergeProps,
+	  mergePropsFactories, and pure args.
 
-    The resulting final props selector is called by the Connect component instance whenever
-    it receives new props or store state.
-   */
+	  The resulting final props selector is called by the Connect component instance whenever
+	  it receives new props or store state.
+	 */
 
   function match(arg, factories, name) {
     for (var i = factories.length - 1; i >= 0; i--) {
@@ -59227,7 +56131,7 @@
     );
   });
 
-  var CloseIcon = unwrapExports(Close);
+  unwrapExports(Close);
 
   var Done = createCommonjsModule(function(module, exports) {
     Object.defineProperty(exports, '__esModule', {
@@ -59538,7 +56442,7 @@
         react.createElement(
           Typography$2,
           { className: classes.load, variant: 'display1' },
-          (workerStats.unpaidBalance / 1000000000000 || 0).toFixed(10),
+          (workerStats.unpaidBalance || 0).toFixed(10),
           ' ',
           miner.currency
         ),
@@ -60041,16 +56945,11 @@
             Toolbar$2,
             null,
             react.createElement(
-              IconButton$2,
-              { 'aria-label': 'Close', color: 'inherit', onClick: closeDialog$$1 },
-              react.createElement(CloseIcon, null)
-            ),
-            react.createElement(
               Typography$2,
               { className: classes.flex, color: 'inherit', variant: 'title' },
               'Setup'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'save')
+            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
           )
         ),
         react.createElement(
@@ -60167,60 +57066,6 @@
     connect(mapStateToProps$8, mapDispatchToProps$4)
   )(CryptoDialog);
 
-  /**
-   * The base implementation of `_.get` without support for default values.
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {Array|string} path The path of the property to get.
-   * @returns {*} Returns the resolved value.
-   */
-  function baseGet(object, path) {
-    path = _castPath(path, object);
-
-    var index = 0,
-      length = path.length;
-
-    while (object != null && index < length) {
-      object = object[_toKey(path[index++])];
-    }
-    return index && index == length ? object : undefined;
-  }
-
-  var _baseGet = baseGet;
-
-  /**
-   * Gets the value at `path` of `object`. If the resolved value is
-   * `undefined`, the `defaultValue` is returned in its place.
-   *
-   * @static
-   * @memberOf _
-   * @since 3.7.0
-   * @category Object
-   * @param {Object} object The object to query.
-   * @param {Array|string} path The path of the property to get.
-   * @param {*} [defaultValue] The value returned for `undefined` resolved values.
-   * @returns {*} Returns the resolved value.
-   * @example
-   *
-   * var object = { 'a': [{ 'b': { 'c': 3 } }] };
-   *
-   * _.get(object, 'a[0].b.c');
-   * // => 3
-   *
-   * _.get(object, ['a', '0', 'b', 'c']);
-   * // => 3
-   *
-   * _.get(object, 'a.b.c', 'default');
-   * // => 'default'
-   */
-  function get$1(object, path, defaultValue) {
-    var result = object == null ? undefined : _baseGet(object, path);
-    return result === undefined ? defaultValue : result;
-  }
-
-  var get_1 = get$1;
-
   class Hardware extends react_1 {
     render() {
       const {
@@ -60292,16 +57137,11 @@
             Toolbar$2,
             null,
             react.createElement(
-              IconButton$2,
-              { 'aria-label': 'Close', color: 'inherit', onClick: closeDialog$$1 },
-              react.createElement(CloseIcon, null)
-            ),
-            react.createElement(
               Typography$2,
               { className: classes.flex, color: 'inherit', variant: 'title' },
               'Settings'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'save')
+            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
           )
         ),
         react.createElement(System, null),
@@ -60363,16 +57203,11 @@
             Toolbar$2,
             null,
             react.createElement(
-              IconButton$2,
-              { 'aria-label': 'Close', color: 'inherit', onClick: closeDialog$$1 },
-              react.createElement(CloseIcon, null)
-            ),
-            react.createElement(
               Typography$2,
               { className: classes.flex, color: 'inherit', variant: 'title' },
               'Support'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'save')
+            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
           )
         ),
         react.createElement(Discord, null)
@@ -61854,7 +58689,6 @@
   });
 
   initialize();
-  store.dispatch(fetchVersion(), trackHardwareInfo());
 
   const App = react.createElement(
     Provider,

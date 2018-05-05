@@ -43,40 +43,51 @@ export const selectMiner = minerIdentifier => {
       type: SELECT_MINER,
       data: minerIdentifier
     });
-    dispatch(fetchWorkerStats(minerIdentifier));
+    dispatch(trackWorkerStats());
   };
 };
 
-export const fetchWorkerStats = minerIdentifier => {
+export const trackWorkerStats = () => {
+  return dispatch => {
+    dispatch(fetchWorkerStats());
+    setInterval(() => {
+      dispatch(fetchWorkerStats());
+    }, 60000);
+  };
+};
+
+const fetchWorkerStats = () => {
   return (dispatch, getState) => {
     const {
-      mining: { miners }
+      mining: { miners, selectedMinerIdentifier: minerIdentifier }
     } = getState();
     const { address } = miners[minerIdentifier];
-    if (!address) return;
+    const {
+      links: { api },
+      apiParser
+    } = getMiner(minerIdentifier);
 
-    /*stats
-      .fetchWorkerStats({ minerId: minerGroup, workerId })
-      .catch(error => {
+    fetch(api(address))
+      .then(response => response.json())
+      .then(result => {
+        console.log(minerIdentifier, result);
+        dispatch({
+          type: RECEIVE_WORKER_STATS,
+          data: {
+            minerIdentifier,
+            workerStats: apiParser(result)
+          }
+        });
+      })
+      .catch(errorMsg => {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,
           data: {
             minerIdentifier,
-            errorMsg: error.message
+            errorMsg
           }
         });
-      })
-      .then(response => {
-        if (response) {
-          dispatch({
-            type: RECEIVE_WORKER_STATS,
-            data: {
-              minerIdentifier,
-              workerStats: response
-            }
-          });
-        }
-      });*/
+      });
   };
 };
 

@@ -1,7 +1,6 @@
-import { AppBar, Button, Dialog, IconButton, Toolbar, Typography } from '../generic';
+import { AppBar, Button, Dialog, Toolbar, Typography } from '../generic';
 import React, { PureComponent } from 'react';
 
-import { CloseIcon } from '../icons';
 import { Discord } from '../support';
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -27,14 +26,11 @@ class SupportDialog extends PureComponent {
       <Dialog fullScreen onClose={closeDialog} open={open}>
         <AppBar className={classes.appBar}>
           <Toolbar>
-            <IconButton aria-label="Close" color="inherit" onClick={closeDialog}>
-              <CloseIcon />
-            </IconButton>
             <Typography className={classes.flex} color="inherit" variant="title">
               Support
             </Typography>
             <Button color="inherit" onClick={closeDialog}>
-              save
+              Done
             </Button>
           </Toolbar>
         </AppBar>

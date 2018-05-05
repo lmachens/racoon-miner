@@ -22,7 +22,9 @@ const defaultMinerProps = {
     to: 0,
     data: []
   },
-  workerStats: {}
+  workerStats: {
+    unpaidBalance: 0
+  }
 };
 
 export const mining = (

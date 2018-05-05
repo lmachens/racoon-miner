@@ -1,21 +1,14 @@
 import { applyMiddleware, createStore } from 'redux';
+import { fetchVersion, trackHardwareInfo, trackWorkerStats } from './actions';
 import { persistReducer, persistStore } from 'redux-persist';
 
-import addFind from 'localforage-find';
-import localForage from 'localforage';
 import reducers from './reducers';
+import storage from 'redux-persist/lib/storage';
 import thunk from 'redux-thunk';
-
-addFind(localForage);
-
-const reduxStorage = localForage.createInstance({
-  name: 'Raccoon Miner',
-  storeName: 'redux'
-});
 
 const persistConfig = {
   key: 'root',
-  storage: reduxStorage,
+  storage,
   blacklist: ['activeMiners', 'hardwareInfo']
 };
 const persistedReducer = persistReducer(persistConfig, reducers);
@@ -28,4 +21,8 @@ if (process.env.__REDUX_LOGGER__) {
   createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
 }
 export const store = createStoreWithMiddleware(persistedReducer);
-export const persistor = persistStore(store);
+export const persistor = persistStore(store, null, () => {
+  store.dispatch(fetchVersion());
+  store.dispatch(trackHardwareInfo());
+  store.dispatch(trackWorkerStats());
+});
