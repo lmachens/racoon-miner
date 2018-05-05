@@ -4663,7 +4663,7 @@
       }),
     links: {
       wallet: 'https://www.myetherwallet.com/',
-      stats: address => address
+      stats: address => `https://ethermine.org/miners/${address}/dashboard`
     },
     isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
     addressHint: 'It should start with 0x and have 42 characters.',
@@ -4688,7 +4688,7 @@
     environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
     links: {
       wallet: 'https://getmonero.org/',
-      stats: address => address
+      stats: () => 'https://supportxmr.com/#/dashboard'
     },
     isValidAddress: address =>
       /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
@@ -59838,11 +59838,11 @@
     }
 
     render() {
-      const { classes } = this.props;
+      const { address, classes, miner } = this.props;
 
       return react.createElement(
         ExternalLinkEnhanced,
-        { to: 'https://google.de' },
+        { to: miner.links.stats(address) },
         react.createElement(
           enhance$7,
           { title: 'Stats' },
@@ -59853,10 +59853,20 @@
   }
 
   StatsButton.propTypes = {
-    classes: propTypes.object.isRequired
+    address: propTypes.string.isRequired,
+    classes: propTypes.object.isRequired,
+    miner: propTypes.object.isRequired
   };
 
-  const enhance$11 = styles_3(styles$14)(StatsButton);
+  const mapStateToProps$6 = ({ mining: { miners, selectedMinerIdentifier } }) => {
+    const miner = getMiner(selectedMinerIdentifier);
+    const address = miners[selectedMinerIdentifier].address;
+    return {
+      address,
+      miner
+    };
+  };
+  const enhance$11 = compose$1(styles_3(styles$14), connect(mapStateToProps$6))(StatsButton);
 
   const styles$15 = {
     icon: {
@@ -60072,7 +60082,7 @@
     selectMiner: propTypes.func.isRequired
   };
 
-  const mapStateToProps$6 = ({
+  const mapStateToProps$7 = ({
     dialogs: { cryptoDialogOpen },
     mining: { miners, selectedMinerIdentifier },
     activeMiners
@@ -60100,7 +60110,7 @@
 
   const enhance$14 = compose$1(
     styles_3(styles$17),
-    connect(mapStateToProps$6, mapDispatchToProps$4)
+    connect(mapStateToProps$7, mapDispatchToProps$4)
   )(CryptoDialog);
 
   /**
@@ -60191,13 +60201,13 @@
     stopTrackingHardwareInfo: propTypes.func.isRequired
   };
 
-  const mapStateToProps$7 = ({ hardwareInfo }) => {
+  const mapStateToProps$8 = ({ hardwareInfo }) => {
     return {
       hardwareInfo
     };
   };
 
-  const enhance$15 = connect(mapStateToProps$7)(Hardware);
+  const enhance$15 = connect(mapStateToProps$8)(Hardware);
 
   class System extends react_1 {
     render() {
@@ -60252,7 +60262,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$8 = ({ dialogs: { settingsDialogOpen } }) => {
+  const mapStateToProps$9 = ({ dialogs: { settingsDialogOpen } }) => {
     return {
       open: settingsDialogOpen
     };
@@ -60266,7 +60276,7 @@
 
   const enhance$16 = compose$1(
     styles_3(styles$18),
-    connect(mapStateToProps$8, mapDispatchToProps$5)
+    connect(mapStateToProps$9, mapDispatchToProps$5)
   )(SettingsDialog);
 
   const Discord = () =>
@@ -60322,7 +60332,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$9 = ({ dialogs: { supportDialogOpen } }) => {
+  const mapStateToProps$10 = ({ dialogs: { supportDialogOpen } }) => {
     return {
       open: supportDialogOpen
     };
@@ -60336,7 +60346,7 @@
 
   const enhance$17 = compose$1(
     styles_3(styles$19),
-    connect(mapStateToProps$9, mapDispatchToProps$6)
+    connect(mapStateToProps$10, mapDispatchToProps$6)
   )(SupportDialog);
 
   class Dialogs extends react_2 {
