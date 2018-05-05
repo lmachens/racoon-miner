@@ -8,7 +8,8 @@
     "author": "Leon Machens",
     "icon": "assets/icon.png",
     "icon_gray": "assets/icon_gray.png",
-    "description": "Crypto mining app for Overwolf appstore"
+    "launcher_icon": "assets/launcher_icon.ico",
+    "description": "Use your PC to mine crypto"
   },
   "externally_connectable": {
     "matches": ["http://localhost:35729"]
