@@ -12,13 +12,10 @@ const ethereumLogsStorage = localForage.createInstance({
   storeName: 'ethereum-logs'
 });
 
-const minerGroup = process.env.__ETHEREUM_MINER_GROUP__;
-
 export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
   identifier: ETHEREUM_MINER,
-  minerGroup,
   logo: 'assets/ethereum.png',
   currency: 'ETH',
   minimumPaymentThreshold: 0.05,
@@ -28,8 +25,8 @@ export const ethereum = {
     [CONNECTING]: /not-connected/
   }),
   path: 'ethereum/ethminer.exe',
-  args: workerId =>
-    `--farm-recheck 200 -G -S eu1.ethermine.org:4444/${workerId} -SF us1.ethermine.org:4444/${workerId} -O ${minerGroup}.${workerId}`,
+  args: address =>
+    `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${address}.raccoon`,
   environmentVariables: () =>
     JSON.stringify({
       GPU_FORCE_64BIT_PTR: '0',
@@ -40,7 +37,8 @@ export const ethereum = {
     }),
   storage: ethereumLogsStorage,
   links: {
-    wallet: 'https://www.myetherwallet.com/'
+    wallet: 'https://www.myetherwallet.com/',
+    stats: address => address
   },
   isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
   addressHint: 'It should start with 0x and have 42 characters.',

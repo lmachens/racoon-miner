@@ -16,7 +16,6 @@ import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
 import sortBy from 'lodash/sortBy';
-import { stats } from '../../api/stitch';
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -56,11 +55,10 @@ export const fetchWorkerStats = minerIdentifier => {
     const {
       mining: { miners }
     } = getState();
-    const workerId = miners[minerIdentifier].address;
-    if (!workerId) return;
-    const { minerGroup } = getMiner(minerIdentifier);
+    const { address } = miners[minerIdentifier];
+    if (!address) return;
 
-    stats
+    /*stats
       .fetchWorkerStats({ minerId: minerGroup, workerId })
       .catch(error => {
         dispatch({
@@ -81,7 +79,7 @@ export const fetchWorkerStats = minerIdentifier => {
             }
           });
         }
-      });
+      });*/
   };
 };
 

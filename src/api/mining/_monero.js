@@ -12,13 +12,10 @@ const moneroLogsStorage = localForage.createInstance({
   storeName: 'monero-logs'
 });
 
-const minerGroup = process.env.__MONERO_MINER_GROUP__;
-
 export const MONERO_MINER = 'MONERO_MINER';
 export const monero = {
   name: 'Monero',
   identifier: MONERO_MINER,
-  minerGroup,
   logo: 'assets/monero.png',
   currency: 'XMR',
   minimumPaymentThreshold: 0.1,
@@ -28,13 +25,13 @@ export const monero = {
     [CONNECTING]: /not-connected/
   }),
   path: 'monero/xmr-stak.exe',
-  args: workerId =>
-    //`--noUAC -i 0 -o pool.supportxmr.com:8080 -u 47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr --currency monero7 -p ${workerId} -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
-    `--noUAC -i 0 -o xmr.coinfoundry.org:3133 -u 47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr --currency monero7 -p ${workerId} -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
+  args: address =>
+    `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
   environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
   storage: moneroLogsStorage,
   links: {
-    wallet: 'https://getmonero.org/'
+    wallet: 'https://getmonero.org/',
+    stats: address => address
   },
   isValidAddress: address =>
     /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
