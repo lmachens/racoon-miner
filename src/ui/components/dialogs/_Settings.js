@@ -1,5 +1,6 @@
+import {} from '../settings';
+
 import { AppBar, Button, Dialog, Toolbar, Typography } from '../generic';
-import { Hardware, System } from '../settings';
 import React, { PureComponent } from 'react';
 
 import PropTypes from 'prop-types';
@@ -34,8 +35,7 @@ class SettingsDialog extends PureComponent {
             </Button>
           </Toolbar>
         </AppBar>
-        <System />
-        <Hardware />
+        ToDo
       </Dialog>
     );
   }

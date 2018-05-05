@@ -53947,7 +53947,7 @@
     }
   });
 
-  var Table$2 = unwrapExports(Table$1);
+  unwrapExports(Table$1);
   var Table_1$1 = Table$1.TableBody;
   var Table_2$1 = Table$1.TableRow;
   var Table_3 = Table$1.TableCell;
@@ -57066,54 +57066,6 @@
     connect(mapStateToProps$8, mapDispatchToProps$4)
   )(CryptoDialog);
 
-  class Hardware extends react_1 {
-    render() {
-      const {
-        hardwareInfo: { data, isListening }
-      } = this.props;
-      console.log(data, isListening);
-      const gpus = get_1(data, 'Gpus.Gpus') || [];
-      return react.createElement(
-        enhance$1,
-        { title: 'Hardware' },
-        react.createElement(
-          Table$2,
-          null,
-          react.createElement(
-            Table_1$1,
-            null,
-            react.createElement(
-              Table_2$1,
-              null,
-              react.createElement(Table_3, null, 'Videocard'),
-              react.createElement(Table_3, null, gpus.map(gpu => gpu.Name))
-            )
-          )
-        )
-      );
-    }
-  }
-
-  Hardware.propTypes = {
-    hardwareInfo: propTypes.object.isRequired,
-    trackHardwareInfo: propTypes.func.isRequired,
-    stopTrackingHardwareInfo: propTypes.func.isRequired
-  };
-
-  const mapStateToProps$9 = ({ hardwareInfo }) => {
-    return {
-      hardwareInfo
-    };
-  };
-
-  const enhance$15 = connect(mapStateToProps$9)(Hardware);
-
-  class System extends react_1 {
-    render() {
-      return react.createElement(enhance$1, { title: 'System' }, 'Language');
-    }
-  }
-
   const styles$18 = {
     appBar: {
       position: 'relative'
@@ -57144,8 +57096,7 @@
             react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
           )
         ),
-        react.createElement(System, null),
-        react.createElement(enhance$15, null)
+        'ToDo'
       );
     }
   }
@@ -57156,7 +57107,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$10 = ({ dialogs: { settingsDialogOpen } }) => {
+  const mapStateToProps$9 = ({ dialogs: { settingsDialogOpen } }) => {
     return {
       open: settingsDialogOpen
     };
@@ -57168,15 +57119,15 @@
     };
   };
 
-  const enhance$16 = compose$1(
+  const enhance$15 = compose$1(
     styles_3(styles$18),
-    connect(mapStateToProps$10, mapDispatchToProps$5)
+    connect(mapStateToProps$9, mapDispatchToProps$5)
   )(SettingsDialog);
 
   const Discord = () =>
     react.createElement('embed', {
       height: '100%',
-      src: 'https://widgetbot.io/embed/424865108230144013/424865855180898304/0002/',
+      src: 'https://widgetbot.io/embed/424865108230144013/424865855180898304/1103/?lang=en',
       width: '100%'
     });
 
@@ -57221,7 +57172,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$11 = ({ dialogs: { supportDialogOpen } }) => {
+  const mapStateToProps$10 = ({ dialogs: { supportDialogOpen } }) => {
     return {
       open: supportDialogOpen
     };
@@ -57233,9 +57184,9 @@
     };
   };
 
-  const enhance$17 = compose$1(
+  const enhance$16 = compose$1(
     styles_3(styles$19),
-    connect(mapStateToProps$11, mapDispatchToProps$6)
+    connect(mapStateToProps$10, mapDispatchToProps$6)
   )(SupportDialog);
 
   class Dialogs extends react_2 {
@@ -57244,8 +57195,8 @@
         react_5,
         null,
         react.createElement(enhance$14, null),
-        react.createElement(enhance$16, null),
-        react.createElement(enhance$17, null)
+        react.createElement(enhance$15, null),
+        react.createElement(enhance$16, null)
       );
     }
   }
