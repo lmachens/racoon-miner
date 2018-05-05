@@ -5,13 +5,6 @@ import {
   generateParser
 } from './_generateParser';
 
-import localForage from 'localforage';
-
-const moneroLogsStorage = localForage.createInstance({
-  name: 'Raccoon Miner',
-  storeName: 'monero-logs'
-});
-
 export const MONERO_MINER = 'MONERO_MINER';
 export const monero = {
   name: 'Monero',
@@ -28,7 +21,6 @@ export const monero = {
   args: address =>
     `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
   environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
-  storage: moneroLogsStorage,
   links: {
     wallet: 'https://getmonero.org/',
     stats: address => address

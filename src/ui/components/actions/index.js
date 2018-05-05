@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 
 import { CryptoButton } from './_Crypto';
-import { Grid } from '../generic';
 import { MiningButton } from './_Mining';
 import PropTypes from 'prop-types';
 import { SettingsButton } from './_Settings';
@@ -11,7 +10,7 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   center: {
-    justifyContent: 'center'
+    textAlign: 'center'
   }
 };
 
@@ -20,13 +19,13 @@ class Actions extends PureComponent {
     const { classes } = this.props;
 
     return (
-      <Grid className={classes.center} container>
+      <div className={classes.center}>
         <CryptoButton />
         <StatsButton />
         <MiningButton />
         <SettingsButton />
         <SupportButton />
-      </Grid>
+      </div>
     );
   }
 }

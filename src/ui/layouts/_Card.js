@@ -1,39 +1,49 @@
-import { Card, CardActions, CardContent, Typography } from '../components/generic';
+import { Card, CardContent, CardHeader, InfoButton, Typography } from '../components/generic';
 
+import { HelpIcon } from '../components/icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
-  card: {
-    minWidth: 275,
-    margin: '20 0'
+  root: {
+    textAlign: 'center',
+    '& :last-child': {
+      paddingBottom: 8
+    }
   },
-  actions: {
-    justifyContent: 'center',
-    marginTop: -20
+  header: {
+    padding: '8 16 0 16'
+  },
+  content: {
+    padding: '0 16 0 16'
   }
 };
 
-const CardLayout = ({ actions, classes, className, children, title }) => (
-  <Card className={classNames(classes.card, className)}>
-    <CardContent>
-      <Typography gutterBottom variant="title">
-        {title}
-      </Typography>
-      {children}
-    </CardContent>
-    {actions && <CardActions className={classes.actions}>{actions}</CardActions>}
+const CardLayout = ({ classes, className, helperText, children, title }) => (
+  <Card className={classNames(classes.root, className)}>
+    <CardHeader
+      action={
+        helperText && (
+          <InfoButton icon popover={<Typography>{helperText}</Typography>}>
+            <HelpIcon />
+          </InfoButton>
+        )
+      }
+      className={classes.header}
+      subheader={title}
+    />
+    <CardContent className={classes.content}>{children}</CardContent>
   </Card>
 );
 
 CardLayout.propTypes = {
-  actions: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
+  helperText: PropTypes.string,
   classes: PropTypes.object.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   className: PropTypes.string,
-  title: PropTypes.string.isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  title: PropTypes.string
 };
 
 const enhance = withStyles(styles)(CardLayout);

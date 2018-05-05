@@ -7,7 +7,8 @@ import { withStyles } from 'material-ui/styles';
 
 const styles = {
   container: {
-    margin: 4
+    margin: 4,
+    display: 'inline-block'
   },
   button: {
     width: 100,
@@ -33,7 +34,7 @@ class ActionButton extends PureComponent {
 ActionButton.propTypes = {
   classes: PropTypes.object.isRequired,
   buttonClassName: PropTypes.string,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
   title: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired
 };

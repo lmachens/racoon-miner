@@ -1,1 +1,1 @@
-export { default as Card, CardActions, CardContent } from 'material-ui/Card';
+export { default as Card, CardActions, CardContent, CardHeader } from 'material-ui/Card';

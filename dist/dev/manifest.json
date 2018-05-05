@@ -21,16 +21,16 @@
       "main": {
         "file": "main.html",
         "transparent": false,
-        "resizable": true,
+        "resizable": false,
         "show_in_taskbar": true,
         "desktop_only": true,
         "size": {
-          "width": 800,
-          "height": 600
+          "width": 680,
+          "height": 420
         },
         "min_size": {
-          "width": 700,
-          "height": 500
+          "width": 680,
+          "height": 420
         },
         "start_position": {
           "Top": 100,

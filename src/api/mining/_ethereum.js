@@ -5,13 +5,6 @@ import {
   generateParser
 } from './_generateParser';
 
-import localForage from 'localforage';
-
-const ethereumLogsStorage = localForage.createInstance({
-  name: 'Raccoon Miner',
-  storeName: 'ethereum-logs'
-});
-
 export const ETHEREUM_MINER = 'ETHEREUM_MINER';
 export const ethereum = {
   name: 'Ethereum',
@@ -35,7 +28,6 @@ export const ethereum = {
       GPU_MAX_ALLOC_PERCENT: '100',
       GPU_SINGLE_ALLOC_PERCENT: '100'
     }),
-  storage: ethereumLogsStorage,
   links: {
     wallet: 'https://www.myetherwallet.com/',
     stats: address => address

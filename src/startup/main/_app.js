@@ -8,12 +8,12 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import createHistory from 'history/createMemoryHistory';
 import { initialize as initializeAnalytics } from '../../api/analytics';
 import { light } from '../../ui/themes';
+import { trackHardwareInfo } from '../../store/actions';
 
-const history = createHistory();
-initializeAnalytics(history);
+initializeAnalytics();
+store.dispatch(trackHardwareInfo());
 
 const App = (
   <Provider store={store}>

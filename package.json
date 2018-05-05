@@ -6,7 +6,6 @@
   "dependencies": {
     "@material-ui/icons": "^1.0.0-beta.43",
     "classnames": "^2.2.5",
-    "history": "^4.7.2",
     "localforage": "^1.7.1",
     "localforage-find": "^2.0.1",
     "lodash": "^4.17.10",

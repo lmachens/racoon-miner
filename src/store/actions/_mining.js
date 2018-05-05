@@ -1,8 +1,6 @@
 import {
   CONNECTING_POOL,
-  RECEIVE_MINING_METRICS,
   RECEIVE_WORKER_STATS,
-  REQUEST_MINING_METRICS,
   SELECT_MINER,
   SET_MINING_ADDRESS,
   SET_MINING_ERROR_MESSAGE,
@@ -15,7 +13,6 @@ import {
 import { getMiner } from '../../api/mining';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
-import sortBy from 'lodash/sortBy';
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -93,7 +90,7 @@ export const startMining = minerIdentifier => {
     const address = miners[selectedMinerIdentifier].address || 'default';
     if (handleDataByIdenfier[minerIdentifier]) return;
     const processManager = await getProcessManagerPlugin();
-    const { parser, path, args, environmentVariables, storage } = getMiner(minerIdentifier);
+    const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
 
     dispatch({
       type: START_MINING,
@@ -101,7 +98,7 @@ export const startMining = minerIdentifier => {
     });
 
     handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
-      const { connecting, timestamp, errorMsg, speed } = parser(error || data);
+      const { connecting, errorMsg, speed } = parser(error || data);
 
       if (connecting) {
         dispatch({
@@ -118,22 +115,6 @@ export const startMining = minerIdentifier => {
             speed
           }
         });
-        const nearestMinute = Math.round(timestamp / 10000) * 10000;
-        const existingMinute = await storage.getItem(nearestMinute);
-        if (existingMinute) {
-          storage.setItem(nearestMinute, {
-            timestamp: nearestMinute,
-            speed:
-              (existingMinute.speed * existingMinute.measurements + speed) /
-              (existingMinute.measurements + 1),
-            measurements: 1
-          });
-        } else {
-          const { from, to } = miners[minerIdentifier].metrics;
-          dispatch(fetchMetrics(minerIdentifier, from, to));
-
-          storage.setItem(nearestMinute, { timestamp: nearestMinute, speed, measurements: 1 });
-        }
       } else if (!isNil(errorMsg)) {
         dispatch({
           type: SET_MINING_ERROR_MESSAGE,
@@ -142,7 +123,6 @@ export const startMining = minerIdentifier => {
             errorMsg
           }
         });
-        storage.setItem(timestamp, { timestamp, errorMsg, speed: 0 });
       }
     };
     processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
@@ -180,50 +160,5 @@ export const stopMining = minerIdentifier => {
       processManager.terminateProcess(processId);
       delete handleDataByIdenfier[minerIdentifier];
     }
-  };
-};
-
-export const fetchMetrics = (minerIdentifier, { from = 0, to = Number.MAX_VALUE }) => {
-  return async (dispatch, getState) => {
-    const { storage } = getMiner(minerIdentifier);
-
-    dispatch({
-      type: REQUEST_MINING_METRICS,
-      data: { minerIdentifier, from, to }
-    });
-
-    storage.find(timestamp => timestamp > from && timestamp < to).then(newItemsInRange => {
-      const {
-        mining: { miners }
-      } = getState();
-      const { from: currentFrom, to: currentTo } = miners[minerIdentifier].metrics;
-
-      if (from !== currentFrom || to !== currentTo) return;
-
-      if (newItemsInRange.length) {
-        const metrics = {
-          data: sortBy(newItemsInRange, 'timestamp').map(({ timestamp, speed, errorMsg }) => [
-            timestamp,
-            speed,
-            errorMsg
-          ])
-        };
-
-        dispatch({
-          type: RECEIVE_MINING_METRICS,
-          data: { minerIdentifier, metrics }
-        });
-      } else {
-        dispatch({
-          type: RECEIVE_MINING_METRICS,
-          data: {
-            minerIdentifier,
-            metrics: {
-              data: []
-            }
-          }
-        });
-      }
-    });
   };
 };

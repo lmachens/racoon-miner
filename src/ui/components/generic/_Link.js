@@ -1,16 +1,24 @@
 import React, { Component } from 'react';
 
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { withStyles } from 'material-ui/styles';
 
-const styles = {
+const styles = ({ palette }) => ({
   link: {
     textDecoration: 'none',
     '&:focus, &:hover, &:visited, &:link, &:active': {
-      textDecoration: 'none'
+      textDecoration: 'none',
+      color: 'inherit'
+    }
+  },
+  overwriteColor: {
+    color: palette.primary.main,
+    '&:focus, &:hover, &:visited, &:link, &:active': {
+      color: palette.primary.main
     }
   }
-};
+});
 
 class ExternalLink extends Component {
   handleClick = event => {
@@ -21,9 +29,14 @@ class ExternalLink extends Component {
   };
 
   render() {
-    const { children, classes, to } = this.props;
+    const { children, classes, to, overwriteColor = false } = this.props;
     return (
-      <a className={classes.link} href={to} onClick={this.handleClick} target="_blank">
+      <a
+        className={classNames(classes.link, { [classes.overwriteColor]: overwriteColor })}
+        href={to}
+        onClick={this.handleClick}
+        target="_blank"
+      >
         {children}
       </a>
     );
@@ -33,7 +46,8 @@ class ExternalLink extends Component {
 ExternalLink.propTypes = {
   classes: PropTypes.object.isRequired,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  to: PropTypes.string.isRequired
+  to: PropTypes.string.isRequired,
+  overwriteColor: PropTypes.bool
 };
 
 const ExternalLinkEnhanced = withStyles(styles)(ExternalLink);

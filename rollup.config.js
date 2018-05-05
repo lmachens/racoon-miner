@@ -45,7 +45,7 @@ export default [
             'createMuiTheme',
             'withStyles'
           ],
-          'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent'],
+          'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent', 'CardHeader'],
           'node_modules/material-ui/Dialog/index.js': [
             'DialogActions',
             'DialogContent',

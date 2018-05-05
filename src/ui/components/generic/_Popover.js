@@ -30,8 +30,7 @@ const Popover = ({ classes, children, ...other }) => (
 
 Popover.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  popover: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 };
 const enhancedPopover = withStyles(styles)(Popover);
 

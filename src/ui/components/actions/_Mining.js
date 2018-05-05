@@ -36,7 +36,7 @@ class MiningButton extends PureComponent {
 
     return (
       <ActionButton
-        buttonClassName={isMining && classes.flip}
+        buttonClassName={isMining ? classes.flip : ''}
         onClick={this.handleMiningClick}
         title={isMining ? 'Stop' : 'Start'}
       >

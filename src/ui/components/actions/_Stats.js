@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 
 import { ActionButton } from './_ActionButton';
 import { AssessmentIcon } from '../icons';
+import { ExternalLink } from '../generic';
 import PropTypes from 'prop-types';
 import { withStyles } from 'material-ui/styles';
 
@@ -19,9 +20,11 @@ class StatsButton extends PureComponent {
     const { classes } = this.props;
 
     return (
-      <ActionButton onClick={this.handleOpenStats} title="Stats">
-        <AssessmentIcon className={classes.icon} />
-      </ActionButton>
+      <ExternalLink to={'https://google.de'}>
+        <ActionButton title="Stats">
+          <AssessmentIcon className={classes.icon} />
+        </ActionButton>
+      </ExternalLink>
     );
   }
 }

@@ -21,7 +21,7 @@ export const dialogs = (
 ) => {
   switch (type) {
     case CLOSE_DIALOG:
-      return closeAllState;
+      return { ...closeAllState };
     case OPEN_CRYPTO_DIALOG:
       return { ...closeAllState, cryptoDialogOpen: true };
     case OPEN_SETTINGS_DIALOG:

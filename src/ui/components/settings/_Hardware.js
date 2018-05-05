@@ -1,26 +1,16 @@
 import React, { Component } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '../generic';
-import { stopTrackingHardwareInfo, trackHardwareInfo } from '../../../store/actions';
 
 import { CardLayout } from '../../layouts';
 import PropTypes from 'prop-types';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import get from 'lodash/get';
 
 class Hardware extends Component {
-  componentDidMount() {
-    const { trackHardwareInfo } = this.props;
-    trackHardwareInfo();
-  }
-
-  componentWillUnmount() {
-    const { stopTrackingHardwareInfo } = this.props;
-    stopTrackingHardwareInfo();
-  }
-
   render() {
-    const { hardwareInfo: { data, isListening } } = this.props;
+    const {
+      hardwareInfo: { data, isListening }
+    } = this.props;
     console.log(data, isListening);
     const gpus = get(data, 'Gpus.Gpus') || [];
     return (
@@ -50,12 +40,5 @@ const mapStateToProps = ({ hardwareInfo }) => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    trackHardwareInfo: bindActionCreators(trackHardwareInfo, dispatch),
-    stopTrackingHardwareInfo: bindActionCreators(stopTrackingHardwareInfo, dispatch)
-  };
-};
-
-const enhance = connect(mapStateToProps, mapDispatchToProps)(Hardware);
+const enhance = connect(mapStateToProps)(Hardware);
 export { enhance as Hardware };

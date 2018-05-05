@@ -1,21 +1,22 @@
 import {
+  AppBar,
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle,
   ExternalLink,
   FormControl,
+  IconButton,
   InfoButton,
   InputAdornment,
   InputLabel,
   MenuItem,
   Select,
   TextField,
+  Toolbar,
   Typography
 } from '../generic';
-import { DoneIcon, ErrorIcon } from '../icons';
+import { CloseIcon, DoneIcon, ErrorIcon } from '../icons';
 import React, { PureComponent } from 'react';
 import { closeDialog, selectMiner, setMiningAddress } from '../../../store/actions';
 import { ethereum, getMiner, monero } from '../../../api/mining';
@@ -27,9 +28,16 @@ import { connect } from 'react-redux';
 import { withStyles } from 'material-ui/styles';
 
 const styles = {
+  appBar: {
+    position: 'relative'
+  },
+  flex: {
+    flex: 1
+  },
   content: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    marginTop: 8
   }
 };
 
@@ -60,8 +68,20 @@ class CryptoDialog extends PureComponent {
     } = this.props;
 
     return (
-      <Dialog aria-labelledby="crypto-dialog-title" onClose={closeDialog} open={open}>
-        <DialogTitle id="crypto-dialog-title">Setup</DialogTitle>
+      <Dialog fullScreen onClose={closeDialog} open={open}>
+        <AppBar className={classes.appBar}>
+          <Toolbar>
+            <IconButton aria-label="Close" color="inherit" onClick={closeDialog}>
+              <CloseIcon />
+            </IconButton>
+            <Typography className={classes.flex} color="inherit" variant="title">
+              Setup
+            </Typography>
+            <Button color="inherit" onClick={closeDialog}>
+              save
+            </Button>
+          </Toolbar>
+        </AppBar>
         <DialogContent className={classes.content}>
           <DialogContentText>
             Before you can start mining, you have to tell the raccoon what to mine and who gets the
@@ -87,8 +107,8 @@ class CryptoDialog extends PureComponent {
             disabled={isMining}
             fullWidth
             helperText={
-              <ExternalLink to={miner.links.wallet}>
-                <Typography color="primary">Don&apos;t have a wallet address?</Typography>
+              <ExternalLink overwriteColor={true} to={miner.links.wallet}>
+                Don&apos;t have a wallet address?
               </ExternalLink>
             }
             InputProps={{
@@ -114,11 +134,6 @@ class CryptoDialog extends PureComponent {
             value={address}
           />
         </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={closeDialog}>
-            Close
-          </Button>
-        </DialogActions>
       </Dialog>
     );
   }

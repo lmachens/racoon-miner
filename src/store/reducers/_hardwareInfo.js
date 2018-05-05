@@ -1,17 +1,21 @@
-import { RECEIVE_HARDWARE_INFO, STOP_TRACKING_HARDWARE_INFO } from '../types';
+import { RECEIVE_HARDWARE_INFO } from '../types';
 
 export const hardwareInfo = (
   state = {
-    isListening: false,
-    data: null
+    BatteriesInfo: [],
+    Cpus: [],
+    General: {},
+    Gpus: { Gpus: [] },
+    Hdds: [],
+    Mainboard: {},
+    Memory: {},
+    Nics: []
   },
   { type, data }
 ) => {
   switch (type) {
     case RECEIVE_HARDWARE_INFO:
-      return { isListening: true, data };
-    case STOP_TRACKING_HARDWARE_INFO:
-      return { isListening: false };
+      return { ...data };
     default:
       return state;
   }
