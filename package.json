@@ -1,7 +1,7 @@
 {
   "name": "raccoon-miner",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Crypto mining app for Overwolf appstore",
   "dependencies": {
     "@material-ui/icons": "^1.0.0-beta.43",
@@ -66,7 +66,7 @@
   },
   "standard-version": {
     "scripts": {
-      "postcommit": "node tools/syncVersion && git commit -am \"chore(overwolf): manifest version bump\" && git push --follow-tags origin master && set CONVENTIONAL_GITHUB_RELEASER_TOKEN=059ff991289433e238681d73c00f04b89c8f1627 && ncu conventional-github-releaser -p angular"
+      "postcommit": "node tools/syncVersion && git commit -am \"chore(overwolf): manifest version bump\" && git push --follow-tags origin master"
     }
   },
   "lint-staged": {
