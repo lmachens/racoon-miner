@@ -15,17 +15,12 @@ export default [
     plugins: [
       replace({
         'process.env.__REDUX_LOGGER__': false,
-        'process.env.__API_ENDPOINT__': JSON.stringify('https://raccoon-miner.now.sh'),
         'process.env.NODE_ENV': JSON.stringify('production'), // needed by react
-        'process.env.__APP_PATH__': JSON.stringify(`${process.cwd()}/dist`.replace(/\\/g, '/')),
-        'process.env.__LISTEN_TO_FILES__': JSON.stringify(['main.js']),
-        'process.env.__TRACKING_ID__': JSON.stringify('UA-115959266-2'),
-        'process.env.__ETHEREUM_MINER_GROUP__': JSON.stringify(
-          '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
+        'process.env.__APP_PATH__': JSON.stringify(
+          `${process.cwd()}/dist/production`.replace(/\\/g, '/')
         ),
-        'process.env.__MONERO_MINER_GROUP__': JSON.stringify(
-          '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
-        )
+        'process.env.__LISTEN_TO_FILES__': JSON.stringify(['main.js']),
+        'process.env.__TRACKING_ID__': JSON.stringify('UA-115959266-2')
       }),
       nodeResolve({
         module: true,
@@ -50,7 +45,13 @@ export default [
             'createMuiTheme',
             'withStyles'
           ],
-          'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent'],
+          'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent', 'CardHeader'],
+          'node_modules/material-ui/Dialog/index.js': [
+            'DialogActions',
+            'DialogContent',
+            'DialogContentText',
+            'DialogTitle'
+          ],
           'node_modules/material-ui/Table/index.js': [
             'TableBody',
             'TableRow',
@@ -59,6 +60,7 @@ export default [
           ],
           'node_modules/material-ui/Form/index.js': ['FormControl', 'FormHelperText'],
           'node_modules/material-ui/Input/index.js': ['InputLabel', 'InputAdornment'],
+          'node_modules/material-ui/Menu/index.js': ['MenuItem'],
           'node_modules/material-ui/Progress/index.js': ['CircularProgress']
         }
       }),
