@@ -30,7 +30,8 @@ export const ethereum = {
     }),
   links: {
     wallet: 'https://www.myetherwallet.com/',
-    stats: address => `https://ethermine.org/miners/${address}/dashboard`
+    stats: address => `https://ethermine.org/miners/${address}/dashboard`,
+    api: address => `https://api.ethermine.org/miner/${address}/dashboard`
   },
   isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
   addressHint: 'It should start with 0x and have 42 characters.',

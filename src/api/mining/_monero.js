@@ -23,7 +23,8 @@ export const monero = {
   environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
   links: {
     wallet: 'https://getmonero.org/',
-    stats: () => 'https://supportxmr.com/#/dashboard'
+    stats: () => 'https://supportxmr.com/#/dashboard',
+    api: address => `https://supportxmr.com/api/miner/${address}/stats`
   },
   isValidAddress: address =>
     /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),

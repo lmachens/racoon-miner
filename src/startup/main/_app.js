@@ -1,3 +1,4 @@
+import { fetchVersion, trackHardwareInfo } from '../../store/actions';
 import { persistor, store } from '../../store';
 
 import { AppLayout } from '../../ui/layouts';
@@ -10,10 +11,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { initialize as initializeAnalytics } from '../../api/analytics';
 import { light } from '../../ui/themes';
-import { trackHardwareInfo } from '../../store/actions';
 
 initializeAnalytics();
-store.dispatch(trackHardwareInfo());
+store.dispatch(fetchVersion(), trackHardwareInfo());
 
 const App = (
   <Provider store={store}>

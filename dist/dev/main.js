@@ -1,6 +1,428 @@
 (function() {
   'use strict';
 
+  const CLOSE_DIALOG = 'CLOSE_DIALOG';
+  const OPEN_CRYPTO_DIALOG = 'OPEN_CRYPTO_DIALOG';
+  const OPEN_SETTINGS_DIALOG = 'OPEN_SETTINGS_DIALOG';
+  const OPEN_SUPPORT_DIALOG = 'OPEN_SUPPORT_DIALOG';
+
+  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
+
+  const CONNECTING_POOL = 'CONNECTING_POOL';
+  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
+  const SELECT_MINER = 'SELECT_MINER';
+  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
+  const SET_MINING_SPEED = 'SET_MINING_SPEED';
+  const SET_PROCESS_ID = 'SET_PROCESS_ID';
+  const START_MINING = 'START_MINING';
+  const STOP_MINING = 'STOP_MINING';
+  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
+  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
+  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
+
+  const RECEIVE_VERSION = 'RECEIVE_VERSION';
+
+  const closeDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: CLOSE_DIALOG
+      });
+    };
+  };
+
+  const openCryptoDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_CRYPTO_DIALOG
+      });
+    };
+  };
+
+  const openSettingsDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_SETTINGS_DIALOG
+      });
+    };
+  };
+
+  const openSupportDialog = () => {
+    return dispatch => {
+      dispatch({
+        type: OPEN_SUPPORT_DIALOG
+      });
+    };
+  };
+
+  const interval = 1000;
+
+  const requestHardwareInfo = () => {
+    console.log('request hardware info');
+    overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
+      console.log(reason);
+      if (reason === 'Permissions Required') {
+        overwolf.benchmarking.requestPermissions(({ status }) => {
+          if (status === 'success') {
+            requestHardwareInfo();
+          }
+        });
+      }
+    });
+  };
+
+  const addHardwareInfoListener = listener => {
+    overwolf.benchmarking.onHardwareInfoReady.addListener(listener);
+    requestHardwareInfo();
+  };
+
+  const trackHardwareInfo = () => {
+    return dispatch => {
+      const hardwareInfoListener = hardwareInfo => {
+        dispatch({
+          type: RECEIVE_HARDWARE_INFO,
+          data: hardwareInfo
+        });
+      };
+
+      addHardwareInfoListener(hardwareInfoListener);
+    };
+  };
+
+  const SPEED_REGEX = 'SPEED_REGEX';
+  const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
+  const CONNECTING = 'CONNECTING';
+
+  const generateParser = regex => line => {
+    const result = {
+      timestamp: Date.now()
+    };
+    //console.info(line);
+    if (regex.SPEED_REGEX) {
+      const parsed = line.match(regex.SPEED_REGEX);
+      if (parsed) result.speed = parseFloat(parsed[1]);
+    }
+    if (regex.CONNECTION_FAILED_REGEX) {
+      const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
+      if (parsed) result.errorMsg = 'Connection failed';
+    }
+    if (regex.CONNECTING) {
+      const parsed = line.match(regex.CONNECTING);
+      if (parsed) result.connecting = true;
+    }
+    return result;
+  };
+
+  const ETHEREUM_MINER = 'ETHEREUM_MINER';
+  const ethereum = {
+    name: 'Ethereum',
+    identifier: ETHEREUM_MINER,
+    logo: 'assets/ethereum.png',
+    currency: 'ETH',
+    minimumPaymentThreshold: 0.05,
+    parser: generateParser({
+      [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
+    }),
+    path: 'ethereum/ethminer.exe',
+    args: address =>
+      `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${address}.raccoon`,
+    environmentVariables: () =>
+      JSON.stringify({
+        GPU_FORCE_64BIT_PTR: '0',
+        GPU_MAX_HEAP_SIZE: '100',
+        GPU_USE_SYNC_OBJECTS: '1',
+        GPU_MAX_ALLOC_PERCENT: '100',
+        GPU_SINGLE_ALLOC_PERCENT: '100'
+      }),
+    links: {
+      wallet: 'https://www.myetherwallet.com/',
+      stats: address => `https://ethermine.org/miners/${address}/dashboard`,
+      api: address => `https://api.ethermine.org/miner/${address}/dashboard`
+    },
+    isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
+    addressHint: 'It should start with 0x and have 42 characters.',
+    developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
+  };
+
+  const MONERO_MINER = 'MONERO_MINER';
+  const monero = {
+    name: 'Monero',
+    identifier: MONERO_MINER,
+    logo: 'assets/monero.png',
+    currency: 'XMR',
+    minimumPaymentThreshold: 0.1,
+    parser: generateParser({
+      [SPEED_REGEX]: /Totals \(ALL\):\s+(.+)\s/,
+      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
+      [CONNECTING]: /not-connected/
+    }),
+    path: 'monero/xmr-stak.exe',
+    args: address =>
+      `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
+    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
+    links: {
+      wallet: 'https://getmonero.org/',
+      stats: () => 'https://supportxmr.com/#/dashboard',
+      api: address => `https://supportxmr.com/api/miner/${address}/stats`
+    },
+    isValidAddress: address =>
+      /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
+    addressHint: 'It should have 95 characters.',
+    developerAddress:
+      '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
+  };
+
+  const getMiner = minerIdentifier => {
+    switch (minerIdentifier) {
+      case ETHEREUM_MINER:
+        return ethereum;
+      case MONERO_MINER:
+        return monero;
+    }
+  };
+
+  const callOverwolfWithPromise = (method, ...params) => {
+    return new Promise((resolve, reject) => {
+      const handleResult = result => {
+        if (result) return resolve(result);
+        return reject(result);
+      };
+
+      console.log(method, params);
+      if (params) {
+        method(...params, handleResult);
+      } else {
+        method(handleResult);
+      }
+    });
+  };
+
+  const getVersion = () => {
+    return new Promise(async resolve => {
+      const result = await callOverwolfWithPromise(overwolf.extensions.current.getManifest);
+      resolve(result.meta.version);
+    });
+  };
+
+  let processManager = null;
+  const getProcessManagerPlugin = () => {
+    return new Promise(async resolve => {
+      if (processManager) return resolve(processManager);
+      const result = await callOverwolfWithPromise(
+        overwolf.extensions.current.getExtraObject,
+        'process-manager-plugin'
+      );
+      processManager = result.object;
+      resolve(result.object);
+    });
+  };
+
+  let simpleIoPlugin;
+  const getSimpleIoPlugin = () => {
+    return new Promise(async resolve => {
+      if (simpleIoPlugin) return resolve(simpleIoPlugin);
+      const result = await callOverwolfWithPromise(
+        overwolf.extensions.current.getExtraObject,
+        'simple-io-plugin'
+      );
+      simpleIoPlugin = result.object;
+      resolve(result.object);
+    });
+  };
+
+  /**
+   * Checks if `value` is `null` or `undefined`.
+   *
+   * @static
+   * @memberOf _
+   * @since 4.0.0
+   * @category Lang
+   * @param {*} value The value to check.
+   * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
+   * @example
+   *
+   * _.isNil(null);
+   * // => true
+   *
+   * _.isNil(void 0);
+   * // => true
+   *
+   * _.isNil(NaN);
+   * // => false
+   */
+  function isNil(value) {
+    return value == null;
+  }
+
+  var isNil_1 = isNil;
+
+  const setMiningAddress = (minerIdentifier, address) => {
+    return dispatch => {
+      dispatch({
+        type: SET_MINING_ADDRESS,
+        data: { address, minerIdentifier }
+      });
+
+      const miner = getMiner(minerIdentifier);
+      const validAddress = miner.isValidAddress(address);
+
+      if (validAddress);
+      else {
+        dispatch({
+          type: RECEIVE_WORKER_STATS,
+          data: {
+            minerIdentifier,
+            workerStats: {}
+          }
+        });
+      }
+    };
+  };
+
+  const selectMiner = minerIdentifier => {
+    return dispatch => {
+      dispatch({
+        type: SELECT_MINER,
+        data: minerIdentifier
+      });
+      dispatch(fetchWorkerStats(minerIdentifier));
+    };
+  };
+
+  const fetchWorkerStats = minerIdentifier => {
+    return (dispatch, getState) => {
+      const {
+        mining: { miners }
+      } = getState();
+      const { address } = miners[minerIdentifier];
+      if (!address) return;
+
+      /*stats
+        .fetchWorkerStats({ minerId: minerGroup, workerId })
+        .catch(error => {
+          dispatch({
+            type: SET_MINING_ERROR_MESSAGE,
+            data: {
+              minerIdentifier,
+              errorMsg: error.message
+            }
+          });
+        })
+        .then(response => {
+          if (response) {
+            dispatch({
+              type: RECEIVE_WORKER_STATS,
+              data: {
+                minerIdentifier,
+                workerStats: response
+              }
+            });
+          }
+        });*/
+    };
+  };
+
+  const handleDataByIdenfier = {};
+  let sendTextInterval = null;
+  const startMining = minerIdentifier => {
+    return async (dispatch, getState) => {
+      const {
+        mining: { miners, selectedMinerIdentifier }
+      } = getState();
+      const address = miners[selectedMinerIdentifier].address || 'default';
+      if (handleDataByIdenfier[minerIdentifier]) return;
+      const processManager = await getProcessManagerPlugin();
+      const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
+
+      dispatch({
+        type: START_MINING,
+        data: { minerIdentifier }
+      });
+
+      handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
+        const { connecting, errorMsg, speed } = parser(error || data);
+
+        if (connecting) {
+          dispatch({
+            type: CONNECTING_POOL,
+            data: {
+              minerIdentifier
+            }
+          });
+        } else if (!isNil_1(speed)) {
+          dispatch({
+            type: SET_MINING_SPEED,
+            data: {
+              minerIdentifier,
+              speed
+            }
+          });
+        } else if (!isNil_1(errorMsg)) {
+          dispatch({
+            type: SET_MINING_ERROR_MESSAGE,
+            data: {
+              minerIdentifier,
+              errorMsg
+            }
+          });
+        }
+      };
+      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
+
+      processManager.launchProcess(
+        path,
+        args(address),
+        environmentVariables(),
+        true,
+        ({ data }) => {
+          console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
+          dispatch({
+            type: SET_PROCESS_ID,
+            data: {
+              minerIdentifier,
+              processId: data
+            }
+          });
+        }
+      );
+    };
+  };
+
+  const stopMining = minerIdentifier => {
+    return async (dispatch, getState) => {
+      const processManager = await getProcessManagerPlugin();
+      const { activeMiners } = getState();
+
+      dispatch({
+        type: STOP_MINING,
+        data: { minerIdentifier }
+      });
+      const processId = activeMiners[minerIdentifier].processId;
+      console.info(`%cStop mining ${processId}`, 'color: blue');
+      if (processId || handleDataByIdenfier[minerIdentifier]) {
+        if (sendTextInterval) {
+          clearInterval(sendTextInterval);
+          sendTextInterval = null;
+        }
+        processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
+        processManager.terminateProcess(processId);
+        delete handleDataByIdenfier[minerIdentifier];
+      }
+    };
+  };
+
+  const fetchVersion = () => {
+    return dispatch => {
+      getVersion().then(version => {
+        dispatch({
+          type: RECEIVE_VERSION,
+          data: version
+        });
+      });
+    };
+  };
+
   function symbolObservablePonyfill(root) {
     var result;
     var Symbol = root.Symbol;
@@ -735,9 +1157,9 @@
   }
 
   /*
-	 * This is a dummy function to check if the function name has been altered by minification.
-	 * If the function has been minified and NODE_ENV !== 'production', warn the user.
-	 */
+   * This is a dummy function to check if the function name has been altered by minification.
+   * If the function has been minified and NODE_ENV !== 'production', warn the user.
+   */
   function isCrushed() {}
 
   if (typeof isCrushed.name === 'string' && isCrushed.name !== 'isCrushed') {
@@ -828,10 +1250,10 @@
   }
 
   /*
-	  autoMergeLevel1: 
-	    - merges 1 level of substate
-	    - skips substate if already modified
-	*/
+    autoMergeLevel1: 
+      - merges 1 level of substate
+      - skips substate if already modified
+  */
 
   // @TODO remove once flow < 0.63 support is no longer required.
 
@@ -1016,10 +1438,10 @@
 
   var DEFAULT_TIMEOUT = 5000;
   /*
-	  @TODO add validation / handling for:
-	  - persisting a reducer which has nested _persist
-	  - handling actions that fire before reydrate is called
-	*/
+    @TODO add validation / handling for:
+    - persisting a reducer which has nested _persist
+    - handling actions that fire before reydrate is called
+  */
   function persistReducer(config, baseReducer) {
     {
       if (!config) throw new Error('config is required for persistReducer');
@@ -1405,11 +1827,11 @@
 
   var localforage = createCommonjsModule(function(module, exports) {
     /*!
-	    localForage -- Offline Storage, Improved
-	    Version 1.7.1
-	    https://localforage.github.io/localForage
-	    (c) 2013-2017 Mozilla, Apache License 2.0
-	*/
+      localForage -- Offline Storage, Improved
+      Version 1.7.1
+      https://localforage.github.io/localForage
+      (c) 2013-2017 Mozilla, Apache License 2.0
+  */
     (function(f) {
       {
         module.exports = f();
@@ -3243,14 +3665,14 @@
               };
 
               /*
-	 * Includes code from:
-	 *
-	 * base64-arraybuffer
-	 * https://github.com/niklasvh/base64-arraybuffer
-	 *
-	 * Copyright (c) 2012 Niklas von Hertzen
-	 * Licensed under the MIT license.
-	 */
+   * Includes code from:
+   *
+   * base64-arraybuffer
+   * https://github.com/niklasvh/base64-arraybuffer
+   *
+   * Copyright (c) 2012 Niklas von Hertzen
+   * Licensed under the MIT license.
+   */
 
               function createDbTable(t, dbInfo, callback, errorCallback) {
                 t.executeSql(
@@ -4594,117 +5016,6 @@
       )(4);
     });
   });
-
-  const CLOSE_DIALOG = 'CLOSE_DIALOG';
-  const OPEN_CRYPTO_DIALOG = 'OPEN_CRYPTO_DIALOG';
-  const OPEN_SETTINGS_DIALOG = 'OPEN_SETTINGS_DIALOG';
-  const OPEN_SUPPORT_DIALOG = 'OPEN_SUPPORT_DIALOG';
-
-  const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
-
-  const CONNECTING_POOL = 'CONNECTING_POOL';
-  const SET_MINING_ADDRESS = 'SET_MINING_ADDRESS';
-  const SELECT_MINER = 'SELECT_MINER';
-  const SET_MINING_ERROR_MESSAGE = 'SET_MINING_ERROR_MESSAGE';
-  const SET_MINING_SPEED = 'SET_MINING_SPEED';
-  const SET_PROCESS_ID = 'SET_PROCESS_ID';
-  const START_MINING = 'START_MINING';
-  const STOP_MINING = 'STOP_MINING';
-  const RECEIVE_WORKER_STATS = 'RECEIVE_WORKER_STATS';
-  const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
-  const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
-
-  const SPEED_REGEX = 'SPEED_REGEX';
-  const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
-  const CONNECTING = 'CONNECTING';
-
-  const generateParser = regex => line => {
-    const result = {
-      timestamp: Date.now()
-    };
-    //console.info(line);
-    if (regex.SPEED_REGEX) {
-      const parsed = line.match(regex.SPEED_REGEX);
-      if (parsed) result.speed = parseFloat(parsed[1]);
-    }
-    if (regex.CONNECTION_FAILED_REGEX) {
-      const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
-      if (parsed) result.errorMsg = 'Connection failed';
-    }
-    if (regex.CONNECTING) {
-      const parsed = line.match(regex.CONNECTING);
-      if (parsed) result.connecting = true;
-    }
-    return result;
-  };
-
-  const ETHEREUM_MINER = 'ETHEREUM_MINER';
-  const ethereum = {
-    name: 'Ethereum',
-    identifier: ETHEREUM_MINER,
-    logo: 'assets/ethereum.png',
-    currency: 'ETH',
-    minimumPaymentThreshold: 0.05,
-    parser: generateParser({
-      [SPEED_REGEX]: /Speed\s+(.+)\sMh\/s/,
-      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
-      [CONNECTING]: /not-connected/
-    }),
-    path: 'ethereum/ethminer.exe',
-    args: address =>
-      `--farm-recheck 200 -G -S eu1.ethermine.org:4444 -SF us1.ethermine.org:4444 -O ${address}.raccoon`,
-    environmentVariables: () =>
-      JSON.stringify({
-        GPU_FORCE_64BIT_PTR: '0',
-        GPU_MAX_HEAP_SIZE: '100',
-        GPU_USE_SYNC_OBJECTS: '1',
-        GPU_MAX_ALLOC_PERCENT: '100',
-        GPU_SINGLE_ALLOC_PERCENT: '100'
-      }),
-    links: {
-      wallet: 'https://www.myetherwallet.com/',
-      stats: address => `https://ethermine.org/miners/${address}/dashboard`
-    },
-    isValidAddress: address => /^0x[0-9a-fA-F]{40}$/i.test(address),
-    addressHint: 'It should start with 0x and have 42 characters.',
-    developerAddress: '0x799db2f010a5a9934eca801c5d702a7d96373b9d'
-  };
-
-  const MONERO_MINER = 'MONERO_MINER';
-  const monero = {
-    name: 'Monero',
-    identifier: MONERO_MINER,
-    logo: 'assets/monero.png',
-    currency: 'XMR',
-    minimumPaymentThreshold: 0.1,
-    parser: generateParser({
-      [SPEED_REGEX]: /Totals \(ALL\):\s+(.+)\s/,
-      [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
-      [CONNECTING]: /not-connected/
-    }),
-    path: 'monero/xmr-stak.exe',
-    args: address =>
-      `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
-    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
-    links: {
-      wallet: 'https://getmonero.org/',
-      stats: () => 'https://supportxmr.com/#/dashboard'
-    },
-    isValidAddress: address =>
-      /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
-    addressHint: 'It should have 95 characters.',
-    developerAddress:
-      '47nCkeWhyJDEoaDPbtm7xc2QyQh2gbRMSdQ8V3NUyuFm6J3UuLiVGn57KjXhLAJD4SZ6jzcukSPRa3auNb1WTfmHRA8ikzr'
-  };
-
-  const getMiner = minerIdentifier => {
-    switch (minerIdentifier) {
-      case ETHEREUM_MINER:
-        return ethereum;
-      case MONERO_MINER:
-        return monero;
-    }
-  };
 
   /** Detect free variable `global` from Node.js. */
   var freeGlobal =
@@ -6186,11 +6497,26 @@
     }
   };
 
+  const utilities = (
+    state = {
+      version: ''
+    },
+    { type, data }
+  ) => {
+    switch (type) {
+      case RECEIVE_VERSION:
+        return _extends$5({}, state, { version: data });
+      default:
+        return state;
+    }
+  };
+
   const reducers = combineReducers({
     dialogs,
     hardwareInfo,
     mining,
-    activeMiners
+    activeMiners,
+    utilities
   });
 
   function createThunkMiddleware(extraArgument) {
@@ -6736,10 +7062,10 @@
   unwrapExports(objectWithoutProperties$1);
 
   /*
-	object-assign
-	(c) Sindre Sorhus
-	@license MIT
-	*/
+  object-assign
+  (c) Sindre Sorhus
+  @license MIT
+  */
   /* eslint-disable no-unused-vars */
   var getOwnPropertySymbols = Object.getOwnPropertySymbols;
   var hasOwnProperty$6 = Object.prototype.hasOwnProperty;
@@ -9425,10 +9751,10 @@
 
   var classnames = createCommonjsModule(function(module) {
     /*!
-	  Copyright (c) 2016 Jed Watson.
-	  Licensed under the MIT License (MIT), see
-	  http://jedwatson.github.io/classnames
-	*/
+    Copyright (c) 2016 Jed Watson.
+    Licensed under the MIT License (MIT), see
+    http://jedwatson.github.io/classnames
+  */
     /* global define */
 
     (function() {
@@ -29087,23 +29413,23 @@
           }
 
           /*
-	  function reuseChildrenEffects(returnFiber : Fiber, firstChild : Fiber) {
-	    let child = firstChild;
-	    do {
-	      // Ensure that the first and last effect of the parent corresponds
-	      // to the children's first and last effect.
-	      if (!returnFiber.firstEffect) {
-	        returnFiber.firstEffect = child.firstEffect;
-	      }
-	      if (child.lastEffect) {
-	        if (returnFiber.lastEffect) {
-	          returnFiber.lastEffect.nextEffect = child.firstEffect;
-	        }
-	        returnFiber.lastEffect = child.lastEffect;
-	      }
-	    } while (child = child.sibling);
-	  }
-	  */
+    function reuseChildrenEffects(returnFiber : Fiber, firstChild : Fiber) {
+      let child = firstChild;
+      do {
+        // Ensure that the first and last effect of the parent corresponds
+        // to the children's first and last effect.
+        if (!returnFiber.firstEffect) {
+          returnFiber.firstEffect = child.firstEffect;
+        }
+        if (child.lastEffect) {
+          if (returnFiber.lastEffect) {
+            returnFiber.lastEffect.nextEffect = child.firstEffect;
+          }
+          returnFiber.lastEffect = child.lastEffect;
+        }
+      } while (child = child.sibling);
+    }
+    */
 
           function bailoutOnAlreadyFinishedWork(current, workInProgress) {
             cancelWorkTimer(workInProgress);
@@ -38361,8 +38687,8 @@
     });
 
     /*!
-	 * Programatically add the following
-	 */
+   * Programatically add the following
+   */
 
     // lower case chars
     for (i = 97; i < 123; i++) codes[String.fromCharCode(i)] = i - 32;
@@ -48139,8 +48465,8 @@
        */
       label: _propTypes2.default.node,
       /*
-	   * @ignore
-	   */
+     * @ignore
+     */
       name: _propTypes2.default.string,
       /**
        * Callback fired when the state is changed.
@@ -50237,9 +50563,9 @@
         left: _propTypes2.default.number
       }),
       /*
-	   * This determines which anchor prop to refer to to set
-	   * the position of the popover.
-	   */
+     * This determines which anchor prop to refer to to set
+     * the position of the popover.
+     */
       anchorReference: _propTypes2.default.oneOf(['anchorEl', 'anchorPosition', 'none']),
       /**
        * The content of the component.
@@ -57080,623 +57406,6 @@
   // export { default as Tooltip } from 'material-ui/Tooltip';
   // Issues with positioning
 
-  const styles$3 = {
-    children: {
-      overflow: 'auto',
-      height: 'calc(100% - 64px)'
-    },
-    flex: {
-      marginLeft: 4,
-      flex: 1
-    },
-    textLogo: {
-      height: 18
-    }
-  };
-
-  const AppLayout = ({ classes, children }) =>
-    react.createElement(
-      react_5,
-      null,
-      react.createElement(
-        AppBar$2,
-        { color: 'inherit', position: 'sticky' },
-        react.createElement(
-          Toolbar$2,
-          null,
-          react.createElement('img', { className: classes.textLogo, src: 'assets/text_logo.png' })
-        )
-      ),
-      react.createElement('div', { className: classes.children }, children)
-    );
-
-  AppLayout.propTypes = {
-    classes: propTypes.object.isRequired,
-    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
-  };
-
-  const enhance = styles_3(styles$3)(AppLayout);
-
-  var setStatic_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-    var setStatic = function setStatic(key, value) {
-      return function(BaseComponent) {
-        /* eslint-disable no-param-reassign */
-        BaseComponent[key] = value;
-        /* eslint-enable no-param-reassign */
-        return BaseComponent;
-      };
-    };
-
-    exports.default = setStatic;
-  });
-
-  unwrapExports(setStatic_1$1);
-
-  var setDisplayName_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-
-    var _setStatic2 = _interopRequireDefault(setStatic_1$1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    var setDisplayName = function setDisplayName(displayName) {
-      return (0, _setStatic2.default)('displayName', displayName);
-    };
-
-    exports.default = setDisplayName;
-  });
-
-  unwrapExports(setDisplayName_1$1);
-
-  var getDisplayName_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-    var getDisplayName = function getDisplayName(Component) {
-      if (typeof Component === 'string') {
-        return Component;
-      }
-
-      if (!Component) {
-        return undefined;
-      }
-
-      return Component.displayName || Component.name || 'Component';
-    };
-
-    exports.default = getDisplayName;
-  });
-
-  unwrapExports(getDisplayName_1$1);
-
-  var wrapDisplayName_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-
-    var _getDisplayName2 = _interopRequireDefault(getDisplayName_1$1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    var wrapDisplayName = function wrapDisplayName(BaseComponent, hocName) {
-      return hocName + '(' + (0, _getDisplayName2.default)(BaseComponent) + ')';
-    };
-
-    exports.default = wrapDisplayName;
-  });
-
-  unwrapExports(wrapDisplayName_1$1);
-
-  var shouldUpdate_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-
-    var _setDisplayName2 = _interopRequireDefault(setDisplayName_1$1);
-
-    var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1$1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    function _classCallCheck(instance, Constructor) {
-      if (!(instance instanceof Constructor)) {
-        throw new TypeError('Cannot call a class as a function');
-      }
-    }
-
-    function _possibleConstructorReturn(self, call) {
-      if (!self) {
-        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-      }
-      return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
-    }
-
-    function _inherits(subClass, superClass) {
-      if (typeof superClass !== 'function' && superClass !== null) {
-        throw new TypeError(
-          'Super expression must either be null or a function, not ' + typeof superClass
-        );
-      }
-      subClass.prototype = Object.create(superClass && superClass.prototype, {
-        constructor: { value: subClass, enumerable: false, writable: true, configurable: true }
-      });
-      if (superClass)
-        Object.setPrototypeOf
-          ? Object.setPrototypeOf(subClass, superClass)
-          : (subClass.__proto__ = superClass);
-    }
-
-    var shouldUpdate = function shouldUpdate(test) {
-      return function(BaseComponent) {
-        var factory = (0, react.createFactory)(BaseComponent);
-
-        var ShouldUpdate = (function(_Component) {
-          _inherits(ShouldUpdate, _Component);
-
-          function ShouldUpdate() {
-            _classCallCheck(this, ShouldUpdate);
-
-            return _possibleConstructorReturn(this, _Component.apply(this, arguments));
-          }
-
-          ShouldUpdate.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps) {
-            return test(this.props, nextProps);
-          };
-
-          ShouldUpdate.prototype.render = function render() {
-            return factory(this.props);
-          };
-
-          return ShouldUpdate;
-        })(react.Component);
-
-        {
-          return (0, _setDisplayName2.default)(
-            (0, _wrapDisplayName2.default)(BaseComponent, 'shouldUpdate')
-          )(ShouldUpdate);
-        }
-        return ShouldUpdate;
-      };
-    };
-
-    exports.default = shouldUpdate;
-  });
-
-  unwrapExports(shouldUpdate_1$1);
-
-  var shallowEqual$3 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-
-    var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = _shallowEqual2.default;
-  });
-
-  unwrapExports(shallowEqual$3);
-
-  var pure_1$1 = createCommonjsModule(function(module, exports) {
-    exports.__esModule = true;
-
-    var _shouldUpdate2 = _interopRequireDefault(shouldUpdate_1$1);
-
-    var _shallowEqual2 = _interopRequireDefault(shallowEqual$3);
-
-    var _setDisplayName2 = _interopRequireDefault(setDisplayName_1$1);
-
-    var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1$1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    var pure = function pure(BaseComponent) {
-      var hoc = (0, _shouldUpdate2.default)(function(props, nextProps) {
-        return !(0, _shallowEqual2.default)(props, nextProps);
-      });
-
-      {
-        return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'pure'))(
-          hoc(BaseComponent)
-        );
-      }
-
-      return hoc(BaseComponent);
-    };
-
-    exports.default = pure;
-  });
-
-  unwrapExports(pure_1$1);
-
-  var createSvgIcon_1 = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _pure2 = _interopRequireDefault(pure_1$1);
-
-    var _SvgIcon2 = _interopRequireDefault(SvgIcon$1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    var SvgIconCustom =
-      (typeof commonjsGlobal !== 'undefined' && commonjsGlobal.__MUI_SvgIcon__) ||
-      _SvgIcon2.default;
-
-    function createSvgIcon(path, displayName) {
-      var Icon = function Icon(props) {
-        return _react2.default.createElement(SvgIconCustom, props, path);
-      };
-
-      Icon.displayName = displayName;
-      Icon = (0, _pure2.default)(Icon);
-      Icon.muiName = 'SvgIcon';
-
-      return Icon;
-    }
-    exports.default = createSvgIcon;
-  });
-
-  unwrapExports(createSvgIcon_1);
-
-  var Assessment = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d:
-            'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z'
-        })
-      ),
-      'Assessment'
-    );
-  });
-
-  var AssessmentIcon = unwrapExports(Assessment);
-
-  var Close = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d:
-            'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
-        })
-      ),
-      'Close'
-    );
-  });
-
-  var CloseIcon = unwrapExports(Close);
-
-  var Done = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d: 'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'
-        })
-      ),
-      'Done'
-    );
-  });
-
-  var DoneIcon = unwrapExports(Done);
-
-  var _Error = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d:
-            'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'
-        })
-      ),
-      'Error'
-    );
-  });
-
-  var ErrorIcon = unwrapExports(_Error);
-
-  var Help = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d:
-            'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z'
-        })
-      ),
-      'Help'
-    );
-  });
-
-  var HelpIcon = unwrapExports(Help);
-
-  var Settings = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    exports.default = (0, _createSvgIcon2.default)(
-      _react2.default.createElement(
-        'g',
-        null,
-        _react2.default.createElement('path', {
-          d:
-            'M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z'
-        })
-      ),
-      'Settings'
-    );
-  });
-
-  var SettingsIcon = unwrapExports(Settings);
-
-  const styles$4 = {
-    root: {
-      textAlign: 'center',
-      '& :last-child': {
-        paddingBottom: 8
-      }
-    },
-    header: {
-      padding: '8 16 0 16'
-    },
-    content: {
-      padding: '0 16 0 16'
-    }
-  };
-
-  const CardLayout = ({ classes, className, helperText, children, title }) =>
-    react.createElement(
-      Card$2,
-      { className: classnames(classes.root, className) },
-      react.createElement(Card_3, {
-        action:
-          helperText &&
-          react.createElement(
-            InfoButton,
-            {
-              icon: true,
-              popover: react.createElement(Typography$2, null, helperText)
-            },
-            react.createElement(HelpIcon, null)
-          ),
-        className: classes.header,
-        subheader: title
-      }),
-      react.createElement(Card_2$1, { className: classes.content }, children)
-    );
-
-  CardLayout.propTypes = {
-    helperText: propTypes.string,
-    classes: propTypes.object.isRequired,
-    className: propTypes.string,
-    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-    title: propTypes.string
-  };
-
-  const enhance$1 = styles_3(styles$4)(CardLayout);
-
-  const styles$5 = {
-    wrapper: {
-      margin: 20
-    }
-  };
-
-  const PageLayout = ({ classes, children }) =>
-    react.createElement('div', { className: classes.wrapper }, children);
-
-  PageLayout.propTypes = {
-    classes: propTypes.object.isRequired,
-    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
-  };
-
-  const enhance$2 = styles_3(styles$5)(PageLayout);
-
-  var CssBaseline_1 = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$1);
-
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
-
-    var _createClass3 = _interopRequireDefault(createClass$1);
-
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
-
-    var _inherits3 = _interopRequireDefault(inherits$1);
-
-    var _react2 = _interopRequireDefault(react);
-
-    var _propTypes2 = _interopRequireDefault(propTypes);
-
-    var _exactProp2 = _interopRequireDefault(exactProp_1);
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-
-    var styles$$1 = function styles$$1(theme) {
-      return {
-        '@global': {
-          html: {
-            WebkitFontSmoothing: 'antialiased', // Antialiasing.
-            MozOsxFontSmoothing: 'grayscale', // Antialiasing.
-            // Change from `box-sizing: content-box` so that `width`
-            // is not affected by `padding` or `border`.
-            boxSizing: 'border-box'
-          },
-          '*, *::before, *::after': {
-            boxSizing: 'inherit'
-          },
-          body: {
-            margin: 0, // Remove the margin in all browsers.
-            backgroundColor: theme.palette.background.default,
-            '@media print': {
-              // Save printer ink.
-              backgroundColor: theme.palette.common.white
-            }
-          }
-        }
-      };
-    };
-
-    /**
-     * Kickstart an elegant, consistent, and simple baseline to build upon.
-     */
-
-    var CssBaseline = (function(_React$Component) {
-      (0, _inherits3.default)(CssBaseline, _React$Component);
-
-      function CssBaseline() {
-        (0, _classCallCheck3.default)(this, CssBaseline);
-        return (0, _possibleConstructorReturn3.default)(
-          this,
-          (CssBaseline.__proto__ || (0, _getPrototypeOf2.default)(CssBaseline)).apply(
-            this,
-            arguments
-          )
-        );
-      }
-
-      (0, _createClass3.default)(CssBaseline, [
-        {
-          key: 'render',
-          value: function render() {
-            return this.props.children;
-          }
-        }
-      ]);
-      return CssBaseline;
-    })(_react2.default.Component);
-
-    CssBaseline.propTypes = {
-      /**
-       * You can only provide a single element with react@15, a node with react@16.
-       */
-      children: _propTypes2.default.node,
-      /**
-       * @ignore
-       */
-      classes: _propTypes2.default.object.isRequired
-    };
-
-    CssBaseline.propTypes = (0, _exactProp2.default)(CssBaseline.propTypes, 'CssBaseline');
-
-    CssBaseline.defaultProps = {
-      children: null
-    };
-
-    exports.default = (0, styles.withStyles)(styles$$1, { name: 'MuiCssBaseline' })(CssBaseline);
-  });
-
-  unwrapExports(CssBaseline_1);
-
-  var CssBaseline$1 = createCommonjsModule(function(module, exports) {
-    Object.defineProperty(exports, '__esModule', {
-      value: true
-    });
-
-    Object.defineProperty(exports, 'default', {
-      enumerable: true,
-      get: function get() {
-        return _interopRequireDefault(CssBaseline_1).default;
-      }
-    });
-
-    function _interopRequireDefault(obj) {
-      return obj && obj.__esModule ? obj : { default: obj };
-    }
-  });
-
-  var CssBaseline$2 = unwrapExports(CssBaseline$1);
-
   var compose_1 = createCommonjsModule(function(module, exports) {
     Object.defineProperty(exports, '__esModule', {
       value: true
@@ -58159,19 +57868,19 @@
 
   function connectAdvanced(
     /*
-	  selectorFactory is a func that is responsible for returning the selector function used to
-	  compute new props from state, props, and dispatch. For example:
-	     export default connectAdvanced((dispatch, options) => (state, props) => ({
-	      thing: state.things[props.thingId],
-	      saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
-	    }))(YourComponent)
-	   Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
-	  outside of their selector as an optimization. Options passed to connectAdvanced are passed to
-	  the selectorFactory, along with displayName and WrappedComponent, as the second argument.
-	   Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
-	  props. Do not use connectAdvanced directly without memoizing results between calls to your
-	  selector, otherwise the Connect component will re-render on every state or props change.
-	*/
+    selectorFactory is a func that is responsible for returning the selector function used to
+    compute new props from state, props, and dispatch. For example:
+       export default connectAdvanced((dispatch, options) => (state, props) => ({
+        thing: state.things[props.thingId],
+        saveThing: fields => dispatch(actionCreators.saveThing(props.thingId, fields)),
+      }))(YourComponent)
+     Access to dispatch is provided to the factory so selectorFactories can bind actionCreators
+    outside of their selector as an optimization. Options passed to connectAdvanced are passed to
+    the selectorFactory, along with displayName and WrappedComponent, as the second argument.
+     Note that selectorFactory is responsible for all caching/memoization of inbound and outbound
+    props. Do not use connectAdvanced directly without memoizing results between calls to your
+    selector, otherwise the Connect component will re-render on every state or props change.
+  */
     selectorFactory
   ) {
     var _contextTypes, _childContextTypes;
@@ -58458,7 +58167,7 @@
     }
   }
 
-  function shallowEqual$5(objA, objB) {
+  function shallowEqual$3(objA, objB) {
     if (is$2(objA, objB)) return true;
 
     if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
@@ -59053,21 +58762,21 @@
   }
 
   /*
-	  connect is a facade over connectAdvanced. It turns its args into a compatible
-	  selectorFactory, which has the signature:
+    connect is a facade over connectAdvanced. It turns its args into a compatible
+    selectorFactory, which has the signature:
 
-	    (dispatch, options) => (nextState, nextOwnProps) => nextFinalProps
-	  
-	  connect passes its args to connectAdvanced as options, which will in turn pass them to
-	  selectorFactory each time a Connect component instance is instantiated or hot reloaded.
+      (dispatch, options) => (nextState, nextOwnProps) => nextFinalProps
+    
+    connect passes its args to connectAdvanced as options, which will in turn pass them to
+    selectorFactory each time a Connect component instance is instantiated or hot reloaded.
 
-	  selectorFactory returns a final props selector from its mapStateToProps,
-	  mapStateToPropsFactories, mapDispatchToProps, mapDispatchToPropsFactories, mergeProps,
-	  mergePropsFactories, and pure args.
+    selectorFactory returns a final props selector from its mapStateToProps,
+    mapStateToPropsFactories, mapDispatchToProps, mapDispatchToPropsFactories, mergeProps,
+    mergePropsFactories, and pure args.
 
-	  The resulting final props selector is called by the Connect component instance whenever
-	  it receives new props or store state.
-	 */
+    The resulting final props selector is called by the Connect component instance whenever
+    it receives new props or store state.
+   */
 
   function match(arg, factories, name) {
     for (var i = factories.length - 1; i >= 0; i--) {
@@ -59123,13 +58832,13 @@
         areStatesEqual = _ref2$areStatesEqual === undefined ? strictEqual : _ref2$areStatesEqual,
         _ref2$areOwnPropsEqua = _ref2.areOwnPropsEqual,
         areOwnPropsEqual =
-          _ref2$areOwnPropsEqua === undefined ? shallowEqual$5 : _ref2$areOwnPropsEqua,
+          _ref2$areOwnPropsEqua === undefined ? shallowEqual$3 : _ref2$areOwnPropsEqua,
         _ref2$areStatePropsEq = _ref2.areStatePropsEqual,
         areStatePropsEqual =
-          _ref2$areStatePropsEq === undefined ? shallowEqual$5 : _ref2$areStatePropsEq,
+          _ref2$areStatePropsEq === undefined ? shallowEqual$3 : _ref2$areStatePropsEq,
         _ref2$areMergedPropsE = _ref2.areMergedPropsEqual,
         areMergedPropsEqual =
-          _ref2$areMergedPropsE === undefined ? shallowEqual$5 : _ref2$areMergedPropsE,
+          _ref2$areMergedPropsE === undefined ? shallowEqual$3 : _ref2$areMergedPropsE,
         extraOptions = _objectWithoutProperties$3(_ref2, [
           'pure',
           'areStatesEqual',
@@ -59179,6 +58888,640 @@
 
   var connect = createConnect();
 
+  const styles$3 = {
+    children: {
+      overflow: 'auto',
+      height: 'calc(100% - 64px)'
+    },
+    flex: {
+      marginLeft: 4,
+      flex: 1
+    },
+    textLogo: {
+      height: 18
+    },
+    version: {
+      margin: 2,
+      paddingTop: 7
+    }
+  };
+
+  const AppLayout = ({ classes, children, version }) =>
+    react.createElement(
+      react_5,
+      null,
+      react.createElement(
+        AppBar$2,
+        { color: 'inherit', position: 'sticky' },
+        react.createElement(
+          Toolbar$2,
+          null,
+          react.createElement('img', { className: classes.textLogo, src: 'assets/text_logo.png' }),
+          react.createElement(
+            Typography$2,
+            { className: classes.version, variant: 'subheading' },
+            'v',
+            version
+          )
+        )
+      ),
+      react.createElement('div', { className: classes.children }, children)
+    );
+
+  AppLayout.propTypes = {
+    classes: propTypes.object.isRequired,
+    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+    version: propTypes.string.isRequired
+  };
+
+  const mapStateToProps = ({ utilities: { version } }) => {
+    return {
+      version
+    };
+  };
+
+  const enhance = compose$1(styles_3(styles$3), connect(mapStateToProps))(AppLayout);
+
+  var setStatic_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+    var setStatic = function setStatic(key, value) {
+      return function(BaseComponent) {
+        /* eslint-disable no-param-reassign */
+        BaseComponent[key] = value;
+        /* eslint-enable no-param-reassign */
+        return BaseComponent;
+      };
+    };
+
+    exports.default = setStatic;
+  });
+
+  unwrapExports(setStatic_1$1);
+
+  var setDisplayName_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _setStatic2 = _interopRequireDefault(setStatic_1$1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    var setDisplayName = function setDisplayName(displayName) {
+      return (0, _setStatic2.default)('displayName', displayName);
+    };
+
+    exports.default = setDisplayName;
+  });
+
+  unwrapExports(setDisplayName_1$1);
+
+  var getDisplayName_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+    var getDisplayName = function getDisplayName(Component) {
+      if (typeof Component === 'string') {
+        return Component;
+      }
+
+      if (!Component) {
+        return undefined;
+      }
+
+      return Component.displayName || Component.name || 'Component';
+    };
+
+    exports.default = getDisplayName;
+  });
+
+  unwrapExports(getDisplayName_1$1);
+
+  var wrapDisplayName_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _getDisplayName2 = _interopRequireDefault(getDisplayName_1$1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    var wrapDisplayName = function wrapDisplayName(BaseComponent, hocName) {
+      return hocName + '(' + (0, _getDisplayName2.default)(BaseComponent) + ')';
+    };
+
+    exports.default = wrapDisplayName;
+  });
+
+  unwrapExports(wrapDisplayName_1$1);
+
+  var shouldUpdate_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _setDisplayName2 = _interopRequireDefault(setDisplayName_1$1);
+
+    var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1$1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+      if (!(instance instanceof Constructor)) {
+        throw new TypeError('Cannot call a class as a function');
+      }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+      if (!self) {
+        throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }
+      return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+      if (typeof superClass !== 'function' && superClass !== null) {
+        throw new TypeError(
+          'Super expression must either be null or a function, not ' + typeof superClass
+        );
+      }
+      subClass.prototype = Object.create(superClass && superClass.prototype, {
+        constructor: { value: subClass, enumerable: false, writable: true, configurable: true }
+      });
+      if (superClass)
+        Object.setPrototypeOf
+          ? Object.setPrototypeOf(subClass, superClass)
+          : (subClass.__proto__ = superClass);
+    }
+
+    var shouldUpdate = function shouldUpdate(test) {
+      return function(BaseComponent) {
+        var factory = (0, react.createFactory)(BaseComponent);
+
+        var ShouldUpdate = (function(_Component) {
+          _inherits(ShouldUpdate, _Component);
+
+          function ShouldUpdate() {
+            _classCallCheck(this, ShouldUpdate);
+
+            return _possibleConstructorReturn(this, _Component.apply(this, arguments));
+          }
+
+          ShouldUpdate.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps) {
+            return test(this.props, nextProps);
+          };
+
+          ShouldUpdate.prototype.render = function render() {
+            return factory(this.props);
+          };
+
+          return ShouldUpdate;
+        })(react.Component);
+
+        {
+          return (0, _setDisplayName2.default)(
+            (0, _wrapDisplayName2.default)(BaseComponent, 'shouldUpdate')
+          )(ShouldUpdate);
+        }
+        return ShouldUpdate;
+      };
+    };
+
+    exports.default = shouldUpdate;
+  });
+
+  unwrapExports(shouldUpdate_1$1);
+
+  var shallowEqual$4 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = _shallowEqual2.default;
+  });
+
+  unwrapExports(shallowEqual$4);
+
+  var pure_1$1 = createCommonjsModule(function(module, exports) {
+    exports.__esModule = true;
+
+    var _shouldUpdate2 = _interopRequireDefault(shouldUpdate_1$1);
+
+    var _shallowEqual2 = _interopRequireDefault(shallowEqual$4);
+
+    var _setDisplayName2 = _interopRequireDefault(setDisplayName_1$1);
+
+    var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1$1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    var pure = function pure(BaseComponent) {
+      var hoc = (0, _shouldUpdate2.default)(function(props, nextProps) {
+        return !(0, _shallowEqual2.default)(props, nextProps);
+      });
+
+      {
+        return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'pure'))(
+          hoc(BaseComponent)
+        );
+      }
+
+      return hoc(BaseComponent);
+    };
+
+    exports.default = pure;
+  });
+
+  unwrapExports(pure_1$1);
+
+  var createSvgIcon_1 = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _pure2 = _interopRequireDefault(pure_1$1);
+
+    var _SvgIcon2 = _interopRequireDefault(SvgIcon$1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    var SvgIconCustom =
+      (typeof commonjsGlobal !== 'undefined' && commonjsGlobal.__MUI_SvgIcon__) ||
+      _SvgIcon2.default;
+
+    function createSvgIcon(path, displayName) {
+      var Icon = function Icon(props) {
+        return _react2.default.createElement(SvgIconCustom, props, path);
+      };
+
+      Icon.displayName = displayName;
+      Icon = (0, _pure2.default)(Icon);
+      Icon.muiName = 'SvgIcon';
+
+      return Icon;
+    }
+    exports.default = createSvgIcon;
+  });
+
+  unwrapExports(createSvgIcon_1);
+
+  var Assessment = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d:
+            'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z'
+        })
+      ),
+      'Assessment'
+    );
+  });
+
+  var AssessmentIcon = unwrapExports(Assessment);
+
+  var Close = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d:
+            'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'
+        })
+      ),
+      'Close'
+    );
+  });
+
+  var CloseIcon = unwrapExports(Close);
+
+  var Done = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d: 'M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z'
+        })
+      ),
+      'Done'
+    );
+  });
+
+  var DoneIcon = unwrapExports(Done);
+
+  var _Error = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d:
+            'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'
+        })
+      ),
+      'Error'
+    );
+  });
+
+  var ErrorIcon = unwrapExports(_Error);
+
+  var Help = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d:
+            'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z'
+        })
+      ),
+      'Help'
+    );
+  });
+
+  var HelpIcon = unwrapExports(Help);
+
+  var Settings = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _createSvgIcon2 = _interopRequireDefault(createSvgIcon_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    exports.default = (0, _createSvgIcon2.default)(
+      _react2.default.createElement(
+        'g',
+        null,
+        _react2.default.createElement('path', {
+          d:
+            'M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z'
+        })
+      ),
+      'Settings'
+    );
+  });
+
+  var SettingsIcon = unwrapExports(Settings);
+
+  const styles$4 = {
+    root: {
+      textAlign: 'center',
+      '& :last-child': {
+        paddingBottom: 8
+      }
+    },
+    header: {
+      padding: '8 16 0 16'
+    },
+    content: {
+      padding: '0 16 0 16'
+    }
+  };
+
+  const CardLayout = ({ classes, className, helperText, children, title }) =>
+    react.createElement(
+      Card$2,
+      { className: classnames(classes.root, className) },
+      react.createElement(Card_3, {
+        action:
+          helperText &&
+          react.createElement(
+            InfoButton,
+            {
+              icon: true,
+              popover: react.createElement(Typography$2, null, helperText)
+            },
+            react.createElement(HelpIcon, null)
+          ),
+        className: classes.header,
+        subheader: title
+      }),
+      react.createElement(Card_2$1, { className: classes.content }, children)
+    );
+
+  CardLayout.propTypes = {
+    helperText: propTypes.string,
+    classes: propTypes.object.isRequired,
+    className: propTypes.string,
+    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+    title: propTypes.string
+  };
+
+  const enhance$1 = styles_3(styles$4)(CardLayout);
+
+  const styles$5 = {
+    wrapper: {
+      margin: 20
+    }
+  };
+
+  const PageLayout = ({ classes, children }) =>
+    react.createElement('div', { className: classes.wrapper }, children);
+
+  PageLayout.propTypes = {
+    classes: propTypes.object.isRequired,
+    children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
+  };
+
+  const enhance$2 = styles_3(styles$5)(PageLayout);
+
+  var CssBaseline_1 = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$1);
+
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
+
+    var _createClass3 = _interopRequireDefault(createClass$1);
+
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
+
+    var _inherits3 = _interopRequireDefault(inherits$1);
+
+    var _react2 = _interopRequireDefault(react);
+
+    var _propTypes2 = _interopRequireDefault(propTypes);
+
+    var _exactProp2 = _interopRequireDefault(exactProp_1);
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+
+    var styles$$1 = function styles$$1(theme) {
+      return {
+        '@global': {
+          html: {
+            WebkitFontSmoothing: 'antialiased', // Antialiasing.
+            MozOsxFontSmoothing: 'grayscale', // Antialiasing.
+            // Change from `box-sizing: content-box` so that `width`
+            // is not affected by `padding` or `border`.
+            boxSizing: 'border-box'
+          },
+          '*, *::before, *::after': {
+            boxSizing: 'inherit'
+          },
+          body: {
+            margin: 0, // Remove the margin in all browsers.
+            backgroundColor: theme.palette.background.default,
+            '@media print': {
+              // Save printer ink.
+              backgroundColor: theme.palette.common.white
+            }
+          }
+        }
+      };
+    };
+
+    /**
+     * Kickstart an elegant, consistent, and simple baseline to build upon.
+     */
+
+    var CssBaseline = (function(_React$Component) {
+      (0, _inherits3.default)(CssBaseline, _React$Component);
+
+      function CssBaseline() {
+        (0, _classCallCheck3.default)(this, CssBaseline);
+        return (0, _possibleConstructorReturn3.default)(
+          this,
+          (CssBaseline.__proto__ || (0, _getPrototypeOf2.default)(CssBaseline)).apply(
+            this,
+            arguments
+          )
+        );
+      }
+
+      (0, _createClass3.default)(CssBaseline, [
+        {
+          key: 'render',
+          value: function render() {
+            return this.props.children;
+          }
+        }
+      ]);
+      return CssBaseline;
+    })(_react2.default.Component);
+
+    CssBaseline.propTypes = {
+      /**
+       * You can only provide a single element with react@15, a node with react@16.
+       */
+      children: _propTypes2.default.node,
+      /**
+       * @ignore
+       */
+      classes: _propTypes2.default.object.isRequired
+    };
+
+    CssBaseline.propTypes = (0, _exactProp2.default)(CssBaseline.propTypes, 'CssBaseline');
+
+    CssBaseline.defaultProps = {
+      children: null
+    };
+
+    exports.default = (0, styles.withStyles)(styles$$1, { name: 'MuiCssBaseline' })(CssBaseline);
+  });
+
+  unwrapExports(CssBaseline_1);
+
+  var CssBaseline$1 = createCommonjsModule(function(module, exports) {
+    Object.defineProperty(exports, '__esModule', {
+      value: true
+    });
+
+    Object.defineProperty(exports, 'default', {
+      enumerable: true,
+      get: function get() {
+        return _interopRequireDefault(CssBaseline_1).default;
+      }
+    });
+
+    function _interopRequireDefault(obj) {
+      return obj && obj.__esModule ? obj : { default: obj };
+    }
+  });
+
+  var CssBaseline$2 = unwrapExports(CssBaseline$1);
+
   const styles$6 = {
     load: {
       fontSize: '1.5rem'
@@ -59210,14 +59553,14 @@
     workerStats: propTypes.object.isRequired
   };
 
-  const mapStateToProps = ({ mining: { selectedMinerIdentifier, miners } }) => {
+  const mapStateToProps$1 = ({ mining: { selectedMinerIdentifier, miners } }) => {
     return {
       miner: getMiner(selectedMinerIdentifier),
       workerStats: miners[selectedMinerIdentifier].workerStats
     };
   };
 
-  const enhance$3 = compose$1(styles_3(styles$6), connect(mapStateToProps))(BalanceCard);
+  const enhance$3 = compose$1(styles_3(styles$6), connect(mapStateToProps$1))(BalanceCard);
 
   const styles$7 = {
     load: {
@@ -59248,7 +59591,7 @@
     totalLoad: propTypes.number.isRequired
   };
 
-  const mapStateToProps$1 = ({ hardwareInfo: { Cpus } }) => {
+  const mapStateToProps$2 = ({ hardwareInfo: { Cpus } }) => {
     if (!Cpus.length) return { totalLoad: 0 };
     const firstCpu = Cpus[0];
     const firstCpuLoad = firstCpu.Load.find(load => load.Name === 'CPU Total');
@@ -59259,7 +59602,7 @@
     };
   };
 
-  const enhance$4 = compose$1(styles_3(styles$7), connect(mapStateToProps$1))(CpusCard);
+  const enhance$4 = compose$1(styles_3(styles$7), connect(mapStateToProps$2))(CpusCard);
 
   const styles$8 = {
     load: {
@@ -59290,7 +59633,7 @@
     totalLoad: propTypes.number.isRequired
   };
 
-  const mapStateToProps$2 = ({
+  const mapStateToProps$3 = ({
     hardwareInfo: {
       Gpus: { Gpus }
     }
@@ -59305,7 +59648,7 @@
     };
   };
 
-  const enhance$5 = compose$1(styles_3(styles$8), connect(mapStateToProps$2))(GpusCard);
+  const enhance$5 = compose$1(styles_3(styles$8), connect(mapStateToProps$3))(GpusCard);
 
   const styles$9 = {
     load: {
@@ -59336,13 +59679,13 @@
     hashRate: propTypes.number.isRequired
   };
 
-  const mapStateToProps$3 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
+  const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
     return {
       hashRate: activeMiners[selectedMinerIdentifier].currentSpeed
     };
   };
 
-  const enhance$6 = compose$1(styles_3(styles$9), connect(mapStateToProps$3))(HashRateCard);
+  const enhance$6 = compose$1(styles_3(styles$9), connect(mapStateToProps$4))(HashRateCard);
 
   const styles$10 = {
     container: {
@@ -59382,295 +59725,6 @@
 
   const enhance$7 = styles_3(styles$10)(ActionButton);
 
-  const closeDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: CLOSE_DIALOG
-      });
-    };
-  };
-
-  const openCryptoDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_CRYPTO_DIALOG
-      });
-    };
-  };
-
-  const openSettingsDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_SETTINGS_DIALOG
-      });
-    };
-  };
-
-  const openSupportDialog = () => {
-    return dispatch => {
-      dispatch({
-        type: OPEN_SUPPORT_DIALOG
-      });
-    };
-  };
-
-  const interval = 1000;
-
-  const requestHardwareInfo = () => {
-    console.log('request hardware info');
-    overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
-      console.log(reason);
-      if (reason === 'Permissions Required') {
-        overwolf.benchmarking.requestPermissions(({ status }) => {
-          if (status === 'success') {
-            requestHardwareInfo();
-          }
-        });
-      }
-    });
-  };
-
-  const addHardwareInfoListener = listener => {
-    overwolf.benchmarking.onHardwareInfoReady.addListener(listener);
-    requestHardwareInfo();
-  };
-
-  const trackHardwareInfo = () => {
-    return dispatch => {
-      const hardwareInfoListener = hardwareInfo => {
-        dispatch({
-          type: RECEIVE_HARDWARE_INFO,
-          data: hardwareInfo
-        });
-      };
-
-      addHardwareInfoListener(hardwareInfoListener);
-    };
-  };
-
-  const callOverwolfWithPromise = (method, ...params) => {
-    return new Promise((resolve, reject) => {
-      const handleResult = result => {
-        if (result.status === 'success') return resolve(result);
-        return reject(result);
-      };
-
-      console.log(method, params);
-      if (params) {
-        method(...params, handleResult);
-      } else {
-        method(handleResult);
-      }
-    });
-  };
-
-  let processManager = null;
-  const getProcessManagerPlugin = () => {
-    return new Promise(async resolve => {
-      if (processManager) return resolve(processManager);
-      const result = await callOverwolfWithPromise(
-        overwolf.extensions.current.getExtraObject,
-        'process-manager-plugin'
-      );
-      processManager = result.object;
-      resolve(result.object);
-    });
-  };
-
-  let simpleIoPlugin;
-  const getSimpleIoPlugin = () => {
-    return new Promise(async resolve => {
-      if (simpleIoPlugin) return resolve(simpleIoPlugin);
-      const result = await callOverwolfWithPromise(
-        overwolf.extensions.current.getExtraObject,
-        'simple-io-plugin'
-      );
-      simpleIoPlugin = result.object;
-      resolve(result.object);
-    });
-  };
-
-  /**
-   * Checks if `value` is `null` or `undefined`.
-   *
-   * @static
-   * @memberOf _
-   * @since 4.0.0
-   * @category Lang
-   * @param {*} value The value to check.
-   * @returns {boolean} Returns `true` if `value` is nullish, else `false`.
-   * @example
-   *
-   * _.isNil(null);
-   * // => true
-   *
-   * _.isNil(void 0);
-   * // => true
-   *
-   * _.isNil(NaN);
-   * // => false
-   */
-  function isNil(value) {
-    return value == null;
-  }
-
-  var isNil_1 = isNil;
-
-  const setMiningAddress = (minerIdentifier, address) => {
-    return dispatch => {
-      dispatch({
-        type: SET_MINING_ADDRESS,
-        data: { address, minerIdentifier }
-      });
-
-      const miner = getMiner(minerIdentifier);
-      const validAddress = miner.isValidAddress(address);
-
-      if (validAddress);
-      else {
-        dispatch({
-          type: RECEIVE_WORKER_STATS,
-          data: {
-            minerIdentifier,
-            workerStats: {}
-          }
-        });
-      }
-    };
-  };
-
-  const selectMiner = minerIdentifier => {
-    return dispatch => {
-      dispatch({
-        type: SELECT_MINER,
-        data: minerIdentifier
-      });
-      dispatch(fetchWorkerStats(minerIdentifier));
-    };
-  };
-
-  const fetchWorkerStats = minerIdentifier => {
-    return (dispatch, getState) => {
-      const {
-        mining: { miners }
-      } = getState();
-      const { address } = miners[minerIdentifier];
-      if (!address) return;
-
-      /*stats
-	      .fetchWorkerStats({ minerId: minerGroup, workerId })
-	      .catch(error => {
-	        dispatch({
-	          type: SET_MINING_ERROR_MESSAGE,
-	          data: {
-	            minerIdentifier,
-	            errorMsg: error.message
-	          }
-	        });
-	      })
-	      .then(response => {
-	        if (response) {
-	          dispatch({
-	            type: RECEIVE_WORKER_STATS,
-	            data: {
-	              minerIdentifier,
-	              workerStats: response
-	            }
-	          });
-	        }
-	      });*/
-    };
-  };
-
-  const handleDataByIdenfier = {};
-  let sendTextInterval = null;
-  const startMining = minerIdentifier => {
-    return async (dispatch, getState) => {
-      const {
-        mining: { miners, selectedMinerIdentifier }
-      } = getState();
-      const address = miners[selectedMinerIdentifier].address || 'default';
-      if (handleDataByIdenfier[minerIdentifier]) return;
-      const processManager = await getProcessManagerPlugin();
-      const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
-
-      dispatch({
-        type: START_MINING,
-        data: { minerIdentifier }
-      });
-
-      handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
-        const { connecting, errorMsg, speed } = parser(error || data);
-
-        if (connecting) {
-          dispatch({
-            type: CONNECTING_POOL,
-            data: {
-              minerIdentifier
-            }
-          });
-        } else if (!isNil_1(speed)) {
-          dispatch({
-            type: SET_MINING_SPEED,
-            data: {
-              minerIdentifier,
-              speed
-            }
-          });
-        } else if (!isNil_1(errorMsg)) {
-          dispatch({
-            type: SET_MINING_ERROR_MESSAGE,
-            data: {
-              minerIdentifier,
-              errorMsg
-            }
-          });
-        }
-      };
-      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
-
-      processManager.launchProcess(
-        path,
-        args(address),
-        environmentVariables(),
-        true,
-        ({ data }) => {
-          console.info(`%cStart mining ${data} with ${args(address)}`, 'color: blue');
-          dispatch({
-            type: SET_PROCESS_ID,
-            data: {
-              minerIdentifier,
-              processId: data
-            }
-          });
-        }
-      );
-    };
-  };
-
-  const stopMining = minerIdentifier => {
-    return async (dispatch, getState) => {
-      const processManager = await getProcessManagerPlugin();
-      const { activeMiners } = getState();
-
-      dispatch({
-        type: STOP_MINING,
-        data: { minerIdentifier }
-      });
-      const processId = activeMiners[minerIdentifier].processId;
-      console.info(`%cStop mining ${processId}`, 'color: blue');
-      if (processId || handleDataByIdenfier[minerIdentifier]) {
-        if (sendTextInterval) {
-          clearInterval(sendTextInterval);
-          sendTextInterval = null;
-        }
-        processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
-        processManager.terminateProcess(processId);
-        delete handleDataByIdenfier[minerIdentifier];
-      }
-    };
-  };
-
   const styles$11 = {
     avatar: {
       width: 80,
@@ -59696,7 +59750,7 @@
     miner: propTypes.object.isRequired
   };
 
-  const mapStateToProps$4 = ({ mining: { selectedMinerIdentifier } }) => {
+  const mapStateToProps$5 = ({ mining: { selectedMinerIdentifier } }) => {
     return {
       miner: getMiner(selectedMinerIdentifier)
     };
@@ -59708,7 +59762,7 @@
     };
   };
 
-  const enhance$8 = compose$1(styles_3(styles$11), connect(mapStateToProps$4, mapDispatchToProps))(
+  const enhance$8 = compose$1(styles_3(styles$11), connect(mapStateToProps$5, mapDispatchToProps))(
     CryptoButton
   );
 
@@ -59770,7 +59824,7 @@
     minerIdentifier: propTypes.string.isRequired
   };
 
-  const mapStateToProps$5 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
+  const mapStateToProps$6 = ({ mining: { selectedMinerIdentifier }, activeMiners }) => {
     return {
       isMining: activeMiners[selectedMinerIdentifier].isMining,
       minerIdentifier: selectedMinerIdentifier
@@ -59786,7 +59840,7 @@
 
   const enhance$9 = compose$1(
     styles_3(styles$12),
-    connect(mapStateToProps$5, mapDispatchToProps$1)
+    connect(mapStateToProps$6, mapDispatchToProps$1)
   )(MiningButton);
 
   const styles$13 = {
@@ -59858,7 +59912,7 @@
     miner: propTypes.object.isRequired
   };
 
-  const mapStateToProps$6 = ({ mining: { miners, selectedMinerIdentifier } }) => {
+  const mapStateToProps$7 = ({ mining: { miners, selectedMinerIdentifier } }) => {
     const miner = getMiner(selectedMinerIdentifier);
     const address = miners[selectedMinerIdentifier].address;
     return {
@@ -59866,7 +59920,7 @@
       miner
     };
   };
-  const enhance$11 = compose$1(styles_3(styles$14), connect(mapStateToProps$6))(StatsButton);
+  const enhance$11 = compose$1(styles_3(styles$14), connect(mapStateToProps$7))(StatsButton);
 
   const styles$15 = {
     icon: {
@@ -60082,7 +60136,7 @@
     selectMiner: propTypes.func.isRequired
   };
 
-  const mapStateToProps$7 = ({
+  const mapStateToProps$8 = ({
     dialogs: { cryptoDialogOpen },
     mining: { miners, selectedMinerIdentifier },
     activeMiners
@@ -60110,7 +60164,7 @@
 
   const enhance$14 = compose$1(
     styles_3(styles$17),
-    connect(mapStateToProps$7, mapDispatchToProps$4)
+    connect(mapStateToProps$8, mapDispatchToProps$4)
   )(CryptoDialog);
 
   /**
@@ -60201,13 +60255,13 @@
     stopTrackingHardwareInfo: propTypes.func.isRequired
   };
 
-  const mapStateToProps$8 = ({ hardwareInfo }) => {
+  const mapStateToProps$9 = ({ hardwareInfo }) => {
     return {
       hardwareInfo
     };
   };
 
-  const enhance$15 = connect(mapStateToProps$8)(Hardware);
+  const enhance$15 = connect(mapStateToProps$9)(Hardware);
 
   class System extends react_1 {
     render() {
@@ -60262,7 +60316,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$9 = ({ dialogs: { settingsDialogOpen } }) => {
+  const mapStateToProps$10 = ({ dialogs: { settingsDialogOpen } }) => {
     return {
       open: settingsDialogOpen
     };
@@ -60276,7 +60330,7 @@
 
   const enhance$16 = compose$1(
     styles_3(styles$18),
-    connect(mapStateToProps$9, mapDispatchToProps$5)
+    connect(mapStateToProps$10, mapDispatchToProps$5)
   )(SettingsDialog);
 
   const Discord = () =>
@@ -60332,7 +60386,7 @@
     open: propTypes.bool.isRequired
   };
 
-  const mapStateToProps$10 = ({ dialogs: { supportDialogOpen } }) => {
+  const mapStateToProps$11 = ({ dialogs: { supportDialogOpen } }) => {
     return {
       open: supportDialogOpen
     };
@@ -60346,7 +60400,7 @@
 
   const enhance$17 = compose$1(
     styles_3(styles$19),
-    connect(mapStateToProps$10, mapDispatchToProps$6)
+    connect(mapStateToProps$11, mapDispatchToProps$6)
   )(SupportDialog);
 
   class Dialogs extends react_2 {
@@ -61766,7 +61820,7 @@
   var ReactGA = unwrapExports(reactGa);
 
   // These envs will be replaced by rollup
-  const APP_PATH = 'C:/RaccoonMiner/raccoon-miner/dist';
+  const APP_PATH = 'C:/RaccoonMiner/raccoon-miner/dist/dev';
   const LISTEN_TO_FILES = ['main.js'];
   const TRACKING_ID = 'UA-115959266-2';
 
@@ -61800,7 +61854,7 @@
   });
 
   initialize();
-  store.dispatch(trackHardwareInfo());
+  store.dispatch(fetchVersion(), trackHardwareInfo());
 
   const App = react.createElement(
     Provider,
