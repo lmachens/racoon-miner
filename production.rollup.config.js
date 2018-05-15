@@ -1,8 +1,8 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
-import minify from 'rollup-plugin-babel-minify';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import replace from 'rollup-plugin-replace';
+import uglify from 'rollup-plugin-uglify';
 
 export default [
   {
@@ -40,36 +40,43 @@ export default [
             'cloneElement',
             'isValidElement'
           ],
-          'node_modules/material-ui/styles/index.js': [
+          'node_modules/@material-ui/core/styles/index.js': [
             'MuiThemeProvider',
             'createMuiTheme',
-            'withStyles'
+            'withStyles',
+            'withTheme',
+            'createGenerateClassName',
+            'jssPreset'
           ],
-          'node_modules/material-ui/Card/index.js': ['CardActions', 'CardContent', 'CardHeader'],
-          'node_modules/material-ui/Dialog/index.js': [
+          'node_modules/@material-ui/core/Modal/index.js': ['ModalManager'],
+          'node_modules/@material-ui/core/Card/index.js': [
+            'CardActions',
+            'CardContent',
+            'CardHeader'
+          ],
+          'node_modules/@material-ui/core/Dialog/index.js': [
             'DialogActions',
             'DialogContent',
             'DialogContentText',
             'DialogTitle'
           ],
-          'node_modules/material-ui/Table/index.js': [
+          'node_modules/@material-ui/core/Table/index.js': [
             'TableBody',
             'TableRow',
             'TableCell',
             'TableHead'
           ],
-          'node_modules/material-ui/Form/index.js': ['FormControl', 'FormHelperText'],
-          'node_modules/material-ui/Input/index.js': ['InputLabel', 'InputAdornment'],
-          'node_modules/material-ui/Menu/index.js': ['MenuItem'],
-          'node_modules/material-ui/Progress/index.js': ['CircularProgress']
+          'node_modules/@material-ui/core/FormControl/index.js': ['FormControl'],
+          'node_modules/@material-ui/core/FormHelperText/index.js': ['FormHelperText'],
+          'node_modules/@material-ui/core/Input/index.js': ['InputLabel', 'InputAdornment'],
+          'node_modules/@material-ui/core/Menu/index.js': ['MenuItem'],
+          'node_modules/@material-ui/core/CircularProgress/index.js': ['CircularProgress']
         }
       }),
       babel({
         exclude: 'node_modules/**'
       }),
-      minify({
-        comments: false
-      })
+      uglify()
     ]
   }
 ];
