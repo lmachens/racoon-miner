@@ -1,4 +1,4 @@
-import ButtonBase from 'material-ui/ButtonBase';
+import ButtonBase from '@material-ui/core/ButtonBase';
 import PropTypes from 'prop-types';
 import React from 'react';
 

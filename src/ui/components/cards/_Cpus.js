@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { Typography } from '../generic';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   load: {

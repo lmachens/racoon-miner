@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { SettingsButton } from './_Settings';
 import { StatsButton } from './_Stats';
 import { SupportButton } from './_Support';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   center: {

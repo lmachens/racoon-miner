@@ -8,7 +8,7 @@ import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
 import { openCryptoDialog } from '../../../store/actions';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   avatar: {
@@ -22,7 +22,7 @@ class CryptoButton extends PureComponent {
     const { classes, openCryptoDialog, miner } = this.props;
 
     return (
-      <ActionButton onClick={openCryptoDialog} title={miner.name}>
+      <ActionButton onClick={openCryptoDialog} title="Wallet">
         <Avatar className={classes.avatar} src={miner.logo} />
       </ActionButton>
     );

@@ -6,7 +6,7 @@ import { Typography } from '../generic';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   load: {

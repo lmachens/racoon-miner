@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import { closeDialog } from '../../../store/actions';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   appBar: {

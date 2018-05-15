@@ -1,7 +1,7 @@
-import MUI_Popover from 'material-ui/Popover';
+import MUI_Popover from '@material-ui/core/Popover';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withStyles } from 'material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = theme => ({
   popoverPaper: {

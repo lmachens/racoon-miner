@@ -3,7 +3,7 @@ import { persistor, store } from '../../store';
 import { AppLayout } from '../../ui/layouts';
 import CssBaseline from 'material-ui/CssBaseline';
 import { MiningPage } from '../../ui/pages';
-import { MuiThemeProvider } from 'material-ui/styles';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import { PersistGate } from 'redux-persist/integration/react';
 import { Provider } from 'react-redux';
 import React from 'react';
