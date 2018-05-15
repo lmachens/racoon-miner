@@ -1,20 +1,12 @@
 {
   "presets": [
     [
-      "env",
+      "@babel/preset-env",
       {
-        "targets": {
-          "chrome": 65
-        },
         "modules": false
       }
     ],
-    ["react"]
+    ["@babel/preset-react"]
   ],
-  "env": {
-    "test": {
-      "presets": [["env"], "react"]
-    }
-  },
-  "plugins": ["external-helpers", "transform-class-properties", "transform-object-rest-spread"]
+  "plugins": ["@babel/plugin-proposal-class-properties"]
 }

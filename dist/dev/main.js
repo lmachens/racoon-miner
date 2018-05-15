@@ -778,7 +778,6 @@
       });
     };
   };
-
   const openCryptoDialog = () => {
     return dispatch => {
       dispatch({
@@ -786,7 +785,6 @@
       });
     };
   };
-
   const openSettingsDialog = () => {
     return dispatch => {
       dispatch({
@@ -794,7 +792,6 @@
       });
     };
   };
-
   const openSupportDialog = () => {
     return dispatch => {
       dispatch({
@@ -809,6 +806,7 @@
     console.log('request hardware info');
     overwolf.benchmarking.requestHardwareInfo(interval, ({ reason }) => {
       console.log(reason);
+
       if (reason === 'Permissions Required') {
         overwolf.benchmarking.requestPermissions(({ status }) => {
           if (status === 'success') {
@@ -840,24 +838,26 @@
   const SPEED_REGEX = 'SPEED_REGEX';
   const CONNECTION_FAILED_REGEX = 'CONNECTION_FAILED_REGEX';
   const CONNECTING = 'CONNECTING';
-
   const generateParser = regex => line => {
     const result = {
       timestamp: Date.now()
-    };
-    //console.info(line);
+    }; //console.info(line);
+
     if (regex.SPEED_REGEX) {
       const parsed = line.match(regex.SPEED_REGEX);
       if (parsed) result.speed = parseFloat(parsed[1]);
     }
+
     if (regex.CONNECTION_FAILED_REGEX) {
       const parsed = line.match(regex.CONNECTION_FAILED_REGEX);
       if (parsed) result.errorMsg = 'Connection failed';
     }
+
     if (regex.CONNECTING) {
       const parsed = line.match(regex.CONNECTING);
       if (parsed) result.connecting = true;
     }
+
     return result;
   };
 
@@ -2131,13 +2131,18 @@
     path: 'monero/xmr-stak.exe',
     args: address =>
       `--noUAC -i 0 -o pool.supportxmr.com:8080 -u ${address} --currency monero7 -p raccoon -r raccoon --amd amd.txt --cpu cpu.txt --config config.txt`,
-    environmentVariables: () => JSON.stringify({ XMRSTAK_NOWAIT: true }),
+    environmentVariables: () =>
+      JSON.stringify({
+        XMRSTAK_NOWAIT: true
+      }),
     links: {
       wallet: 'https://getmonero.org/',
       stats: () => 'https://supportxmr.com/#/dashboard',
       api: address => `https://supportxmr.com/api/miner/${address}/stats`
     },
-    apiParser: result => ({ unpaidBalance: (get_1(result, 'amtDue') || 0) / 1000000000000 }),
+    apiParser: result => ({
+      unpaidBalance: (get_1(result, 'amtDue') || 0) / 1000000000000
+    }),
     isValidAddress: address =>
       /^4[0-9AB][123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{93}$/i.test(address),
     addressHint: 'It should have 95 characters.',
@@ -2149,6 +2154,7 @@
     switch (minerIdentifier) {
       case ETHEREUM_MINER:
         return ethereum;
+
       case MONERO_MINER:
         return monero;
     }
@@ -2162,6 +2168,7 @@
       };
 
       console.log(method, params);
+
       if (params) {
         method(...params, handleResult);
       } else {
@@ -2233,12 +2240,13 @@
     return dispatch => {
       dispatch({
         type: SET_MINING_ADDRESS,
-        data: { address, minerIdentifier }
+        data: {
+          address,
+          minerIdentifier
+        }
       });
-
       const miner = getMiner(minerIdentifier);
       const validAddress = miner.isValidAddress(address);
-
       if (validAddress);
       else {
         dispatch({
@@ -2251,7 +2259,6 @@
       }
     };
   };
-
   const selectMiner = minerIdentifier => {
     return dispatch => {
       dispatch({
@@ -2261,7 +2268,6 @@
       dispatch(trackWorkerStats());
     };
   };
-
   const trackWorkerStats = () => {
     return dispatch => {
       dispatch(fetchWorkerStats());
@@ -2281,7 +2287,6 @@
         links: { api },
         apiParser
       } = getMiner(minerIdentifier);
-
       fetch(api(address))
         .then(response => response.json())
         .then(result => {
@@ -2317,10 +2322,11 @@
       if (handleDataByIdenfier[minerIdentifier]) return;
       const processManager = await getProcessManagerPlugin();
       const { parser, path, args, environmentVariables } = getMiner(minerIdentifier);
-
       dispatch({
         type: START_MINING,
-        data: { minerIdentifier }
+        data: {
+          minerIdentifier
+        }
       });
 
       handleDataByIdenfier[minerIdentifier] = async ({ error, data }) => {
@@ -2351,8 +2357,8 @@
           });
         }
       };
-      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
 
+      processManager.onDataReceivedEvent.addListener(handleDataByIdenfier[minerIdentifier]);
       processManager.launchProcess(
         path,
         args(address),
@@ -2371,23 +2377,25 @@
       );
     };
   };
-
   const stopMining = minerIdentifier => {
     return async (dispatch, getState) => {
       const processManager = await getProcessManagerPlugin();
       const { activeMiners } = getState();
-
       dispatch({
         type: STOP_MINING,
-        data: { minerIdentifier }
+        data: {
+          minerIdentifier
+        }
       });
       const processId = activeMiners[minerIdentifier].processId;
       console.info(`%cStop mining ${processId}`, 'color: blue');
+
       if (processId || handleDataByIdenfier[minerIdentifier]) {
         if (sendTextInterval) {
           clearInterval(sendTextInterval);
           sendTextInterval = null;
         }
+
         processManager.onDataReceivedEvent.removeListener(handleDataByIdenfier[minerIdentifier]);
         processManager.terminateProcess(processId);
         delete handleDataByIdenfier[minerIdentifier];
@@ -3117,34 +3125,6 @@
 
   var set_1 = set;
 
-  var _extends$5 =
-    Object.assign ||
-    function(target) {
-      for (var i = 1; i < arguments.length; i++) {
-        var source = arguments[i];
-
-        for (var key in source) {
-          if (Object.prototype.hasOwnProperty.call(source, key)) {
-            target[key] = source[key];
-          }
-        }
-      }
-
-      return target;
-    };
-
-  var objectWithoutProperties = function(obj, keys) {
-    var target = {};
-
-    for (var i in obj) {
-      if (keys.indexOf(i) >= 0) continue;
-      if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
-      target[i] = obj[i];
-    }
-
-    return target;
-  };
-
   const defaultMinerProps = {
     metrics: {
       fetching: false,
@@ -3156,43 +3136,56 @@
       unpaidBalance: 0
     }
   };
-
   const mining = (
     state = {
       selectedMinerIdentifier: MONERO_MINER,
       miners: {
-        [ETHEREUM_MINER]: _extends$5({}, defaultMinerProps, { address: ethereum.developerAddress }),
-        [MONERO_MINER]: _extends$5({}, defaultMinerProps, { address: monero.developerAddress })
+        [ETHEREUM_MINER]: {
+          ...defaultMinerProps,
+          address: ethereum.developerAddress
+        },
+        [MONERO_MINER]: {
+          ...defaultMinerProps,
+          address: monero.developerAddress
+        }
       }
     },
     { type, data }
   ) => {
-    const newState = _extends$5({}, state);
+    const newState = {
+      ...state
+    };
+
     switch (type) {
       case SET_MINING_ADDRESS:
         set_1(newState, `miners.${data.minerIdentifier}.address`, data.address);
         break;
+
       case SELECT_MINER:
         set_1(newState, `selectedMinerIdentifier`, data);
         break;
+
       case REQUEST_MINING_METRICS:
         set_1(newState, `miners.${data.minerIdentifier}.metrics.fetching`, true);
         set_1(newState, `miners.${data.minerIdentifier}.metrics.from`, data.from);
         set_1(newState, `miners.${data.minerIdentifier}.metrics.to`, data.to);
         break;
+
       case RECEIVE_MINING_METRICS:
         set_1(newState, `miners.${data.minerIdentifier}.metrics.fetching`, false);
         set_1(newState, `miners.${data.minerIdentifier}.metrics.data`, data.metrics.data);
         break;
+
       case RECEIVE_WORKER_STATS:
         set_1(newState, `miners.${data.minerIdentifier}.workerStats`, data.workerStats);
         break;
+
       default:
         return state;
     }
+
     return newState;
   };
-
   const defaultActiveMinersProps = {
     processId: null,
     isMining: false,
@@ -3200,44 +3193,56 @@
     errorMsg: null,
     connecting: false
   };
-
   const activeMiners = (
     state = {
-      [ETHEREUM_MINER]: _extends$5({}, defaultActiveMinersProps),
-      [MONERO_MINER]: _extends$5({}, defaultActiveMinersProps)
+      [ETHEREUM_MINER]: {
+        ...defaultActiveMinersProps
+      },
+      [MONERO_MINER]: {
+        ...defaultActiveMinersProps
+      }
     },
     { type, data }
   ) => {
-    const newState = _extends$5({}, state);
+    const newState = {
+      ...state
+    };
 
     switch (type) {
       case CONNECTING_POOL:
         set_1(newState, `${data.minerIdentifier}.connecting`, true);
         break;
+
       case SET_MINING_SPEED:
         set_1(newState, `${data.minerIdentifier}.currentSpeed`, data.speed);
         set_1(newState, `${data.minerIdentifier}.errorMsg`, null);
         set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
+
       case SET_MINING_ERROR_MESSAGE:
         set_1(newState, `${data.minerIdentifier}.errorMsg`, data.errorMsg);
         set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
+
       case SET_PROCESS_ID:
         set_1(newState, `${data.minerIdentifier}.processId`, data.processId);
         break;
+
       case START_MINING:
         set_1(newState, `${data.minerIdentifier}.isMining`, true);
         set_1(newState, `${data.minerIdentifier}.connecting`, true);
         break;
+
       case STOP_MINING:
         set_1(newState, `${data.minerIdentifier}.isMining`, false);
         set_1(newState, `${data.minerIdentifier}.currentSpeed`, 0);
         set_1(newState, `${data.minerIdentifier}.connecting`, false);
         break;
+
       default:
         return state;
     }
+
     return newState;
   };
 
@@ -3246,7 +3251,6 @@
     settingsDialogOpen: false,
     supportDialogOpen: false
   };
-
   const dialogs = (
     state = {
       cryptoDialogOpen: true,
@@ -3257,13 +3261,28 @@
   ) => {
     switch (type) {
       case CLOSE_DIALOG:
-        return _extends$5({}, closeAllState);
+        return {
+          ...closeAllState
+        };
+
       case OPEN_CRYPTO_DIALOG:
-        return _extends$5({}, closeAllState, { cryptoDialogOpen: true });
+        return {
+          ...closeAllState,
+          cryptoDialogOpen: true
+        };
+
       case OPEN_SETTINGS_DIALOG:
-        return _extends$5({}, closeAllState, { settingsDialogOpen: true });
+        return {
+          ...closeAllState,
+          settingsDialogOpen: true
+        };
+
       case OPEN_SUPPORT_DIALOG:
-        return _extends$5({}, closeAllState, { supportDialogOpen: true });
+        return {
+          ...closeAllState,
+          supportDialogOpen: true
+        };
+
       default:
         return state;
     }
@@ -3274,7 +3293,9 @@
       BatteriesInfo: [],
       Cpus: [],
       General: {},
-      Gpus: { Gpus: [] },
+      Gpus: {
+        Gpus: []
+      },
       Hdds: [],
       Mainboard: {},
       Memory: {},
@@ -3284,7 +3305,10 @@
   ) => {
     switch (type) {
       case RECEIVE_HARDWARE_INFO:
-        return _extends$5({}, data);
+        return {
+          ...data
+        };
+
       default:
         return state;
     }
@@ -3298,7 +3322,11 @@
   ) => {
     switch (type) {
       case RECEIVE_VERSION:
-        return _extends$5({}, state, { version: data });
+        return {
+          ...state,
+          version: data
+        };
+
       default:
         return state;
     }
@@ -3451,11 +3479,12 @@
     blacklist: ['activeMiners', 'hardwareInfo']
   };
   const persistedReducer = persistReducer(persistConfig, reducers);
-
   let createStoreWithMiddleware;
+
   {
     createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
   }
+
   const store = createStoreWithMiddleware(persistedReducer);
   const persistor = persistStore(store, null, () => {
     store.dispatch(fetchVersion());
@@ -3463,7 +3492,7 @@
     store.dispatch(trackWorkerStats());
   });
 
-  var interopRequireDefault$1 = createCommonjsModule(function(module) {
+  var interopRequireDefault = createCommonjsModule(function(module) {
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule
         ? obj
@@ -3475,7 +3504,7 @@
     module.exports = _interopRequireDefault;
   });
 
-  unwrapExports(interopRequireDefault$1);
+  unwrapExports(interopRequireDefault);
 
   var _global = createCommonjsModule(function(module) {
     // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
@@ -3916,15 +3945,15 @@
   _export(_export.S + _export.F * !_descriptors, 'Object', { defineProperty: _objectDp.f });
 
   var $Object = _core.Object;
-  var defineProperty$2 = function defineProperty(it, key, desc) {
+  var defineProperty$1 = function defineProperty(it, key, desc) {
     return $Object.defineProperty(it, key, desc);
   };
 
-  var defineProperty$3 = defineProperty$2;
+  var defineProperty$2 = defineProperty$1;
 
   function _defineProperty$1(obj, key, value) {
     if (key in obj) {
-      defineProperty$3(obj, key, {
+      defineProperty$2(obj, key, {
         value: value,
         enumerable: true,
         configurable: true,
@@ -3937,7 +3966,7 @@
     return obj;
   }
 
-  var defineProperty$4 = _defineProperty$1;
+  var defineProperty$3 = _defineProperty$1;
 
   var _redefine = _hide;
 
@@ -4042,11 +4071,11 @@
 
   var _library = true;
 
-  var defineProperty$5 = _objectDp.f;
+  var defineProperty$4 = _objectDp.f;
   var _wksDefine = function(name) {
     var $Symbol = _core.Symbol || (_core.Symbol = _library ? {} : _global.Symbol || {});
     if (name.charAt(0) != '_' && !(name in $Symbol))
-      defineProperty$5($Symbol, name, { value: _wksExt.f(name) });
+      defineProperty$4($Symbol, name, { value: _wksExt.f(name) });
   };
 
   // all enumerable object keys, includes symbols
@@ -4515,7 +4544,7 @@
     return target;
   }
 
-  var objectWithoutProperties$1 = _objectWithoutProperties$1;
+  var objectWithoutProperties = _objectWithoutProperties$1;
 
   /*
 	object-assign
@@ -7275,7 +7304,7 @@
 
   var getOwnPropertyDescriptor$1 = getOwnPropertyDescriptor;
 
-  var interopRequireWildcard$1 = createCommonjsModule(function(module) {
+  var interopRequireWildcard = createCommonjsModule(function(module) {
     function _interopRequireWildcard(obj) {
       if (obj && obj.__esModule) {
         return obj;
@@ -7286,12 +7315,12 @@
           for (var key in obj) {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
               var desc =
-                defineProperty$3 && getOwnPropertyDescriptor$1
+                defineProperty$2 && getOwnPropertyDescriptor$1
                   ? getOwnPropertyDescriptor$1(obj, key)
                   : {};
 
               if (desc.get || desc.set) {
-                defineProperty$3(newObj, key, desc);
+                defineProperty$2(newObj, key, desc);
               } else {
                 newObj[key] = obj[key];
               }
@@ -7307,7 +7336,7 @@
     module.exports = _interopRequireWildcard;
   });
 
-  unwrapExports(interopRequireWildcard$1);
+  unwrapExports(interopRequireWildcard);
 
   function _objectSpread(target) {
     for (var i = 1; i < arguments.length; i++) {
@@ -7324,7 +7353,7 @@
       }
 
       ownKeys.forEach(function(key) {
-        defineProperty$4(target, key, source[key]);
+        defineProperty$3(target, key, source[key]);
       });
     }
 
@@ -7367,7 +7396,7 @@
     }
   }
 
-  var classCallCheck$1 = _classCallCheck;
+  var classCallCheck = _classCallCheck;
 
   function _defineProperties(target, props) {
     for (var i = 0; i < props.length; i++) {
@@ -7376,7 +7405,7 @@
       descriptor.configurable = true;
       if ('value' in descriptor) descriptor.writable = true;
 
-      defineProperty$3(target, descriptor.key, descriptor);
+      defineProperty$2(target, descriptor.key, descriptor);
     }
   }
 
@@ -7386,7 +7415,7 @@
     return Constructor;
   }
 
-  var createClass$1 = _createClass;
+  var createClass = _createClass;
 
   // true  -> String#at
   // false -> String#codePointAt
@@ -7649,7 +7678,7 @@
     return assertThisInitialized(self);
   }
 
-  var possibleConstructorReturn$1 = _possibleConstructorReturn;
+  var possibleConstructorReturn = _possibleConstructorReturn;
 
   // Works with __proto__ only. Old v8 can't work with null proto objects.
   /* eslint-disable no-proto */
@@ -7713,7 +7742,7 @@
     if (superClass) setPrototypeOf$2(subClass, superClass);
   }
 
-  var inherits$1 = _inherits;
+  var inherits = _inherits;
 
   var _redefineAll = function(target, src, safe) {
     for (var key in src) {
@@ -9999,7 +10028,7 @@
 
   unwrapExports(createGenerateClassName);
 
-  var _typeof$4 =
+  var _typeof$3 =
     typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
       ? function(obj) {
           return typeof obj;
@@ -10014,8 +10043,8 @@
         };
 
   var isBrowser =
-    (typeof window === 'undefined' ? 'undefined' : _typeof$4(window)) === 'object' &&
-    (typeof document === 'undefined' ? 'undefined' : _typeof$4(document)) === 'object' &&
+    (typeof window === 'undefined' ? 'undefined' : _typeof$3(window)) === 'object' &&
+    (typeof document === 'undefined' ? 'undefined' : _typeof$3(document)) === 'object' &&
     document.nodeType === 9;
 
   var module$1 = /*#__PURE__*/ Object.freeze({
@@ -12817,17 +12846,17 @@
     });
     exports.default = void 0;
 
-    var _jssGlobal = interopRequireDefault$1(lib$1);
+    var _jssGlobal = interopRequireDefault(lib$1);
 
-    var _jssNested = interopRequireDefault$1(lib$2);
+    var _jssNested = interopRequireDefault(lib$2);
 
-    var _jssCamelCase = interopRequireDefault$1(lib$3);
+    var _jssCamelCase = interopRequireDefault(lib$3);
 
-    var _jssDefaultUnit = interopRequireDefault$1(lib$4);
+    var _jssDefaultUnit = interopRequireDefault(lib$4);
 
-    var _jssVendorPrefixer = interopRequireDefault$1(lib$6);
+    var _jssVendorPrefixer = interopRequireDefault(lib$6);
 
-    var _jssPropsSort = interopRequireDefault$1(lib$7);
+    var _jssPropsSort = interopRequireDefault(lib$7);
 
     // Subset of jss-preset-default with only the plugins the Material-UI
     // components are using.
@@ -12949,9 +12978,9 @@
     });
     exports.default = createTypography;
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _deepmerge$$1 = interopRequireDefault$1(_deepmerge);
+    var _deepmerge$$1 = interopRequireDefault(_deepmerge);
 
     // < 1kb payload overhead when lodash/merge is > 3kb.
     function round(value) {
@@ -13099,9 +13128,9 @@
     exports.default = createBreakpoints;
     exports.keys = void 0;
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
     // Sorted ASC by size. That's important.
     // It can't be configured as it's used statically for propTypes.
@@ -13321,7 +13350,7 @@
     exports.darken = darken;
     exports.lighten = lighten;
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
     //  weak
 
@@ -13595,23 +13624,23 @@
     exports.default = createPalette;
     exports.dark = exports.light = void 0;
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _deepmerge$$1 = interopRequireDefault$1(_deepmerge);
+    var _deepmerge$$1 = interopRequireDefault(_deepmerge);
 
-    var _indigo = interopRequireDefault$1(indigo_1);
+    var _indigo = interopRequireDefault(indigo_1);
 
-    var _pink = interopRequireDefault$1(pink_1);
+    var _pink = interopRequireDefault(pink_1);
 
-    var _grey = interopRequireDefault$1(grey_1);
+    var _grey = interopRequireDefault(grey_1);
 
-    var _red = interopRequireDefault$1(red_1);
+    var _red = interopRequireDefault(red_1);
 
-    var _common = interopRequireDefault$1(common_1);
+    var _common = interopRequireDefault(common_1);
 
     // < 1kb payload overhead when lodash/merge is > 3kb.
     var light = {
@@ -13826,9 +13855,9 @@
     });
     exports.default = createMixins;
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectSpread3 = interopRequireDefault$1(objectSpread);
+    var _objectSpread3 = interopRequireDefault(objectSpread);
 
     function createMixins(breakpoints, spacing, mixins) {
       var _toolbar;
@@ -13962,13 +13991,13 @@
     });
     exports.default = exports.isNumber = exports.isString = exports.formatMs = exports.duration = exports.easing = void 0;
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _isNan = interopRequireDefault$1(isNan$1);
+    var _isNan = interopRequireDefault(isNan$1);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
     /* eslint-disable no-param-reassign */
     // Follow https://material.google.com/motion/duration-easing.html#duration-easing-natural-easing-curves
@@ -14147,29 +14176,29 @@
     });
     exports.default = void 0;
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _deepmerge$$1 = interopRequireDefault$1(_deepmerge);
+    var _deepmerge$$1 = interopRequireDefault(_deepmerge);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _createTypography = interopRequireDefault$1(createTypography_1);
+    var _createTypography = interopRequireDefault(createTypography_1);
 
-    var _createBreakpoints = interopRequireDefault$1(createBreakpoints_1);
+    var _createBreakpoints = interopRequireDefault(createBreakpoints_1);
 
-    var _createPalette = interopRequireDefault$1(createPalette_1);
+    var _createPalette = interopRequireDefault(createPalette_1);
 
-    var _createMixins = interopRequireDefault$1(createMixins_1);
+    var _createMixins = interopRequireDefault(createMixins_1);
 
-    var _shadows = interopRequireDefault$1(shadows_1);
+    var _shadows = interopRequireDefault(shadows_1);
 
-    var _transitions = interopRequireDefault$1(transitions);
+    var _transitions = interopRequireDefault(transitions);
 
-    var _zIndex = interopRequireDefault$1(zIndex_1);
+    var _zIndex = interopRequireDefault(zIndex_1);
 
-    var _spacing = interopRequireDefault$1(spacing);
+    var _spacing = interopRequireDefault(spacing);
 
     // < 1kb payload overhead when lodash/merge is > 3kb.
     function createMuiTheme() {
@@ -14231,9 +14260,9 @@
     });
     exports.default = exports.CHANNEL = void 0;
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
     // Same value used by react-jss
     var CHANNEL = '__THEMING__';
@@ -14273,7 +14302,7 @@
     });
     exports.default = createGenerateClassName;
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
     // When new generator function is created, rule counter is reset.
     // We need to reset the rule counter for SSR for each request.
     //
@@ -14337,13 +14366,13 @@
     });
     exports.default = void 0;
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _deepmerge$$1 = interopRequireDefault$1(_deepmerge);
+    var _deepmerge$$1 = interopRequireDefault(_deepmerge);
 
     // < 1kb payload overhead when lodash/merge is > 3kb.
     // Support for the jss-expand plugin.
@@ -14419,57 +14448,57 @@
     });
     exports.default = exports.sheetsManager = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _map = interopRequireDefault$1(map$1);
+    var _map = interopRequireDefault(map$1);
 
-    var _minSafeInteger = interopRequireDefault$1(minSafeInteger$1);
+    var _minSafeInteger = interopRequireDefault(minSafeInteger$1);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _hoistNonReactStatics = interopRequireDefault$1(hoistNonReactStatics);
+    var _hoistNonReactStatics = interopRequireDefault(hoistNonReactStatics);
 
-    var _getDisplayName = interopRequireDefault$1(getDisplayName_1);
+    var _getDisplayName = interopRequireDefault(getDisplayName_1);
 
-    var _wrapDisplayName = interopRequireDefault$1(wrapDisplayName_1);
+    var _wrapDisplayName = interopRequireDefault(wrapDisplayName_1);
 
-    var _contextTypes = interopRequireDefault$1(contextTypes);
+    var _contextTypes = interopRequireDefault(contextTypes);
 
-    var ns$$1 = interopRequireWildcard$1(ns);
+    var ns$$1 = interopRequireWildcard(ns);
 
-    var _jssPreset = interopRequireDefault$1(jssPreset_1);
+    var _jssPreset = interopRequireDefault(jssPreset_1);
 
-    var _createMuiTheme = interopRequireDefault$1(createMuiTheme_1);
+    var _createMuiTheme = interopRequireDefault(createMuiTheme_1);
 
-    var _themeListener = interopRequireDefault$1(themeListener_1);
+    var _themeListener = interopRequireDefault(themeListener_1);
 
-    var _createGenerateClassName = interopRequireDefault$1(createGenerateClassName_1);
+    var _createGenerateClassName = interopRequireDefault(createGenerateClassName_1);
 
-    var _getStylesCreator = interopRequireDefault$1(getStylesCreator_1);
+    var _getStylesCreator = interopRequireDefault(getStylesCreator_1);
 
-    var _getThemeProps = interopRequireDefault$1(getThemeProps_1);
+    var _getThemeProps = interopRequireDefault(getThemeProps_1);
 
     // Default JSS instance.
     var jss = (0, lib.create)((0, _jssPreset.default)()); // Use a singleton or the provided one by the context.
@@ -14915,11 +14944,11 @@
     exports.find = find;
     exports.createChainedFunction = createChainedFunction;
 
-    var _typeof2 = interopRequireDefault$1(_typeof_1);
+    var _typeof2 = interopRequireDefault(_typeof_1);
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
     //  weak
     function capitalize(string) {
@@ -15016,23 +15045,23 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       var elevations = {};
@@ -15149,7 +15178,7 @@
       }
     });
 
-    var _Paper = interopRequireDefault$1(Paper_1);
+    var _Paper = interopRequireDefault(Paper_1);
   });
 
   unwrapExports(Paper$1);
@@ -15160,21 +15189,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Paper = interopRequireDefault$1(Paper$1);
+    var _Paper = interopRequireDefault(Paper$1);
 
     // @inheritedComponent Paper
     var styles = function styles(theme) {
@@ -15326,7 +15355,7 @@
       }
     });
 
-    var _AppBar = interopRequireDefault$1(AppBar_1);
+    var _AppBar = interopRequireDefault(AppBar_1);
   });
 
   var AppBar$2 = unwrapExports(AppBar$1);
@@ -15337,19 +15366,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -15544,7 +15573,7 @@
       }
     });
 
-    var _Avatar = interopRequireDefault$1(Avatar_1);
+    var _Avatar = interopRequireDefault(Avatar_1);
   });
 
   var Avatar$2 = unwrapExports(Avatar$1);
@@ -35716,7 +35745,7 @@
     });
     exports.default = void 0;
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
     var ownerWindow = function ownerWindow(node) {
       var fallback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : window;
@@ -35791,13 +35820,13 @@
     exports.detectFocusVisible = detectFocusVisible;
     exports.listenForFocusKeys = listenForFocusKeys;
 
-    var _keycode = interopRequireDefault$1(keycode);
+    var _keycode = interopRequireDefault(keycode);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _contains = interopRequireDefault$1(contains);
+    var _contains = interopRequireDefault(contains);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
     //  weak
     var internal = {
@@ -35971,7 +36000,7 @@
     return arrayWithoutHoles(arr) || iterableToArray(arr) || nonIterableSpread();
   }
 
-  var toConsumableArray$1 = _toConsumableArray$1;
+  var toConsumableArray = _toConsumableArray$1;
 
   var ChildMapping = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
@@ -37067,31 +37096,31 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _Transition = interopRequireDefault$1(Transition_1);
+    var _Transition = interopRequireDefault(Transition_1);
 
     /**
      * @ignore - internal component.
@@ -37272,37 +37301,37 @@
     });
     exports.default = exports.styles = exports.DELAY_RIPPLE = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _toConsumableArray2 = interopRequireDefault$1(toConsumableArray$1);
+    var _toConsumableArray2 = interopRequireDefault(toConsumableArray);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _TransitionGroup = interopRequireDefault$1(TransitionGroup_1);
+    var _TransitionGroup = interopRequireDefault(TransitionGroup_1);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Ripple = interopRequireDefault$1(Ripple_1);
+    var _Ripple = interopRequireDefault(Ripple_1);
 
     var DURATION = 550;
     var DELAY_RIPPLE = 80;
@@ -37757,41 +37786,41 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _keycode = interopRequireDefault$1(keycode);
+    var _keycode = interopRequireDefault(keycode);
 
-    var _ownerWindow = interopRequireDefault$1(ownerWindow_1);
+    var _ownerWindow = interopRequireDefault(ownerWindow_1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _TouchRipple = interopRequireDefault$1(TouchRipple_1);
+    var _TouchRipple = interopRequireDefault(TouchRipple_1);
 
-    var _createRippleHandler = interopRequireDefault$1(createRippleHandler_1);
+    var _createRippleHandler = interopRequireDefault(createRippleHandler_1);
 
     var styles = {
       root: {
@@ -38527,7 +38556,7 @@
       }
     });
 
-    var _ButtonBase = interopRequireDefault$1(ButtonBase_1);
+    var _ButtonBase = interopRequireDefault(ButtonBase_1);
   });
 
   var ButtonBase$2 = unwrapExports(ButtonBase$1);
@@ -38538,23 +38567,23 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ButtonBase = interopRequireDefault$1(ButtonBase$1);
+    var _ButtonBase = interopRequireDefault(ButtonBase$1);
 
     // @inheritedComponent ButtonBase
     var styles = function styles(theme) {
@@ -38922,7 +38951,7 @@
       }
     });
 
-    var _Button = interopRequireDefault$1(Button_1);
+    var _Button = interopRequireDefault(Button_1);
   });
 
   var Button$2 = unwrapExports(Button$1);
@@ -38933,19 +38962,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _Paper = interopRequireDefault$1(Paper$1);
+    var _Paper = interopRequireDefault(Paper$1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     // @inheritedComponent Paper
     var styles = {
@@ -39014,7 +39043,7 @@
       }
     });
 
-    var _Card = interopRequireDefault$1(Card_1);
+    var _Card = interopRequireDefault(Card_1);
   });
 
   var Card$2 = unwrapExports(Card$1);
@@ -39031,9 +39060,9 @@
     exports.isMuiElement = isMuiElement;
     exports.isMuiComponent = isMuiComponent;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
     /* eslint-disable import/prefer-default-export */
     function cloneElementWithClassName(child, className) {
@@ -39071,19 +39100,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     // So we don't have any override priority issue.
     var styles = function styles(theme) {
@@ -39180,7 +39209,7 @@
       }
     });
 
-    var _CardActions = interopRequireDefault$1(CardActions_1);
+    var _CardActions = interopRequireDefault(CardActions_1);
   });
 
   unwrapExports(CardActions$1);
@@ -39191,17 +39220,17 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -39280,7 +39309,7 @@
       }
     });
 
-    var _CardContent = interopRequireDefault$1(CardContent_1);
+    var _CardContent = interopRequireDefault(CardContent_1);
   });
 
   var CardContent$2 = unwrapExports(CardContent$1);
@@ -39291,19 +39320,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -39543,7 +39572,7 @@
       }
     });
 
-    var _Typography = interopRequireDefault$1(Typography_1);
+    var _Typography = interopRequireDefault(Typography_1);
   });
 
   var Typography$2 = unwrapExports(Typography$1);
@@ -39554,19 +39583,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Typography = interopRequireDefault$1(Typography$1);
+    var _Typography = interopRequireDefault(Typography$1);
 
     var styles = function styles(theme) {
       return {
@@ -39729,7 +39758,7 @@
       }
     });
 
-    var _CardHeader = interopRequireDefault$1(CardHeader_1);
+    var _CardHeader = interopRequireDefault(CardHeader_1);
   });
 
   var CardHeader$2 = unwrapExports(CardHeader$1);
@@ -39769,21 +39798,21 @@
     });
     exports.default = void 0;
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
     /**
      * Helper component to allow attaching a ref to a
@@ -39847,7 +39876,7 @@
       }
     });
 
-    var _RootRef = interopRequireDefault$1(RootRef_1);
+    var _RootRef = interopRequireDefault(RootRef_1);
   });
 
   unwrapExports(RootRef$1);
@@ -39859,11 +39888,11 @@
     exports.default = exactProp;
     exports.specialProperty = void 0;
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _objectSpread3 = interopRequireDefault$1(objectSpread);
+    var _objectSpread3 = interopRequireDefault(objectSpread);
 
     // This module is based on https://github.com/airbnb/prop-types-exact repository.
     // However, in order to reduce the number of dependencies and to remove some extra safe checks
@@ -39903,27 +39932,27 @@
     });
     exports.default = void 0;
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _exactProp = interopRequireDefault$1(exactProp_1);
+    var _exactProp = interopRequireDefault(exactProp_1);
 
     function getContainer(container, defaultContainer) {
       container = typeof container === 'function' ? container() : container;
@@ -40059,7 +40088,7 @@
       }
     });
 
-    var _Portal = interopRequireDefault$1(Portal_1);
+    var _Portal = interopRequireDefault(Portal_1);
   });
 
   unwrapExports(Portal$1);
@@ -40484,11 +40513,11 @@
     exports.isBody = isBody;
     exports.default = isOverflowing;
 
-    var _isWindow = interopRequireDefault$1(isWindow);
+    var _isWindow = interopRequireDefault(isWindow);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _ownerWindow = interopRequireDefault$1(ownerWindow_1);
+    var _ownerWindow = interopRequireDefault(ownerWindow_1);
 
     function isBody(node) {
       return node && node.tagName.toLowerCase() === 'body';
@@ -40572,19 +40601,19 @@
     });
     exports.default = void 0;
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _keys = interopRequireDefault$1(keys$1);
+    var _keys = interopRequireDefault(keys$1);
 
-    var _style = interopRequireDefault$1(style_1);
+    var _style = interopRequireDefault(style_1);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _scrollbarSize = interopRequireDefault$1(scrollbarSize);
+    var _scrollbarSize = interopRequireDefault(scrollbarSize);
 
-    var _isOverflowing = interopRequireDefault$1(isOverflowing_1);
+    var _isOverflowing = interopRequireDefault(isOverflowing_1);
 
     function findIndexOf(data, callback) {
       var idx = -1;
@@ -40773,29 +40802,29 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _hoistNonReactStatics = interopRequireDefault$1(hoistNonReactStatics);
+    var _hoistNonReactStatics = interopRequireDefault(hoistNonReactStatics);
 
-    var _wrapDisplayName = interopRequireDefault$1(wrapDisplayName_1);
+    var _wrapDisplayName = interopRequireDefault(wrapDisplayName_1);
 
-    var _createMuiTheme = interopRequireDefault$1(createMuiTheme_1);
+    var _createMuiTheme = interopRequireDefault(createMuiTheme_1);
 
-    var _themeListener = interopRequireDefault$1(themeListener_1);
+    var _themeListener = interopRequireDefault(themeListener_1);
 
     var defaultTheme;
 
@@ -40945,31 +40974,31 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _Transition = interopRequireDefault$1(Transition_1);
+    var _Transition = interopRequireDefault(Transition_1);
 
-    var _withTheme = interopRequireDefault$1(withTheme_1);
+    var _withTheme = interopRequireDefault(withTheme_1);
 
     // @inheritedComponent Transition
     var styles = {
@@ -41175,7 +41204,7 @@
       }
     });
 
-    var _Fade = interopRequireDefault$1(Fade_1);
+    var _Fade = interopRequireDefault(Fade_1);
   });
 
   unwrapExports(Fade$1);
@@ -41186,21 +41215,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Fade = interopRequireDefault$1(Fade$1);
+    var _Fade = interopRequireDefault(Fade$1);
 
     var styles = {
       root: {
@@ -41314,7 +41343,7 @@
       }
     });
 
-    var _Backdrop = interopRequireDefault$1(Backdrop_1);
+    var _Backdrop = interopRequireDefault(Backdrop_1);
   });
 
   unwrapExports(Backdrop$1);
@@ -41325,53 +41354,53 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _keycode = interopRequireDefault$1(keycode);
+    var _keycode = interopRequireDefault(keycode);
 
-    var _activeElement = interopRequireDefault$1(activeElement_1);
+    var _activeElement = interopRequireDefault(activeElement_1);
 
-    var _contains = interopRequireDefault$1(contains);
+    var _contains = interopRequireDefault(contains);
 
-    var _inDOM = interopRequireDefault$1(inDOM);
+    var _inDOM = interopRequireDefault(inDOM);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _RootRef = interopRequireDefault$1(RootRef$1);
+    var _RootRef = interopRequireDefault(RootRef$1);
 
-    var _Portal = interopRequireDefault$1(Portal$1);
+    var _Portal = interopRequireDefault(Portal$1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ModalManager = interopRequireDefault$1(ModalManager_1);
+    var _ModalManager = interopRequireDefault(ModalManager_1);
 
-    var _Backdrop = interopRequireDefault$1(Backdrop$1);
+    var _Backdrop = interopRequireDefault(Backdrop$1);
 
     // @inheritedComponent Portal
     function getContainer(container, defaultContainer) {
@@ -41958,9 +41987,9 @@
       }
     });
 
-    var _Modal = interopRequireDefault$1(Modal_1);
+    var _Modal = interopRequireDefault(Modal_1);
 
-    var _ModalManager = interopRequireDefault$1(ModalManager_1);
+    var _ModalManager = interopRequireDefault(ModalManager_1);
   });
 
   unwrapExports(Modal$1);
@@ -41972,27 +42001,27 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Modal = interopRequireDefault$1(Modal$1);
+    var _Modal = interopRequireDefault(Modal$1);
 
-    var _Fade = interopRequireDefault$1(Fade$1);
+    var _Fade = interopRequireDefault(Fade$1);
 
-    var _Paper = interopRequireDefault$1(Paper$1);
+    var _Paper = interopRequireDefault(Paper$1);
 
     // @inheritedComponent Modal
     var styles = function styles(theme) {
@@ -42322,7 +42351,7 @@
       }
     });
 
-    var _Dialog = interopRequireDefault$1(Dialog_1);
+    var _Dialog = interopRequireDefault(Dialog_1);
   });
 
   var Dialog$2 = unwrapExports(Dialog$1);
@@ -42337,17 +42366,17 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     // So we don't have any override priority issue.
     var styles = function styles(theme) {
@@ -42440,7 +42469,7 @@
       }
     });
 
-    var _DialogActions = interopRequireDefault$1(DialogActions_1);
+    var _DialogActions = interopRequireDefault(DialogActions_1);
   });
 
   unwrapExports(DialogActions$1);
@@ -42451,17 +42480,17 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       var spacing = theme.spacing.unit * 3;
@@ -42540,7 +42569,7 @@
       }
     });
 
-    var _DialogContent = interopRequireDefault$1(DialogContent_1);
+    var _DialogContent = interopRequireDefault(DialogContent_1);
   });
 
   var DialogContent$2 = unwrapExports(DialogContent$1);
@@ -42551,19 +42580,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Typography = interopRequireDefault$1(Typography$1);
+    var _Typography = interopRequireDefault(Typography$1);
 
     // @inheritedComponent Typography
     var styles = function styles(theme) {
@@ -42634,7 +42663,7 @@
       }
     });
 
-    var _DialogContentText = interopRequireDefault$1(DialogContentText_1);
+    var _DialogContentText = interopRequireDefault(DialogContentText_1);
   });
 
   var DialogContentText$2 = unwrapExports(DialogContentText$1);
@@ -42645,19 +42674,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Typography = interopRequireDefault$1(Typography$1);
+    var _Typography = interopRequireDefault(Typography$1);
 
     var styles = function styles(theme) {
       return {
@@ -42753,7 +42782,7 @@
       }
     });
 
-    var _DialogTitle = interopRequireDefault$1(DialogTitle_1);
+    var _DialogTitle = interopRequireDefault(DialogTitle_1);
   });
 
   unwrapExports(DialogTitle$1);
@@ -43041,7 +43070,7 @@
 
   unwrapExports(getPrototypeOf$2);
 
-  var classCallCheck$2 = createCommonjsModule(function(module, exports) {
+  var classCallCheck$1 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
     exports.default = function(instance, Constructor) {
@@ -43051,18 +43080,18 @@
     };
   });
 
-  unwrapExports(classCallCheck$2);
+  unwrapExports(classCallCheck$1);
 
-  var defineProperty$6 = createCommonjsModule(function(module) {
-    module.exports = { default: defineProperty$2, __esModule: true };
+  var defineProperty$5 = createCommonjsModule(function(module) {
+    module.exports = { default: defineProperty$1, __esModule: true };
   });
 
-  unwrapExports(defineProperty$6);
+  unwrapExports(defineProperty$5);
 
-  var createClass$2 = createCommonjsModule(function(module, exports) {
+  var createClass$1 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
-    var _defineProperty2 = _interopRequireDefault(defineProperty$6);
+    var _defineProperty2 = _interopRequireDefault(defineProperty$5);
 
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
@@ -43087,7 +43116,7 @@
     })();
   });
 
-  unwrapExports(createClass$2);
+  unwrapExports(createClass$1);
 
   var iterator$2 = createCommonjsModule(function(module) {
     module.exports = { default: iterator, __esModule: true };
@@ -43145,7 +43174,7 @@
 
   unwrapExports(_typeof_1$1);
 
-  var possibleConstructorReturn$2 = createCommonjsModule(function(module, exports) {
+  var possibleConstructorReturn$1 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
     var _typeof3 = _interopRequireDefault(_typeof_1$1);
@@ -43167,7 +43196,7 @@
     };
   });
 
-  unwrapExports(possibleConstructorReturn$2);
+  unwrapExports(possibleConstructorReturn$1);
 
   var setPrototypeOf$3 = createCommonjsModule(function(module) {
     module.exports = { default: setPrototypeOf, __esModule: true };
@@ -43189,7 +43218,7 @@
 
   unwrapExports(create$1);
 
-  var inherits$2 = createCommonjsModule(function(module, exports) {
+  var inherits$1 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
     var _setPrototypeOf2 = _interopRequireDefault(setPrototypeOf$3);
@@ -43225,7 +43254,7 @@
     };
   });
 
-  unwrapExports(inherits$2);
+  unwrapExports(inherits$1);
 
   var keys$2 = createCommonjsModule(function(module) {
     module.exports = { default: keys, __esModule: true };
@@ -43233,7 +43262,7 @@
 
   unwrapExports(keys$2);
 
-  var objectWithoutProperties$2 = createCommonjsModule(function(module, exports) {
+  var objectWithoutProperties$1 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
     exports.default = function(obj, keys) {
@@ -43249,7 +43278,7 @@
     };
   });
 
-  unwrapExports(objectWithoutProperties$2);
+  unwrapExports(objectWithoutProperties$1);
 
   var assign$2 = createCommonjsModule(function(module) {
     module.exports = { default: assign, __esModule: true };
@@ -43263,7 +43292,7 @@
     });
     exports.passiveOption = undefined;
 
-    var _defineProperty2 = _interopRequireDefault(defineProperty$6);
+    var _defineProperty2 = _interopRequireDefault(defineProperty$5);
 
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
@@ -43318,19 +43347,19 @@
 
     var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _createClass3 = _interopRequireDefault(createClass$2);
+    var _createClass3 = _interopRequireDefault(createClass$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
     var _typeof3 = _interopRequireDefault(_typeof_1$1);
 
     var _keys2 = _interopRequireDefault(keys$2);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     var _assign2 = _interopRequireDefault(assign$2);
 
@@ -43523,33 +43552,33 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _debounce = interopRequireDefault$1(debounce_1);
+    var _debounce = interopRequireDefault(debounce_1);
 
-    var _reactEventListener = interopRequireDefault$1(lib$8);
+    var _reactEventListener = interopRequireDefault(lib$8);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var ROWS_HEIGHT = 19;
     var styles = {
@@ -43906,35 +43935,35 @@
     exports.isAdornedStart = isAdornedStart;
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Textarea = interopRequireDefault$1(Textarea_1);
+    var _Textarea = interopRequireDefault(Textarea_1);
 
     // Supports determination of isControlled().
     // Controlled input accepts its current value as a prop.
@@ -44767,31 +44796,31 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -45123,7 +45152,7 @@
       }
     });
 
-    var _FormControl = interopRequireDefault$1(FormControl_1);
+    var _FormControl = interopRequireDefault(FormControl_1);
   });
 
   var FormControl$2 = unwrapExports(FormControl$1);
@@ -45135,19 +45164,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -45300,7 +45329,7 @@
       }
     });
 
-    var _FormHelperText = interopRequireDefault$1(FormHelperText_1);
+    var _FormHelperText = interopRequireDefault(FormHelperText_1);
   });
 
   unwrapExports(FormHelperText$1);
@@ -45344,23 +45373,23 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _requirePropFactory = interopRequireDefault$1(requirePropFactory_1);
+    var _requirePropFactory = interopRequireDefault(requirePropFactory_1);
 
     // A grid component using the following libs as inspiration.
     //
@@ -45825,7 +45854,7 @@
       }
     });
 
-    var _Grid = interopRequireDefault$1(Grid_1);
+    var _Grid = interopRequireDefault(Grid_1);
   });
 
   var Grid$2 = unwrapExports(Grid$1);
@@ -45836,21 +45865,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ButtonBase = interopRequireDefault$1(ButtonBase$1);
+    var _ButtonBase = interopRequireDefault(ButtonBase$1);
 
     // @inheritedComponent ButtonBase
     var styles = function styles(theme) {
@@ -46034,20 +46063,65 @@
       }
     });
 
-    var _IconButton = interopRequireDefault$1(IconButton_1);
+    var _IconButton = interopRequireDefault(IconButton_1);
   });
 
   var IconButton$2 = unwrapExports(IconButton$1);
 
-  const ImageButton = _ref => {
-    let { src, imgProps } = _ref,
-      other = objectWithoutProperties(_ref, ['src', 'imgProps']);
-    return react.createElement(
+  function _defineProperty$2(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _extends$5() {
+    _extends$5 =
+      Object.assign ||
+      function(target) {
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+
+          for (var key in source) {
+            if (Object.prototype.hasOwnProperty.call(source, key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+
+        return target;
+      };
+
+    return _extends$5.apply(this, arguments);
+  }
+
+  const ImageButton = ({ src, imgProps, ...other }) =>
+    react.createElement(
       ButtonBase$2,
-      _extends$5({ focusRipple: true }, other),
-      react.createElement('img', _extends$5({ src: src }, imgProps))
+      _extends$5(
+        {
+          focusRipple: true
+        },
+        other
+      ),
+      react.createElement(
+        'img',
+        _extends$5(
+          {
+            src: src
+          },
+          imgProps
+        )
+      )
     );
-  };
 
   ImageButton.propTypes = {
     src: propTypes.string.isRequired,
@@ -46060,31 +46134,31 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _Transition = interopRequireDefault$1(Transition_1);
+    var _Transition = interopRequireDefault(Transition_1);
 
-    var _withTheme = interopRequireDefault$1(withTheme_1);
+    var _withTheme = interopRequireDefault(withTheme_1);
 
     // @inheritedComponent Transition
     function getScale(value) {
@@ -46374,7 +46448,7 @@
       }
     });
 
-    var _Grow = interopRequireDefault$1(Grow_1);
+    var _Grow = interopRequireDefault(Grow_1);
   });
 
   unwrapExports(Grow$1);
@@ -46385,47 +46459,47 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _contains = interopRequireDefault$1(contains);
+    var _contains = interopRequireDefault(contains);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _debounce = interopRequireDefault$1(debounce_1);
+    var _debounce = interopRequireDefault(debounce_1);
 
-    var _reactEventListener = interopRequireDefault$1(lib$8);
+    var _reactEventListener = interopRequireDefault(lib$8);
 
-    var _ownerWindow = interopRequireDefault$1(ownerWindow_1);
+    var _ownerWindow = interopRequireDefault(ownerWindow_1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Modal = interopRequireDefault$1(Modal$1);
+    var _Modal = interopRequireDefault(Modal$1);
 
-    var _Grow = interopRequireDefault$1(Grow$1);
+    var _Grow = interopRequireDefault(Grow$1);
 
-    var _Paper = interopRequireDefault$1(Paper$1);
+    var _Paper = interopRequireDefault(Paper$1);
 
     // @inheritedComponent Modal
     function getOffsetTop(rect, vertical) {
@@ -47126,7 +47200,7 @@
       }
     });
 
-    var _Popover = interopRequireDefault$1(Popover_1);
+    var _Popover = interopRequireDefault(Popover_1);
   });
 
   var MUI_Popover = unwrapExports(Popover$1);
@@ -47189,33 +47263,33 @@
     });
     exports.default = void 0;
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _brcast$$1 = interopRequireDefault$1(_brcast);
+    var _brcast$$1 = interopRequireDefault(_brcast);
 
-    var _themeListener = interopRequireWildcard$1(themeListener_1);
+    var _themeListener = interopRequireWildcard(themeListener_1);
 
-    var _exactProp = interopRequireDefault$1(exactProp_1);
+    var _exactProp = interopRequireDefault(exactProp_1);
 
     /**
      * This component takes a `theme` property.
@@ -47469,17 +47543,17 @@
       }
     });
 
-    var _createGenerateClassName = interopRequireDefault$1(createGenerateClassName_1);
+    var _createGenerateClassName = interopRequireDefault(createGenerateClassName_1);
 
-    var _createMuiTheme = interopRequireDefault$1(createMuiTheme_1);
+    var _createMuiTheme = interopRequireDefault(createMuiTheme_1);
 
-    var _jssPreset = interopRequireDefault$1(jssPreset_1);
+    var _jssPreset = interopRequireDefault(jssPreset_1);
 
-    var _MuiThemeProvider = interopRequireDefault$1(MuiThemeProvider_1);
+    var _MuiThemeProvider = interopRequireDefault(MuiThemeProvider_1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _withTheme = interopRequireDefault$1(withTheme_1);
+    var _withTheme = interopRequireDefault(withTheme_1);
   });
 
   unwrapExports(styles);
@@ -47496,10 +47570,8 @@
     }
   });
 
-  const Popover$2 = _ref => {
-    let { classes, children } = _ref,
-      other = objectWithoutProperties(_ref, ['classes', 'children']);
-    return react.createElement(
+  const Popover$2 = ({ classes, children, ...other }) =>
+    react.createElement(
       MUI_Popover,
       _extends$5(
         {
@@ -47519,7 +47591,6 @@
       ),
       children
     );
-  };
 
   Popover$2.propTypes = {
     classes: propTypes.object.isRequired,
@@ -47533,20 +47604,20 @@
 
       return (
         (_temp = super(...args)),
-        (this.state = {
+        _defineProperty$2(this, 'state', {
           open: false
         }),
-        (this.handleClickButton = () => {
+        _defineProperty$2(this, 'handleClickButton', () => {
           this.setState({
             open: true
           });
         }),
-        (this.handleClose = () => {
+        _defineProperty$2(this, 'handleClose', () => {
           this.setState({
             open: false
           });
         }),
-        (this.anchorEl = null),
+        _defineProperty$2(this, 'anchorEl', null),
         _temp
       );
     }
@@ -47554,7 +47625,6 @@
     render() {
       const { children, popover, icon } = this.props;
       const { open } = this.state;
-
       return react.createElement(
         react_5,
         null,
@@ -47584,7 +47654,11 @@
           ),
         react.createElement(
           enhancedPopover,
-          { anchorEl: this.anchorEl, onClose: this.handleClose, open: open },
+          {
+            anchorEl: this.anchorEl,
+            onClose: this.handleClose,
+            open: open
+          },
           popover
         )
       );
@@ -47608,7 +47682,7 @@
       }
     });
 
-    var _Input = interopRequireDefault$1(Input_1);
+    var _Input = interopRequireDefault(Input_1);
   });
 
   unwrapExports(Input$1);
@@ -47621,19 +47695,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -47814,7 +47888,7 @@
       }
     });
 
-    var _FormLabel = interopRequireDefault$1(FormLabel_1);
+    var _FormLabel = interopRequireDefault(FormLabel_1);
   });
 
   unwrapExports(FormLabel$1);
@@ -47825,21 +47899,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _FormLabel = interopRequireDefault$1(FormLabel$1);
+    var _FormLabel = interopRequireDefault(FormLabel$1);
 
     // @inheritedComponent FormLabel
     var styles = function styles(theme) {
@@ -48015,7 +48089,7 @@
       }
     });
 
-    var _InputLabel = interopRequireDefault$1(InputLabel_1);
+    var _InputLabel = interopRequireDefault(InputLabel_1);
   });
 
   var InputLabel$2 = unwrapExports(InputLabel$1);
@@ -48026,21 +48100,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _Typography = interopRequireDefault$1(Typography$1);
+    var _Typography = interopRequireDefault(Typography$1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -48167,7 +48241,7 @@
       }
     });
 
-    var _InputAdornment = interopRequireDefault$1(InputAdornment_1);
+    var _InputAdornment = interopRequireDefault(InputAdornment_1);
   });
 
   var InputAdornment$2 = unwrapExports(InputAdornment$1);
@@ -48194,10 +48268,9 @@
 
       return (
         (_temp = super(...args)),
-        (this.handleClick = event => {
+        _defineProperty$2(this, 'handleClick', event => {
           event.preventDefault();
           const { to } = this.props;
-
           overwolf.utils.openUrlInDefaultBrowser(to);
         }),
         _temp
@@ -48209,7 +48282,9 @@
       return react.createElement(
         'a',
         {
-          className: classnames(classes.link, { [classes.overwriteColor]: overwriteColor }),
+          className: classnames(classes.link, {
+            [classes.overwriteColor]: overwriteColor
+          }),
           href: to,
           onClick: this.handleClick,
           target: '_blank'
@@ -48225,7 +48300,6 @@
     to: propTypes.string.isRequired,
     overwriteColor: propTypes.bool
   };
-
   const ExternalLinkEnhanced = styles_3(styles$2)(ExternalLink);
 
   var ListItem_1 = createCommonjsModule(function(module, exports) {
@@ -48234,33 +48308,33 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ButtonBase = interopRequireDefault$1(ButtonBase$1);
+    var _ButtonBase = interopRequireDefault(ButtonBase$1);
 
     var styles = function styles(theme) {
       return {
@@ -48550,7 +48624,7 @@
       }
     });
 
-    var _ListItem = interopRequireDefault$1(ListItem_1);
+    var _ListItem = interopRequireDefault(ListItem_1);
   });
 
   unwrapExports(ListItem$1);
@@ -48561,23 +48635,23 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ListItem = interopRequireDefault$1(ListItem$1);
+    var _ListItem = interopRequireDefault(ListItem$1);
 
     // @inheritedComponent ListItem
     var styles = function styles(theme) {
@@ -48693,7 +48767,7 @@
       }
     });
 
-    var _MenuItem = interopRequireDefault$1(MenuItem_1);
+    var _MenuItem = interopRequireDefault(MenuItem_1);
   });
 
   var MenuItem$2 = unwrapExports(MenuItem$1);
@@ -48704,21 +48778,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var SIZE = 50;
 
@@ -48986,7 +49060,7 @@
       }
     });
 
-    var _CircularProgress = interopRequireDefault$1(CircularProgress_1);
+    var _CircularProgress = interopRequireDefault(CircularProgress_1);
   });
 
   unwrapExports(CircularProgress$1);
@@ -48998,29 +49072,29 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -49186,7 +49260,7 @@
       }
     });
 
-    var _List = interopRequireDefault$1(List_1);
+    var _List = interopRequireDefault(List_1);
   });
 
   unwrapExports(List$1);
@@ -49197,39 +49271,39 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _toConsumableArray2 = interopRequireDefault$1(toConsumableArray$1);
+    var _toConsumableArray2 = interopRequireDefault(toConsumableArray);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _keycode = interopRequireDefault$1(keycode);
+    var _keycode = interopRequireDefault(keycode);
 
-    var _contains = interopRequireDefault$1(contains);
+    var _contains = interopRequireDefault(contains);
 
-    var _activeElement = interopRequireDefault$1(activeElement_1);
+    var _activeElement = interopRequireDefault(activeElement_1);
 
-    var _ownerDocument = interopRequireDefault$1(ownerDocument_1);
+    var _ownerDocument = interopRequireDefault(ownerDocument_1);
 
-    var _List = interopRequireDefault$1(List$1);
+    var _List = interopRequireDefault(List$1);
 
     // @inheritedComponent List
     var MenuList =
@@ -49518,7 +49592,7 @@
       }
     });
 
-    var _MenuList = interopRequireDefault$1(MenuList_1);
+    var _MenuList = interopRequireDefault(MenuList_1);
   });
 
   unwrapExports(MenuList$1);
@@ -49529,37 +49603,37 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _reactDom = interopRequireDefault$1(reactDom);
+    var _reactDom = interopRequireDefault(reactDom);
 
-    var _scrollbarSize = interopRequireDefault$1(scrollbarSize);
+    var _scrollbarSize = interopRequireDefault(scrollbarSize);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _Popover = interopRequireDefault$1(Popover$1);
+    var _Popover = interopRequireDefault(Popover$1);
 
-    var _MenuList = interopRequireDefault$1(MenuList$1);
+    var _MenuList = interopRequireDefault(MenuList$1);
 
     // @inheritedComponent Popover
     var RTL_ORIGIN = {
@@ -49880,39 +49954,39 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _toConsumableArray2 = interopRequireDefault$1(toConsumableArray$1);
+    var _toConsumableArray2 = interopRequireDefault(toConsumableArray);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _assertThisInitialized2 = interopRequireDefault$1(assertThisInitialized);
+    var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _keycode = interopRequireDefault$1(keycode);
+    var _keycode = interopRequireDefault(keycode);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _Menu = interopRequireDefault$1(Menu_1);
+    var _Menu = interopRequireDefault(Menu_1);
 
     /**
      * @ignore - internal component.
@@ -50658,11 +50732,11 @@
       value: true
     });
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
     var _setDisplayName2 = _interopRequireDefault(setDisplayName_1);
 
@@ -50770,19 +50844,19 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -50938,7 +51012,7 @@
       }
     });
 
-    var _SvgIcon = interopRequireDefault$1(SvgIcon_1);
+    var _SvgIcon = interopRequireDefault(SvgIcon_1);
   });
 
   unwrapExports(SvgIcon$1);
@@ -50949,11 +51023,11 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _pure = interopRequireDefault$1(pure_1);
+    var _pure = interopRequireDefault(pure_1);
 
-    var _SvgIcon = interopRequireDefault$1(SvgIcon$1);
+    var _SvgIcon = interopRequireDefault(SvgIcon$1);
 
     var _ref = _react.default.createElement('path', {
       d: 'M7 10l5 5 5-5z'
@@ -50980,21 +51054,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _SelectInput = interopRequireDefault$1(SelectInput_1);
+    var _SelectInput = interopRequireDefault(SelectInput_1);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
-    var _ArrowDropDown = interopRequireDefault$1(ArrowDropDown_1);
+    var _ArrowDropDown = interopRequireDefault(ArrowDropDown_1);
 
-    var _Input = interopRequireDefault$1(Input$1);
+    var _Input = interopRequireDefault(Input$1);
 
     // @inheritedComponent Input
     // Import to enforce the CSS injection order
@@ -51274,7 +51348,7 @@
       }
     });
 
-    var _Select = interopRequireDefault$1(Select_1);
+    var _Select = interopRequireDefault(Select_1);
   });
 
   var Select$2 = unwrapExports(Select$1);
@@ -51285,27 +51359,27 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _getPrototypeOf = interopRequireDefault$1(getPrototypeOf$1);
+    var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
 
-    var _classCallCheck2 = interopRequireDefault$1(classCallCheck$1);
+    var _classCallCheck2 = interopRequireDefault(classCallCheck);
 
-    var _createClass2 = interopRequireDefault$1(createClass$1);
+    var _createClass2 = interopRequireDefault(createClass);
 
-    var _possibleConstructorReturn2 = interopRequireDefault$1(possibleConstructorReturn$1);
+    var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
 
-    var _inherits2 = interopRequireDefault$1(inherits$1);
+    var _inherits2 = interopRequireDefault(inherits);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -51422,7 +51496,7 @@
       }
     });
 
-    var _Table = interopRequireDefault$1(Table_1);
+    var _Table = interopRequireDefault(Table_1);
   });
 
   unwrapExports(Table$1);
@@ -51437,25 +51511,25 @@
     });
     exports.default = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _warning = interopRequireDefault$1(browser);
+    var _warning = interopRequireDefault(browser);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _Input = interopRequireDefault$1(Input$1);
+    var _Input = interopRequireDefault(Input$1);
 
-    var _InputLabel = interopRequireDefault$1(InputLabel$1);
+    var _InputLabel = interopRequireDefault(InputLabel$1);
 
-    var _FormControl = interopRequireDefault$1(FormControl$1);
+    var _FormControl = interopRequireDefault(FormControl$1);
 
-    var _FormHelperText = interopRequireDefault$1(FormHelperText$1);
+    var _FormHelperText = interopRequireDefault(FormHelperText$1);
 
-    var _Select = interopRequireDefault$1(Select$1);
+    var _Select = interopRequireDefault(Select$1);
 
     // @inheritedComponent FormControl
 
@@ -51818,7 +51892,7 @@
       }
     });
 
-    var _TextField = interopRequireDefault$1(TextField_1);
+    var _TextField = interopRequireDefault(TextField_1);
   });
 
   var TextField$2 = unwrapExports(TextField$1);
@@ -51829,21 +51903,21 @@
     });
     exports.default = exports.styles = void 0;
 
-    var _extends2 = interopRequireDefault$1(_extends_1);
+    var _extends2 = interopRequireDefault(_extends_1);
 
-    var _defineProperty2 = interopRequireDefault$1(defineProperty$4);
+    var _defineProperty2 = interopRequireDefault(defineProperty$3);
 
-    var _objectWithoutProperties2 = interopRequireDefault$1(objectWithoutProperties$1);
+    var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
-    var _objectSpread2 = interopRequireDefault$1(objectSpread);
+    var _objectSpread2 = interopRequireDefault(objectSpread);
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _propTypes = interopRequireDefault$1(propTypes);
+    var _propTypes = interopRequireDefault(propTypes);
 
-    var _classnames = interopRequireDefault$1(classnames);
+    var _classnames = interopRequireDefault(classnames);
 
-    var _withStyles = interopRequireDefault$1(withStyles_1);
+    var _withStyles = interopRequireDefault(withStyles_1);
 
     var styles = function styles(theme) {
       return {
@@ -51933,7 +52007,7 @@
       }
     });
 
-    var _Toolbar = interopRequireDefault$1(Toolbar_1);
+    var _Toolbar = interopRequireDefault(Toolbar_1);
   });
 
   var Toolbar$2 = unwrapExports(Toolbar$1);
@@ -52006,20 +52080,20 @@
     /* eslint-enable no-empty */
   }
 
-  function _classCallCheck$1(instance, Constructor) {
+  function _classCallCheck$2(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError('Cannot call a class as a function');
     }
   }
 
-  function _possibleConstructorReturn$1(self, call) {
+  function _possibleConstructorReturn$2(self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
     return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
   }
 
-  function _inherits$1(subClass, superClass) {
+  function _inherits$2(subClass, superClass) {
     if (typeof superClass !== 'function' && superClass !== null) {
       throw new TypeError(
         'Super expression must either be null or a function, not ' + typeof superClass
@@ -52059,7 +52133,7 @@
     var subscriptionKey = subKey || storeKey + 'Subscription';
 
     var Provider = (function(_Component) {
-      _inherits$1(Provider, _Component);
+      _inherits$2(Provider, _Component);
 
       Provider.prototype.getChildContext = function getChildContext() {
         var _ref;
@@ -52068,9 +52142,9 @@
       };
 
       function Provider(props, context) {
-        _classCallCheck$1(this, Provider);
+        _classCallCheck$2(this, Provider);
 
-        var _this = _possibleConstructorReturn$1(this, _Component.call(this, props, context));
+        var _this = _possibleConstructorReturn$2(this, _Component.call(this, props, context));
 
         _this[storeKey] = props.store;
         return _this;
@@ -52228,7 +52302,7 @@
 
   var browser$1 = invariant$2;
 
-  function _classCallCheck$2(instance, Constructor) {
+  function _classCallCheck$3(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError('Cannot call a class as a function');
     }
@@ -52281,7 +52355,7 @@
 
   var Subscription = (function() {
     function Subscription(store, parentSub, onStateChange) {
-      _classCallCheck$2(this, Subscription);
+      _classCallCheck$3(this, Subscription);
 
       this.store = store;
       this.parentSub = parentSub;
@@ -52339,20 +52413,20 @@
       return target;
     };
 
-  function _classCallCheck$3(instance, Constructor) {
+  function _classCallCheck$4(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError('Cannot call a class as a function');
     }
   }
 
-  function _possibleConstructorReturn$2(self, call) {
+  function _possibleConstructorReturn$3(self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
     return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
   }
 
-  function _inherits$2(subClass, superClass) {
+  function _inherits$3(subClass, superClass) {
     if (typeof superClass !== 'function' && superClass !== null) {
       throw new TypeError(
         'Super expression must either be null or a function, not ' + typeof superClass
@@ -52367,7 +52441,7 @@
         : (subClass.__proto__ = superClass);
   }
 
-  function _objectWithoutProperties$2(obj, keys) {
+  function _objectWithoutProperties$3(obj, keys) {
     var target = {};
     for (var i in obj) {
       if (keys.indexOf(i) >= 0) continue;
@@ -52438,7 +52512,7 @@
       storeKey = _ref$storeKey === undefined ? 'store' : _ref$storeKey,
       _ref$withRef = _ref.withRef,
       withRef = _ref$withRef === undefined ? false : _ref$withRef,
-      connectOptions = _objectWithoutProperties$2(_ref, [
+      connectOptions = _objectWithoutProperties$3(_ref, [
         'getDisplayName',
         'methodName',
         'renderCountProp',
@@ -52483,12 +52557,12 @@
       });
 
       var Connect = (function(_Component) {
-        _inherits$2(Connect, _Component);
+        _inherits$3(Connect, _Component);
 
         function Connect(props, context) {
-          _classCallCheck$3(this, Connect);
+          _classCallCheck$4(this, Connect);
 
-          var _this = _possibleConstructorReturn$2(this, _Component.call(this, props, context));
+          var _this = _possibleConstructorReturn$3(this, _Component.call(this, props, context));
 
           _this.version = version;
           _this.state = {};
@@ -53138,7 +53212,7 @@
     verify(mergeProps, 'mergeProps', displayName);
   }
 
-  function _objectWithoutProperties$3(obj, keys) {
+  function _objectWithoutProperties$4(obj, keys) {
     var target = {};
     for (var i in obj) {
       if (keys.indexOf(i) >= 0) continue;
@@ -53251,7 +53325,7 @@
     var initMapStateToProps = _ref2.initMapStateToProps,
       initMapDispatchToProps = _ref2.initMapDispatchToProps,
       initMergeProps = _ref2.initMergeProps,
-      options = _objectWithoutProperties$3(_ref2, [
+      options = _objectWithoutProperties$4(_ref2, [
         'initMapStateToProps',
         'initMapDispatchToProps',
         'initMergeProps'
@@ -53286,7 +53360,7 @@
       return target;
     };
 
-  function _objectWithoutProperties$4(obj, keys) {
+  function _objectWithoutProperties$5(obj, keys) {
     var target = {};
     for (var i in obj) {
       if (keys.indexOf(i) >= 0) continue;
@@ -53374,7 +53448,7 @@
         _ref2$areMergedPropsE = _ref2.areMergedPropsEqual,
         areMergedPropsEqual =
           _ref2$areMergedPropsE === undefined ? shallowEqual$3 : _ref2$areMergedPropsE,
-        extraOptions = _objectWithoutProperties$4(_ref2, [
+        extraOptions = _objectWithoutProperties$5(_ref2, [
           'pure',
           'areStatesEqual',
           'areOwnPropsEqual',
@@ -53447,20 +53521,35 @@
       null,
       react.createElement(
         AppBar$2,
-        { color: 'inherit', position: 'sticky' },
+        {
+          color: 'inherit',
+          position: 'sticky'
+        },
         react.createElement(
           Toolbar$2,
           null,
-          react.createElement('img', { className: classes.textLogo, src: 'assets/text_logo.png' }),
+          react.createElement('img', {
+            className: classes.textLogo,
+            src: 'assets/text_logo.png'
+          }),
           react.createElement(
             Typography$2,
-            { className: classes.version, variant: 'subheading' },
+            {
+              className: classes.version,
+              variant: 'subheading'
+            },
             'v',
             version
           )
         )
       ),
-      react.createElement('div', { className: classes.children }, children)
+      react.createElement(
+        'div',
+        {
+          className: classes.children
+        },
+        children
+      )
     );
 
   AppLayout.propTypes = {
@@ -53483,11 +53572,11 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _pure = interopRequireDefault$1(pure_1);
+    var _pure = interopRequireDefault(pure_1);
 
-    var _SvgIcon = interopRequireDefault$1(SvgIcon$1);
+    var _SvgIcon = interopRequireDefault(SvgIcon$1);
 
     var SvgIconCustom =
       (typeof commonjsGlobal !== 'undefined' && commonjsGlobal.__MUI_SvgIcon__) || _SvgIcon.default;
@@ -53514,9 +53603,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53541,9 +53630,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53568,9 +53657,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53594,9 +53683,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53621,9 +53710,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53648,9 +53737,9 @@
     });
     exports.default = void 0;
 
-    var _react = interopRequireDefault$1(react);
+    var _react = interopRequireDefault(react);
 
-    var _createSvgIcon = interopRequireDefault$1(createSvgIcon_1);
+    var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
 
     var _default = (0, _createSvgIcon.default)(
       _react.default.createElement(
@@ -53687,7 +53776,9 @@
   const CardLayout = ({ classes, className, helperText, children, title }) =>
     react.createElement(
       Card$2,
-      { className: classnames(classes.root, className) },
+      {
+        className: classnames(classes.root, className)
+      },
       react.createElement(CardHeader$2, {
         action:
           helperText &&
@@ -53702,7 +53793,13 @@
         className: classes.header,
         subheader: title
       }),
-      react.createElement(CardContent$2, { className: classes.content }, children)
+      react.createElement(
+        CardContent$2,
+        {
+          className: classes.content
+        },
+        children
+      )
     );
 
   CardLayout.propTypes = {
@@ -53712,7 +53809,6 @@
     children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
     title: propTypes.string
   };
-
   const enhance$1 = styles_3(styles$4)(CardLayout);
 
   const styles$5 = {
@@ -53722,13 +53818,18 @@
   };
 
   const PageLayout = ({ classes, children }) =>
-    react.createElement('div', { className: classes.wrapper }, children);
+    react.createElement(
+      'div',
+      {
+        className: classes.wrapper
+      },
+      children
+    );
 
   PageLayout.propTypes = {
     classes: propTypes.object.isRequired,
     children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
   };
-
   const enhance$2 = styles_3(styles$5)(PageLayout);
 
   var createGenerateClassName_1$1 = createCommonjsModule(function(module, exports) {
@@ -53831,7 +53932,7 @@
       value: true
     });
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     exports.default = createTypography;
 
@@ -53987,7 +54088,7 @@
 
     var _extends3 = _interopRequireDefault(_extends$9);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     exports.default = createBreakpoints;
 
@@ -54485,7 +54586,7 @@
 
     var _extends3 = _interopRequireDefault(_extends$9);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     exports.default = createPalette;
 
@@ -54704,10 +54805,10 @@
   var createPalette_2$1 = createPalette_1$1.dark;
   var createPalette_3$1 = createPalette_1$1.light;
 
-  var defineProperty$8 = createCommonjsModule(function(module, exports) {
+  var defineProperty$7 = createCommonjsModule(function(module, exports) {
     exports.__esModule = true;
 
-    var _defineProperty2 = _interopRequireDefault(defineProperty$6);
+    var _defineProperty2 = _interopRequireDefault(defineProperty$5);
 
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : { default: obj };
@@ -54729,14 +54830,14 @@
     };
   });
 
-  unwrapExports(defineProperty$8);
+  unwrapExports(defineProperty$7);
 
   var createMixins_1$1 = createCommonjsModule(function(module, exports) {
     Object.defineProperty(exports, '__esModule', {
       value: true
     });
 
-    var _defineProperty3 = _interopRequireDefault(defineProperty$8);
+    var _defineProperty3 = _interopRequireDefault(defineProperty$7);
 
     var _extends4 = _interopRequireDefault(_extends$9);
 
@@ -54885,7 +54986,7 @@
 
     var _keys2 = _interopRequireDefault(keys$2);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     var _isNan2 = _interopRequireDefault(isNan$2);
 
@@ -55057,7 +55158,7 @@
 
     var _extends3 = _interopRequireDefault(_extends$9);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     var _deepmerge2 = _interopRequireDefault(_deepmerge);
 
@@ -55183,7 +55284,7 @@
     });
     exports.CHANNEL = undefined;
 
-    var _defineProperty3 = _interopRequireDefault(defineProperty$8);
+    var _defineProperty3 = _interopRequireDefault(defineProperty$7);
 
     var _propTypes2 = _interopRequireDefault(propTypes);
 
@@ -55229,7 +55330,7 @@
     });
     exports.specialProperty = undefined;
 
-    var _defineProperty3 = _interopRequireDefault(defineProperty$8);
+    var _defineProperty3 = _interopRequireDefault(defineProperty$7);
 
     var _keys2 = _interopRequireDefault(keys$2);
 
@@ -55279,17 +55380,17 @@
 
     var _extends3 = _interopRequireDefault(_extends$9);
 
-    var _defineProperty3 = _interopRequireDefault(defineProperty$8);
+    var _defineProperty3 = _interopRequireDefault(defineProperty$7);
 
     var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _createClass3 = _interopRequireDefault(createClass$2);
+    var _createClass3 = _interopRequireDefault(createClass$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
     var _react2 = _interopRequireDefault(react);
 
@@ -55684,15 +55785,15 @@
 
     var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _createClass3 = _interopRequireDefault(createClass$2);
+    var _createClass3 = _interopRequireDefault(createClass$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
-    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$2);
+    var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
 
     var _map2 = _interopRequireDefault(map$2);
 
@@ -56108,13 +56209,13 @@
 
     var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _createClass3 = _interopRequireDefault(createClass$2);
+    var _createClass3 = _interopRequireDefault(createClass$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
     var _react2 = _interopRequireDefault(react);
 
@@ -56286,13 +56387,13 @@
 
     var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
 
-    var _classCallCheck3 = _interopRequireDefault(classCallCheck$2);
+    var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
 
-    var _createClass3 = _interopRequireDefault(createClass$2);
+    var _createClass3 = _interopRequireDefault(createClass$1);
 
-    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$2);
+    var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
 
-    var _inherits3 = _interopRequireDefault(inherits$2);
+    var _inherits3 = _interopRequireDefault(inherits$1);
 
     var _react2 = _interopRequireDefault(react);
 
@@ -56408,18 +56509,26 @@
   class BalanceCard extends react_1 {
     render() {
       const { classes, miner, workerStats } = this.props;
-
       return react.createElement(
         enhance$1,
         null,
         react.createElement(
           Typography$2,
-          { className: classes.load, variant: 'display1' },
+          {
+            className: classes.load,
+            variant: 'display1'
+          },
           (workerStats.unpaidBalance || 0).toFixed(10),
           ' ',
           miner.currency
         ),
-        react.createElement(Typography$2, { variant: 'caption' }, 'Unpaid Balance')
+        react.createElement(
+          Typography$2,
+          {
+            variant: 'caption'
+          },
+          'Unpaid Balance'
+        )
       );
     }
   }
@@ -56448,17 +56557,25 @@
   class CpusCard extends react_1 {
     render() {
       const { classes, totalLoad } = this.props;
-
       return react.createElement(
         enhance$1,
         null,
         react.createElement(
           Typography$2,
-          { className: classes.load, variant: 'display1' },
+          {
+            className: classes.load,
+            variant: 'display1'
+          },
           totalLoad.toString(),
           '%'
         ),
-        react.createElement(Typography$2, { variant: 'caption' }, 'CPU')
+        react.createElement(
+          Typography$2,
+          {
+            variant: 'caption'
+          },
+          'CPU'
+        )
       );
     }
   }
@@ -56469,11 +56586,13 @@
   };
 
   const mapStateToProps$2 = ({ hardwareInfo: { Cpus } }) => {
-    if (!Cpus.length) return { totalLoad: 0 };
+    if (!Cpus.length)
+      return {
+        totalLoad: 0
+      };
     const firstCpu = Cpus[0];
     const firstCpuLoad = firstCpu.Load.find(load => load.Name === 'CPU Total');
     const totalLoad = parseInt(firstCpuLoad.Value / firstCpuLoad.Max * 100);
-
     return {
       totalLoad
     };
@@ -56490,17 +56609,25 @@
   class GpusCard extends react_1 {
     render() {
       const { classes, totalLoad } = this.props;
-
       return react.createElement(
         enhance$1,
         null,
         react.createElement(
           Typography$2,
-          { className: classes.load, variant: 'display1' },
+          {
+            className: classes.load,
+            variant: 'display1'
+          },
           totalLoad.toString(),
           '%'
         ),
-        react.createElement(Typography$2, { variant: 'caption' }, 'GPU')
+        react.createElement(
+          Typography$2,
+          {
+            variant: 'caption'
+          },
+          'GPU'
+        )
       );
     }
   }
@@ -56515,11 +56642,13 @@
       Gpus: { Gpus }
     }
   }) => {
-    if (!Gpus.length) return { totalLoad: 0 };
+    if (!Gpus.length)
+      return {
+        totalLoad: 0
+      };
     const firstGpu = Gpus[0];
     const firstGpuLoad = firstGpu.Load.find(load => load.Name === 'GPU Core');
     const totalLoad = parseInt(firstGpuLoad.Value / firstGpuLoad.Max * 100);
-
     return {
       totalLoad
     };
@@ -56536,17 +56665,25 @@
   class HashRateCard extends react_1 {
     render() {
       const { classes, hashRate } = this.props;
-
       return react.createElement(
         enhance$1,
         null,
         react.createElement(
           Typography$2,
-          { className: classes.load, variant: 'display1' },
+          {
+            className: classes.load,
+            variant: 'display1'
+          },
           hashRate,
           'H/s'
         ),
-        react.createElement(Typography$2, { variant: 'caption' }, 'Hash Rate')
+        react.createElement(
+          Typography$2,
+          {
+            variant: 'caption'
+          },
+          'Hash Rate'
+        )
       );
     }
   }
@@ -56578,16 +56715,26 @@
   class ActionButton extends react_2 {
     render() {
       const { classes, buttonClassName, onClick, children, title } = this.props;
-
       return react.createElement(
         'div',
-        { className: classes.container },
+        {
+          className: classes.container
+        },
         react.createElement(
           IconButton$2,
-          { className: classnames(classes.button, buttonClassName), onClick: onClick },
+          {
+            className: classnames(classes.button, buttonClassName),
+            onClick: onClick
+          },
           children
         ),
-        react.createElement(Typography$2, { variant: 'button' }, title)
+        react.createElement(
+          Typography$2,
+          {
+            variant: 'button'
+          },
+          title
+        )
       );
     }
   }
@@ -56599,7 +56746,6 @@
     title: propTypes.string.isRequired,
     children: propTypes.node.isRequired
   };
-
   const enhance$7 = styles_3(styles$11)(ActionButton);
 
   const styles$12 = {
@@ -56612,11 +56758,16 @@
   class CryptoButton extends react_2 {
     render() {
       const { classes, openCryptoDialog: openCryptoDialog$$1, miner } = this.props;
-
       return react.createElement(
         enhance$7,
-        { onClick: openCryptoDialog$$1, title: 'Wallet' },
-        react.createElement(Avatar$2, { className: classes.avatar, src: miner.logo })
+        {
+          onClick: openCryptoDialog$$1,
+          title: 'Wallet'
+        },
+        react.createElement(Avatar$2, {
+          className: classes.avatar,
+          src: miner.logo
+        })
       );
     }
   }
@@ -56664,7 +56815,7 @@
 
       return (
         (_temp = super(...args)),
-        (this.handleMiningClick = () => {
+        _defineProperty$2(this, 'handleMiningClick', () => {
           const {
             isMining,
             startMining: startMining$$1,
@@ -56680,7 +56831,6 @@
 
     render() {
       const { classes, isMining } = this.props;
-
       return react.createElement(
         enhance$7,
         {
@@ -56688,7 +56838,10 @@
           onClick: this.handleMiningClick,
           title: isMining ? 'Stop' : 'Start'
         },
-        react.createElement(Avatar$2, { className: classes.avatar, src: 'assets/mining.png' })
+        react.createElement(Avatar$2, {
+          className: classes.avatar,
+          src: 'assets/mining.png'
+        })
       );
     }
   }
@@ -56730,11 +56883,15 @@
   class SettingsButton extends react_2 {
     render() {
       const { classes, openSettingsDialog: openSettingsDialog$$1 } = this.props;
-
       return react.createElement(
         enhance$7,
-        { onClick: openSettingsDialog$$1, title: 'Settings' },
-        react.createElement(SettingsIcon, { className: classes.icon })
+        {
+          onClick: openSettingsDialog$$1,
+          title: 'Settings'
+        },
+        react.createElement(SettingsIcon, {
+          className: classes.icon
+        })
       );
     }
   }
@@ -56765,19 +56922,24 @@
     constructor(...args) {
       var _temp;
 
-      return (_temp = super(...args)), (this.handleOpenStats = () => {}), _temp;
+      return (_temp = super(...args)), _defineProperty$2(this, 'handleOpenStats', () => {}), _temp;
     }
 
     render() {
       const { address, classes, miner } = this.props;
-
       return react.createElement(
         ExternalLinkEnhanced,
-        { to: miner.links.stats(address) },
+        {
+          to: miner.links.stats(address)
+        },
         react.createElement(
           enhance$7,
-          { title: 'Stats' },
-          react.createElement(AssessmentIcon, { className: classes.icon })
+          {
+            title: 'Stats'
+          },
+          react.createElement(AssessmentIcon, {
+            className: classes.icon
+          })
         )
       );
     }
@@ -56797,6 +56959,7 @@
       miner
     };
   };
+
   const enhance$11 = compose$1(styles_3(styles$15), connect(mapStateToProps$7))(StatsButton);
 
   const styles$16 = {
@@ -56809,11 +56972,15 @@
   class SupportButton extends react_2 {
     render() {
       const { classes, openSupportDialog: openSupportDialog$$1 } = this.props;
-
       return react.createElement(
         enhance$7,
-        { onClick: openSupportDialog$$1, title: 'Support' },
-        react.createElement(HelpIcon, { className: classes.icon })
+        {
+          onClick: openSupportDialog$$1,
+          title: 'Support'
+        },
+        react.createElement(HelpIcon, {
+          className: classes.icon
+        })
       );
     }
   }
@@ -56842,10 +57009,11 @@
   class Actions extends react_2 {
     render() {
       const { classes } = this.props;
-
       return react.createElement(
         'div',
-        { className: classes.center },
+        {
+          className: classes.center
+        },
         react.createElement(enhance$8, null),
         react.createElement(enhance$11, null),
         react.createElement(enhance$9, null),
@@ -56858,7 +57026,6 @@
   Actions.propTypes = {
     classes: propTypes.object.isRequired
   };
-
   const enhance$13 = styles_3(styles$17)(Actions);
 
   const styles$18 = {
@@ -56881,13 +57048,12 @@
 
       return (
         (_temp = super(...args)),
-        (this.handleAddressChange = event => {
+        _defineProperty$2(this, 'handleAddressChange', event => {
           const { setMiningAddress: setMiningAddress$$1, minerIdentifier } = this.props;
-
           const address = event.target.value;
           setMiningAddress$$1(minerIdentifier, address);
         }),
-        (this.handleCurrencyChange = event => {
+        _defineProperty$2(this, 'handleCurrencyChange', event => {
           const { selectMiner: selectMiner$$1 } = this.props;
           const minerIdentifier = event.target.value;
           selectMiner$$1(minerIdentifier);
@@ -56907,27 +57073,45 @@
         isValidAddress,
         selectedMinerIdentifier
       } = this.props;
-
       return react.createElement(
         Dialog$2,
-        { fullScreen: true, onClose: closeDialog$$1, open: open },
+        {
+          fullScreen: true,
+          onClose: closeDialog$$1,
+          open: open
+        },
         react.createElement(
           AppBar$2,
-          { className: classes.appBar },
+          {
+            className: classes.appBar
+          },
           react.createElement(
             Toolbar$2,
             null,
             react.createElement(
               Typography$2,
-              { className: classes.flex, color: 'inherit', variant: 'title' },
+              {
+                className: classes.flex,
+                color: 'inherit',
+                variant: 'title'
+              },
               'Setup'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
+            react.createElement(
+              Button$2,
+              {
+                color: 'inherit',
+                onClick: closeDialog$$1
+              },
+              'Done'
+            )
           )
         ),
         react.createElement(
           DialogContent$2,
-          { className: classes.content },
+          {
+            className: classes.content
+          },
           react.createElement(
             DialogContentText$2,
             null,
@@ -56936,7 +57120,13 @@
           react.createElement(
             FormControl$2,
             null,
-            react.createElement(InputLabel$2, { htmlFor: 'crypto-select' }, 'Currency'),
+            react.createElement(
+              InputLabel$2,
+              {
+                htmlFor: 'crypto-select'
+              },
+              'Currency'
+            ),
             react.createElement(
               Select$2,
               {
@@ -56949,7 +57139,10 @@
               [ethereum, monero].map(miner =>
                 react.createElement(
                   MenuItem$2,
-                  { key: miner.name, value: miner.identifier },
+                  {
+                    key: miner.name,
+                    value: miner.identifier
+                  },
                   miner.name
                 )
               )
@@ -56960,13 +57153,18 @@
             fullWidth: true,
             helperText: react.createElement(
               ExternalLinkEnhanced,
-              { overwriteColor: true, to: miner.links.wallet },
+              {
+                overwriteColor: true,
+                to: miner.links.wallet
+              },
               "Don't have a wallet address?"
             ),
             InputProps: {
               endAdornment: react.createElement(
                 InputAdornment$2,
-                { position: 'end' },
+                {
+                  position: 'end'
+                },
                 react.createElement(
                   InfoButton,
                   {
@@ -56979,7 +57177,9 @@
                   },
                   isValidAddress
                     ? react.createElement(DoneIcon, null)
-                    : react.createElement(ErrorIcon, { color: 'error' })
+                    : react.createElement(ErrorIcon, {
+                        color: 'error'
+                      })
                 )
               )
             },
@@ -57051,22 +57251,38 @@
   class SettingsDialog extends react_2 {
     render() {
       const { classes, closeDialog: closeDialog$$1, open } = this.props;
-
       return react.createElement(
         Dialog$2,
-        { fullScreen: true, onClose: closeDialog$$1, open: open },
+        {
+          fullScreen: true,
+          onClose: closeDialog$$1,
+          open: open
+        },
         react.createElement(
           AppBar$2,
-          { className: classes.appBar },
+          {
+            className: classes.appBar
+          },
           react.createElement(
             Toolbar$2,
             null,
             react.createElement(
               Typography$2,
-              { className: classes.flex, color: 'inherit', variant: 'title' },
+              {
+                className: classes.flex,
+                color: 'inherit',
+                variant: 'title'
+              },
               'Settings'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
+            react.createElement(
+              Button$2,
+              {
+                color: 'inherit',
+                onClick: closeDialog$$1
+              },
+              'Done'
+            )
           )
         ),
         'ToDo'
@@ -57116,22 +57332,38 @@
   class SupportDialog extends react_2 {
     render() {
       const { classes, closeDialog: closeDialog$$1, open } = this.props;
-
       return react.createElement(
         Dialog$2,
-        { fullScreen: true, onClose: closeDialog$$1, open: open },
+        {
+          fullScreen: true,
+          onClose: closeDialog$$1,
+          open: open
+        },
         react.createElement(
           AppBar$2,
-          { className: classes.appBar },
+          {
+            className: classes.appBar
+          },
           react.createElement(
             Toolbar$2,
             null,
             react.createElement(
               Typography$2,
-              { className: classes.flex, color: 'inherit', variant: 'title' },
+              {
+                className: classes.flex,
+                color: 'inherit',
+                variant: 'title'
+              },
               'Support'
             ),
-            react.createElement(Button$2, { color: 'inherit', onClick: closeDialog$$1 }, 'Done')
+            react.createElement(
+              Button$2,
+              {
+                color: 'inherit',
+                onClick: closeDialog$$1
+              },
+              'Done'
+            )
           )
         ),
         react.createElement(Discord, null)
@@ -57181,23 +57413,57 @@
         null,
         react.createElement(
           Grid$2,
-          { container: true, spacing: 16 },
+          {
+            container: true,
+            spacing: 16
+          },
           react.createElement(
             Grid$2,
-            { item: true, xs: 12 },
+            {
+              item: true,
+              xs: 12
+            },
             react.createElement(enhance$13, null)
           ),
-          react.createElement(Grid$2, { item: true, xs: 2 }, react.createElement(enhance$4, null)),
-          react.createElement(Grid$2, { item: true, xs: 2 }, react.createElement(enhance$5, null)),
-          react.createElement(Grid$2, { item: true, xs: 3 }, react.createElement(enhance$6, null)),
-          react.createElement(Grid$2, { item: true, xs: 5 }, react.createElement(enhance$3, null))
+          react.createElement(
+            Grid$2,
+            {
+              item: true,
+              xs: 2
+            },
+            react.createElement(enhance$4, null)
+          ),
+          react.createElement(
+            Grid$2,
+            {
+              item: true,
+              xs: 2
+            },
+            react.createElement(enhance$5, null)
+          ),
+          react.createElement(
+            Grid$2,
+            {
+              item: true,
+              xs: 3
+            },
+            react.createElement(enhance$6, null)
+          ),
+          react.createElement(
+            Grid$2,
+            {
+              item: true,
+              xs: 5
+            },
+            react.createElement(enhance$3, null)
+          )
         ),
         react.createElement(Dialogs, null)
       );
     }
   }
 
-  var _createClass$1 = (function() {
+  var _createClass$2 = (function() {
     function defineProperties(target, props) {
       for (var i = 0; i < props.length; i++) {
         var descriptor = props[i];
@@ -57214,20 +57480,20 @@
     };
   })();
 
-  function _classCallCheck$4(instance, Constructor) {
+  function _classCallCheck$5(instance, Constructor) {
     if (!(instance instanceof Constructor)) {
       throw new TypeError('Cannot call a class as a function');
     }
   }
 
-  function _possibleConstructorReturn$3(self, call) {
+  function _possibleConstructorReturn$4(self, call) {
     if (!self) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
     return call && (typeof call === 'object' || typeof call === 'function') ? call : self;
   }
 
-  function _inherits$3(subClass, superClass) {
+  function _inherits$4(subClass, superClass) {
     if (typeof superClass !== 'function' && superClass !== null) {
       throw new TypeError(
         'Super expression must either be null or a function, not ' + typeof superClass
@@ -57244,21 +57510,21 @@
   // eslint-disable-line import/no-unresolved
 
   var PersistGate = (function(_PureComponent) {
-    _inherits$3(PersistGate, _PureComponent);
+    _inherits$4(PersistGate, _PureComponent);
 
     function PersistGate() {
       var _ref;
 
       var _temp, _this, _ret;
 
-      _classCallCheck$4(this, PersistGate);
+      _classCallCheck$5(this, PersistGate);
 
       for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
         args[_key] = arguments[_key];
       }
 
       return (
-        (_ret = ((_temp = ((_this = _possibleConstructorReturn$3(
+        (_ret = ((_temp = ((_this = _possibleConstructorReturn$4(
           this,
           (_ref = PersistGate.__proto__ || Object.getPrototypeOf(PersistGate)).call.apply(
             _ref,
@@ -57291,11 +57557,11 @@
           }
         }),
         _temp)),
-        _possibleConstructorReturn$3(_this, _ret)
+        _possibleConstructorReturn$4(_this, _ret)
       );
     }
 
-    _createClass$1(PersistGate, [
+    _createClass$2(PersistGate, [
       {
         key: 'componentDidMount',
         value: function componentDidMount() {
@@ -58593,9 +58859,8 @@
   const initialize = () => {
     ReactGA.initialize(TRACKING_ID, {
       debug: true
-    });
+    }); // Remove failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
 
-    // Remove failing protocol check. @see: http://stackoverflow.com/a/22152353/1958200
     ReactGA.ga('set', 'checkProtocolTask', () => {});
     ReactGA.pageview('/');
     console.info('%cAnalytics is active', 'color: blue');
@@ -58620,27 +58885,31 @@
   });
 
   initialize();
-
   const App = react.createElement(
     Provider,
-    { store: store },
+    {
+      store: store
+    },
     react.createElement(
       PersistGate,
-      { loading: null, persistor: persistor },
+      {
+        loading: null,
+        persistor: persistor
+      },
       react.createElement(
         styles_1,
-        { theme: light },
+        {
+          theme: light
+        },
         react.createElement(CssBaseline$2, null),
         react.createElement(enhance, null, react.createElement(MiningPage, null))
       )
     )
   );
-
   reactDom.render(App, document.getElementById('root'));
 
   (async () => {
     const simpleIoPlugin = await getSimpleIoPlugin();
-
     simpleIoPlugin.onFileListenerChanged.addListener(fileIdentifier => {
       if (LISTEN_TO_FILES.includes(fileIdentifier)) {
         setTimeout(() => {
@@ -58648,13 +58917,11 @@
         }, 1000);
       }
     });
-
     const skipToEndOfFile = true;
     LISTEN_TO_FILES.forEach(fileName => {
       const path = `${APP_PATH}/${fileName}`;
       simpleIoPlugin.listenOnFile(fileName, path, skipToEndOfFile, () => {});
     });
-
     console.info('%cHot reload is active', 'color: blue');
   })();
 })();
