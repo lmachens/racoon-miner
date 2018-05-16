@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/lmachens/raccoon-miner/compare/v0.6.1...v0.7.0) (2018-05-16)
+
+
+### Bug Fixes
+
+* **rollup:** replace minifier and generate production build ([b3dd4e2](https://github.com/lmachens/raccoon-miner/commit/b3dd4e2))
+* **tests:** make jest test work again ([ff2232e](https://github.com/lmachens/raccoon-miner/commit/ff2232e))
+
+
+### Features
+
+* **cards:** add helper texts ([2c02d38](https://github.com/lmachens/raccoon-miner/commit/2c02d38))
+* **crypto:** add "coming soon" selection for mining pool ([d032b40](https://github.com/lmachens/raccoon-miner/commit/d032b40))
+* **UI:** add placeholder descriptions for upcoming features ([6129358](https://github.com/lmachens/raccoon-miner/commit/6129358))
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/lmachens/raccoon-miner/compare/v0.6.0...v0.6.1) (2018-05-05)
 
