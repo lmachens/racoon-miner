@@ -4,7 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
   wrapper: {
-    margin: 20
+    margin: 20,
+    textAlign: 'center'
   }
 };
 

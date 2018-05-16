@@ -642,6 +642,9 @@
 	const RECEIVE_MINING_METRICS = 'RECEIVE_MINING_METRICS';
 	const REQUEST_MINING_METRICS = 'REQUEST_MINING_METRICS';
 
+	const SET_NOTIFICATION = 'SET_NOTIFICATION';
+	const UNSET_NOTIFICATION = 'UNSET_NOTIFICATION';
+
 	const RECEIVE_VERSION = 'RECEIVE_VERSION';
 
 	const closeDialog = () => {
@@ -3039,6 +3042,28 @@
 	  }
 	};
 
+	const notifications = (state = {
+	  notification: null
+	}, {
+	  type,
+	  notification
+	}) => {
+	  switch (type) {
+	    case SET_NOTIFICATION:
+	      return {
+	        notification
+	      };
+
+	    case UNSET_NOTIFICATION:
+	      return {
+	        notification: null
+	      };
+
+	    default:
+	      return state;
+	  }
+	};
+
 	const utilities = (state = {
 	  version: ''
 	}, {
@@ -3061,6 +3086,7 @@
 	  hardwareInfo,
 	  mining,
 	  activeMiners,
+	  notifications,
 	  utilities
 	});
 
@@ -46462,7 +46488,8 @@
 
 	const styles$6 = {
 	  wrapper: {
-	    margin: 20
+	    margin: 20,
+	    textAlign: 'center'
 	  }
 	};
 
@@ -49752,6 +49779,39 @@
 
 	}
 
+	const styles$19 = {
+	  container: {
+	    margin: 16
+	  }
+	};
+
+	class Notifications extends react_2 {
+	  render() {
+	    const {
+	      classes
+	    } = this.props;
+	    return react.createElement("div", {
+	      className: classes.container
+	    }, react.createElement(Typography$2, null, "I want to display alerts and other Notifications here"));
+	  }
+
+	}
+
+	Notifications.propTypes = {
+	  classes: propTypes.object.isRequired,
+	  notifications: propTypes.object
+	};
+
+	const mapStateToProps$11 = ({
+	  notifications
+	}) => {
+	  return {
+	    notifications
+	  };
+	};
+
+	const enhance$18 = compose$1(styles_3(styles$19), connect(mapStateToProps$11))(Notifications);
+
 	class MiningPage extends react_2 {
 	  render() {
 	    return react.createElement(enhance$2, null, react.createElement(Grid$2, {
@@ -49772,7 +49832,7 @@
 	    }, react.createElement(enhance$6, null)), react.createElement(Grid$2, {
 	      item: true,
 	      xs: 5
-	    }, react.createElement(enhance$3, null))), react.createElement(Dialogs, null));
+	    }, react.createElement(enhance$3, null))), react.createElement(enhance$18, null), react.createElement(Dialogs, null));
 	  }
 
 	}

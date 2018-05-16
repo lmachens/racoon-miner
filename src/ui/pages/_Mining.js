@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { Actions } from '../components/actions';
 import { Dialogs } from '../components/dialogs';
 import { Grid } from '../components/generic';
+import { Notifications } from '../components/notifications';
 import { PageLayout } from '../layouts';
 
 class MiningPage extends PureComponent {
@@ -27,6 +28,7 @@ class MiningPage extends PureComponent {
             <BalanceCard />
           </Grid>
         </Grid>
+        <Notifications />
         <Dialogs />
       </PageLayout>
     );
