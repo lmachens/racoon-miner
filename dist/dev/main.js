@@ -39227,7 +39227,7 @@
 
 	    if (children) {
 	      _react.default.Children.forEach(children, function (child) {
-	        if (!(0, reactHelpers.isMuiElement)(child, ['Input', 'Select'])) {
+	        if (!(0, reactHelpers.isMuiElement)(child, ['Input', 'Select', 'NativeSelect'])) {
 	          return;
 	        }
 
@@ -39235,7 +39235,7 @@
 	          _this.state.filled = true;
 	        }
 
-	        var input = (0, reactHelpers.isMuiElement)(child, ['Select']) ? child.props.input : child;
+	        var input = (0, reactHelpers.isMuiElement)(child, ['Select', 'NativeSelect']) ? child.props.input : child;
 
 	        if (input && (0, Input_1.isAdornedStart)(input.props)) {
 	          _this.state.adornedStart = true;
@@ -40601,8 +40601,8 @@
 	    // It's most likely on issue on userland.
 	    minWidth: 16,
 	    minHeight: 16,
-	    maxWidth: 'calc(100vw - 32px)',
-	    maxHeight: 'calc(100vh - 32px)',
+	    maxWidth: 'calc(100% - 32px)',
+	    maxHeight: 'calc(100% - 32px)',
 	    // We disable the focus ring for mouse, touch and keyboard users.
 	    outline: 'none'
 	  }
@@ -41320,7 +41320,7 @@
 
 	MuiThemeProvider.propTypes = {
 	  /**
-	   * You can only provide a single element with react@15, a node with react@16.
+	   * You can wrap a node.
 	   */
 	  children: _propTypes.default.node.isRequired,
 
@@ -43254,7 +43254,7 @@
 	    // specZ: The maximum height of a simple menu should be one or more rows less than the view
 	    // height. This ensures a tappable area outside of the simple menu with which to dismiss
 	    // the menu.
-	    maxHeight: 'calc(100vh - 96px)',
+	    maxHeight: 'calc(100% - 96px)',
 	    // Add iOS momentum scrolling.
 	    WebkitOverflowScrolling: 'touch'
 	  }
@@ -43537,8 +43537,6 @@
 
 	var _keycode = interopRequireDefault(keycode);
 
-	var _warning = interopRequireDefault(browser);
-
 	var _Menu = interopRequireDefault(Menu_1);
 
 
@@ -43589,11 +43587,6 @@
 	      enumerable: true,
 	      writable: true,
 	      value: _this.props.open !== undefined
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "isControlled", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: _this.props.value != null
 	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "updateDisplayWidth", {
 	      configurable: true,
 	      enumerable: true,
@@ -43767,7 +43760,7 @@
 	        this.forceUpdate();
 	      }
 
-	      if (this.props.autoFocus && !this.props.native) {
+	      if (this.props.autoFocus) {
 	        this.displayNode.focus();
 	      }
 	    }
@@ -43786,7 +43779,7 @@
 	          autoWidth = _props.autoWidth,
 	          children = _props.children,
 	          classes = _props.classes,
-	          classNameProp = _props.className,
+	          className = _props.className,
 	          disabled = _props.disabled,
 	          displayEmpty = _props.displayEmpty,
 	          IconComponent = _props.IconComponent,
@@ -43795,7 +43788,6 @@
 	          MenuProps = _props$MenuProps === void 0 ? {} : _props$MenuProps,
 	          multiple = _props.multiple,
 	          name = _props.name,
-	          native = _props.native,
 	          onBlur = _props.onBlur,
 	          onChange = _props.onChange,
 	          onClose = _props.onClose,
@@ -43809,34 +43801,8 @@
 	          _props$type = _props.type,
 	          type = _props$type === void 0 ? 'hidden' : _props$type,
 	          value = _props.value,
-	          other = (0, _objectWithoutProperties2.default)(_props, ["autoWidth", "children", "classes", "className", "disabled", "displayEmpty", "IconComponent", "inputRef", "MenuProps", "multiple", "name", "native", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value"]);
+	          other = (0, _objectWithoutProperties2.default)(_props, ["autoWidth", "children", "classes", "className", "disabled", "displayEmpty", "IconComponent", "inputRef", "MenuProps", "multiple", "name", "onBlur", "onChange", "onClose", "onFocus", "onOpen", "open", "readOnly", "renderValue", "SelectDisplayProps", "tabIndex", "type", "value"]);
 	      var open = this.isOpenControlled && this.displayNode ? openProp : this.state.open;
-
-	      if (native) {
-	        (0, _warning.default)(multiple === false, 'Material-UI: you can not use the `native={true}` and `multiple={true}` properties ' + 'at the same time on a `Select` component.');
-	        (0, _warning.default)(!renderValue, 'Material-UI: the `renderValue` property is not used by the native implementation.');
-	        (0, _warning.default)(!displayEmpty, 'Material-UI: the `displayEmpty` property is not used by the native implementation.');
-	        return _react.default.createElement("div", {
-	          className: classes.root
-	        }, _react.default.createElement("select", (0, _extends2.default)({
-	          className: (0, _classnames.default)(classes.select, (0, _defineProperty2.default)({}, classes.disabled, disabled), classNameProp),
-	          name: name,
-	          disabled: disabled,
-	          onBlur: onBlur,
-	          onChange: onChange,
-	          onFocus: onFocus,
-	          value: value,
-	          readOnly: readOnly,
-	          ref: inputRef
-	        }, other), children), _react.default.createElement(IconComponent, {
-	          className: classes.icon
-	        }));
-	      }
-
-	      if (!this.isControlled) {
-	        throw new Error('Material-UI: the `value` property is required ' + 'when using the `Select` component with `native=false` (default).');
-	      }
-
 	      var display;
 	      var displaySingle = '';
 	      var displayMultiple = [];
@@ -43902,7 +43868,7 @@
 	      return _react.default.createElement("div", {
 	        className: classes.root
 	      }, _react.default.createElement("div", (0, _extends2.default)({
-	        className: (0, _classnames.default)(classes.select, classes.selectMenu, (0, _defineProperty2.default)({}, classes.disabled, disabled), classNameProp),
+	        className: (0, _classnames.default)(classes.select, classes.selectMenu, (0, _defineProperty2.default)({}, classes.disabled, disabled), className),
 	        ref: this.handleDisplayRef,
 	        "aria-pressed": open ? 'true' : 'false',
 	        tabIndex: tabIndex,
@@ -43959,7 +43925,7 @@
 
 	  /**
 	   * The option elements to populate the select with.
-	   * Can be some `MenuItem` when `native` is false and `option` when `native` is true.
+	   * Can be some `<MenuItem>` elements.
 	   */
 	  children: _propTypes.default.node,
 
@@ -43981,7 +43947,6 @@
 
 	  /**
 	   * If `true`, the selected item is displayed even if its value is empty.
-	   * You can only use it when the `native` property is `false` (default).
 	   */
 	  displayEmpty: _propTypes.default.bool,
 
@@ -44002,7 +43967,6 @@
 
 	  /**
 	   * If true, `value` must be an array and the menu will support multiple selections.
-	   * You can only use it when the `native` property is `false` (default).
 	   */
 	  multiple: _propTypes.default.bool,
 
@@ -44010,11 +43974,6 @@
 	   * Name attribute of the `select` or hidden `input` element.
 	   */
 	  name: _propTypes.default.string,
-
-	  /**
-	   * If `true`, the component will be using a native `select` element.
-	   */
-	  native: _propTypes.default.bool,
 
 	  /**
 	   * @ignore
@@ -44026,7 +43985,7 @@
 	   *
 	   * @param {object} event The event source of the callback.
 	   * You can pull out the new value by accessing `event.target.value`.
-	   * @param {object} [child] The react element that was selected when `native` is `false` (default).
+	   * @param {object} [child] The react element that was selected.
 	   */
 	  onChange: _propTypes.default.func,
 
@@ -44053,7 +44012,6 @@
 
 	  /**
 	   * Control `select` open state.
-	   * You can only use it when the `native` property is `false` (default).
 	   */
 	  open: _propTypes.default.bool,
 
@@ -44064,7 +44022,6 @@
 
 	  /**
 	   * Render the selected value.
-	   * You can only use it when the `native` property is `false` (default).
 	   *
 	   * @param {*} value The `value` provided to the component.
 	   * @returns {ReactElement}
@@ -44088,9 +44045,8 @@
 
 	  /**
 	   * The input value.
-	   * This property is required when the `native` property is `false` (default).
 	   */
-	  value: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number, _propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number]))])
+	  value: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number, _propTypes.default.arrayOf(_propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number]))]).isRequired
 	};
 	var _default = SelectInput;
 	exports.default = _default;
@@ -44451,7 +44407,113 @@
 
 	unwrapExports(ArrowDropDown_1);
 
-	var Select_1 = createCommonjsModule(function (module, exports) {
+	var NativeSelectInput_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _classnames = interopRequireDefault(classnames);
+
+	/**
+	 * @ignore - internal component.
+	 */
+	function NativeSelectInput(props) {
+	  var children = props.children,
+	      classes = props.classes,
+	      className = props.className,
+	      disabled = props.disabled,
+	      IconComponent = props.IconComponent,
+	      inputRef = props.inputRef,
+	      name = props.name,
+	      onChange = props.onChange,
+	      value = props.value,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "disabled", "IconComponent", "inputRef", "name", "onChange", "value"]);
+	  return _react.default.createElement("div", {
+	    className: classes.root
+	  }, _react.default.createElement("select", (0, _extends2.default)({
+	    className: (0, _classnames.default)(classes.select, (0, _defineProperty2.default)({}, classes.disabled, disabled), className),
+	    name: name,
+	    disabled: disabled,
+	    onChange: onChange,
+	    value: value,
+	    ref: inputRef
+	  }, other), children), _react.default.createElement(IconComponent, {
+	    className: classes.icon
+	  }));
+	}
+
+	NativeSelectInput.propTypes = {
+	  /**
+	   * The option elements to populate the select with.
+	   * Can be some `<option>` elements.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * The CSS class name of the select element.
+	   */
+	  className: _propTypes.default.string,
+
+	  /**
+	   * If `true`, the select will be disabled.
+	   */
+	  disabled: _propTypes.default.bool,
+
+	  /**
+	   * The icon that displays the arrow.
+	   */
+	  IconComponent: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
+
+	  /**
+	   * Use that property to pass a ref callback to the native select element.
+	   */
+	  inputRef: _propTypes.default.func,
+
+	  /**
+	   * Name attribute of the `select` or hidden `input` element.
+	   */
+	  name: _propTypes.default.string,
+
+	  /**
+	   * Callback function fired when a menu item is selected.
+	   *
+	   * @param {object} event The event source of the callback.
+	   * You can pull out the new value by accessing `event.target.value`.
+	   */
+	  onChange: _propTypes.default.func,
+
+	  /**
+	   * The input value.
+	   */
+	  value: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number])
+	};
+	var _default = NativeSelectInput;
+	exports.default = _default;
+	});
+
+	unwrapExports(NativeSelectInput_1);
+
+	var NativeSelect_1 = createCommonjsModule(function (module, exports) {
 
 
 
@@ -44468,7 +44530,7 @@
 
 	var _propTypes = interopRequireDefault(propTypes);
 
-	var _SelectInput = interopRequireDefault(SelectInput_1);
+	var _NativeSelectInput = interopRequireDefault(NativeSelectInput_1);
 
 	var _withStyles = interopRequireDefault(withStyles_1);
 
@@ -44477,7 +44539,6 @@
 	var _Input = interopRequireDefault(Input$1);
 
 	// @inheritedComponent Input
-	// Import to enforce the CSS injection order
 	var styles = function styles(theme) {
 	  return {
 	    root: {
@@ -44539,7 +44600,122 @@
 	    }
 	  };
 	};
+	/**
+	 * An alternative to `<Select native />` with a much smaller dependency graph.
+	 */
 
+
+	exports.styles = styles;
+
+	function NativeSelect(props) {
+	  var children = props.children,
+	      classes = props.classes,
+	      IconComponent = props.IconComponent,
+	      input = props.input,
+	      inputProps = props.inputProps,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "IconComponent", "input", "inputProps"]);
+	  return _react.default.cloneElement(input, (0, _objectSpread2.default)({
+	    // Most of the logic is implemented in `NativeSelectInput`.
+	    // The `Select` component is a simple API wrapper to expose something better to play with.
+	    inputComponent: _NativeSelectInput.default,
+	    inputProps: (0, _objectSpread2.default)({
+	      children: children,
+	      classes: classes,
+	      IconComponent: IconComponent,
+	      type: undefined
+	    }, inputProps, input ? input.props.inputProps : {})
+	  }, other));
+	}
+
+	NativeSelect.propTypes = {
+	  /**
+	   * The option elements to populate the select with.
+	   * Can be some `<option>` elements.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * The icon that displays the arrow.
+	   */
+	  IconComponent: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
+
+	  /**
+	   * An `Input` element; does not have to be a material-ui specific `Input`.
+	   */
+	  input: _propTypes.default.element,
+
+	  /**
+	   * Properties applied to the `input` element.
+	   * The properties are applied on the `select` element.
+	   */
+	  inputProps: _propTypes.default.object,
+
+	  /**
+	   * Callback function fired when a menu item is selected.
+	   *
+	   * @param {object} event The event source of the callback.
+	   * You can pull out the new value by accessing `event.target.value`.
+	   */
+	  onChange: _propTypes.default.func,
+
+	  /**
+	   * The input value.
+	   */
+	  value: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.number])
+	};
+	NativeSelect.defaultProps = {
+	  IconComponent: _ArrowDropDown.default,
+	  input: _react.default.createElement(_Input.default, null)
+	};
+	NativeSelect.muiName = 'NativeSelect';
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiNativeSelect'
+	})(NativeSelect);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(NativeSelect_1);
+	var NativeSelect_2 = NativeSelect_1.styles;
+
+	var Select_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.styles = void 0;
+
+	var _objectSpread2 = interopRequireDefault(objectSpread);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _SelectInput = interopRequireDefault(SelectInput_1);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+	var _ArrowDropDown = interopRequireDefault(ArrowDropDown_1);
+
+	var _Input = interopRequireDefault(Input$1);
+
+
+
+	var _NativeSelectInput = interopRequireDefault(NativeSelectInput_1);
+
+	// @inheritedComponent Input
+	var styles = NativeSelect_1.styles;
 	exports.styles = styles;
 
 	function Select(props) {
@@ -44559,25 +44735,30 @@
 	      renderValue = props.renderValue,
 	      SelectDisplayProps = props.SelectDisplayProps,
 	      other = (0, _objectWithoutProperties2.default)(props, ["autoWidth", "children", "classes", "displayEmpty", "IconComponent", "input", "inputProps", "MenuProps", "multiple", "native", "onClose", "onOpen", "open", "renderValue", "SelectDisplayProps"]);
+	  var inputComponent = native ? _NativeSelectInput.default : _SelectInput.default;
+	  var inputNativeProps = {
+	    children: children,
+	    classes: classes,
+	    IconComponent: IconComponent,
+	    type: undefined // We render a select. We can ignore the type provided by the `Input`.
+
+	  };
 	  return _react.default.cloneElement(input, (0, _objectSpread2.default)({
 	    // Most of the logic is implemented in `SelectInput`.
 	    // The `Select` component is a simple API wrapper to expose something better to play with.
-	    inputComponent: _SelectInput.default,
-	    inputProps: (0, _objectSpread2.default)({
+	    inputComponent: inputComponent,
+	    inputProps: (0, _objectSpread2.default)({}, inputNativeProps, native ? {} : {
 	      autoWidth: autoWidth,
 	      children: children,
 	      classes: classes,
 	      displayEmpty: displayEmpty,
-	      IconComponent: IconComponent,
 	      MenuProps: MenuProps,
 	      multiple: multiple,
-	      native: native,
 	      onClose: onClose,
 	      onOpen: onOpen,
 	      open: open,
 	      renderValue: renderValue,
-	      SelectDisplayProps: SelectDisplayProps,
-	      type: undefined
+	      SelectDisplayProps: SelectDisplayProps
 	    }, inputProps, input ? input.props.inputProps : {})
 	  }, other));
 	}
@@ -44700,7 +44881,7 @@
 	};
 	Select.muiName = 'Select';
 
-	var _default = (0, _withStyles.default)(styles, {
+	var _default = (0, _withStyles.default)(NativeSelect_1.styles, {
 	  name: 'MuiSelect'
 	})(Select);
 
@@ -49894,7 +50075,9 @@
 	      onClick: closeDialog$$1
 	    }, "Done"))), react.createElement(DialogContent$2, {
 	      className: classes.content
-	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can leave the default settings if you want to try out this app."), react.createElement(FormControl$2, null, react.createElement(InputLabel$2, {
+	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can leave the default settings if you want to try out this app."), react.createElement(FormControl$2, {
+	      margin: "normal"
+	    }, react.createElement(InputLabel$2, {
 	      htmlFor: "crypto-select"
 	    }, "Currency"), react.createElement(Select$2, {
 	      inputProps: {
@@ -49905,7 +50088,23 @@
 	    }, [ethereum, monero].map(miner => react.createElement(MenuItem$2, {
 	      key: miner.name,
 	      value: miner.identifier
-	    }, miner.name)))), react.createElement(TextField$2, {
+	    }, miner.name)), react.createElement(MenuItem$2, {
+	      disabled: true,
+	      value: null
+	    }, "More coming soon"))), react.createElement(FormControl$2, {
+	      margin: "normal"
+	    }, react.createElement(InputLabel$2, {
+	      htmlFor: "pool-select"
+	    }, "Mining Pool"), react.createElement(Select$2, {
+	      disabled: true,
+	      inputProps: {
+	        id: 'pool-select'
+	      },
+	      onChange: this.handleCurrencyChange,
+	      value: selectedMinerIdentifier
+	    }, react.createElement(MenuItem$2, {
+	      value: miner.identifier
+	    }, "Coming soon"))), react.createElement(TextField$2, {
 	      disabled: isMining,
 	      fullWidth: true,
 	      helperText: react.createElement(ExternalLinkEnhanced, {

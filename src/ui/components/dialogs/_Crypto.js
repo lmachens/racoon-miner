@@ -83,7 +83,7 @@ class CryptoDialog extends PureComponent {
             Before you can start mining, you have to tell the raccoon what to mine and who gets the
             profit. You can leave the default settings if you want to try out this app.
           </DialogContentText>
-          <FormControl>
+          <FormControl margin="normal">
             <InputLabel htmlFor="crypto-select">Currency</InputLabel>
             <Select
               inputProps={{
@@ -97,6 +97,22 @@ class CryptoDialog extends PureComponent {
                   {miner.name}
                 </MenuItem>
               ))}
+              <MenuItem disabled value={null}>
+                More coming soon
+              </MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl margin="normal">
+            <InputLabel htmlFor="pool-select">Mining Pool</InputLabel>
+            <Select
+              disabled
+              inputProps={{
+                id: 'pool-select'
+              }}
+              onChange={this.handleCurrencyChange}
+              value={selectedMinerIdentifier}
+            >
+              <MenuItem value={miner.identifier}>Coming soon</MenuItem>
             </Select>
           </FormControl>
           <TextField
