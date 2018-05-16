@@ -87,7 +87,6 @@ class CryptoDialog extends PureComponent {
             endAdornment: (
               <InputAdornment position="end">
                 <InfoButton
-                  icon
                   popover={
                     <Typography>
                       {isValidAddress ? 'Valid address' : `Invalid address! ${miner.addressHint}`}

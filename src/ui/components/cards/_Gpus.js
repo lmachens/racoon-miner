@@ -17,7 +17,7 @@ class GpusCard extends Component {
     const { classes, totalLoad } = this.props;
 
     return (
-      <StatusCard>
+      <StatusCard helperText="Your current GPU load">
         <Typography className={classes.load} variant="display1">
           {totalLoad.toString()}%
         </Typography>

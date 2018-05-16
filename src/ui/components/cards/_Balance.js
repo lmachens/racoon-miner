@@ -18,7 +18,7 @@ class BalanceCard extends Component {
     const { classes, miner, workerStats } = this.props;
 
     return (
-      <StatusCard>
+      <StatusCard helperText="This is the balance reported by the mining pool">
         <Typography className={classes.load} variant="display1">
           {(workerStats.unpaidBalance || 0).toFixed(10)} {miner.currency}
         </Typography>

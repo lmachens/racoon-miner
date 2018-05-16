@@ -33831,469 +33831,6 @@
 	var Card_2$1 = Card$1.CardContent;
 	var Card_3 = Card$1.CardHeader;
 
-	var CardContent_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var styles = function styles(theme) {
-	  return {
-	    root: theme.mixins.gutters({
-	      paddingTop: theme.spacing.unit * 2,
-	      paddingBottom: theme.spacing.unit * 2,
-	      '&:last-child': {
-	        paddingBottom: theme.spacing.unit * 3
-	      }
-	    })
-	  };
-	};
-
-	exports.styles = styles;
-
-	function CardContent(props) {
-	  var classes = props.classes,
-	      className = props.className,
-	      Component = props.component,
-	      other = (0, _objectWithoutProperties2.default)(props, ["classes", "className", "component"]);
-	  return _react.default.createElement(Component, (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, className)
-	  }, other));
-	}
-
-	CardContent.propTypes = {
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * The component used for the root node.
-	   * Either a string to use a DOM element or a component.
-	   */
-	  component: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func])
-	};
-	CardContent.defaultProps = {
-	  component: 'div'
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiCardContent'
-	})(CardContent);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(CardContent_1);
-	var CardContent_2 = CardContent_1.styles;
-
-	var CardContent$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _CardContent.default;
-	  }
-	});
-
-	var _CardContent = interopRequireDefault(CardContent_1);
-	});
-
-	var CardContent$2 = unwrapExports(CardContent$1);
-
-	var Typography_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-
-
-	var styles = function styles(theme) {
-	  return {
-	    root: {
-	      display: 'block',
-	      margin: 0
-	    },
-	    display4: theme.typography.display4,
-	    display3: theme.typography.display3,
-	    display2: theme.typography.display2,
-	    display1: theme.typography.display1,
-	    headline: theme.typography.headline,
-	    title: theme.typography.title,
-	    subheading: theme.typography.subheading,
-	    body2: theme.typography.body2,
-	    body1: theme.typography.body1,
-	    caption: theme.typography.caption,
-	    button: theme.typography.button,
-	    alignLeft: {
-	      textAlign: 'left'
-	    },
-	    alignCenter: {
-	      textAlign: 'center'
-	    },
-	    alignRight: {
-	      textAlign: 'right'
-	    },
-	    alignJustify: {
-	      textAlign: 'justify'
-	    },
-	    noWrap: {
-	      overflow: 'hidden',
-	      textOverflow: 'ellipsis',
-	      whiteSpace: 'nowrap'
-	    },
-	    gutterBottom: {
-	      marginBottom: '0.35em'
-	    },
-	    paragraph: {
-	      marginBottom: theme.spacing.unit * 2
-	    },
-	    colorInherit: {
-	      color: 'inherit'
-	    },
-	    colorPrimary: {
-	      color: theme.palette.primary.main
-	    },
-	    colorSecondary: {
-	      color: theme.palette.secondary.main
-	    },
-	    colorTextSecondary: {
-	      color: theme.palette.text.secondary
-	    },
-	    colorError: {
-	      color: theme.palette.error.main
-	    }
-	  };
-	};
-
-	exports.styles = styles;
-
-	function Typography(props) {
-	  var _classNames;
-
-	  var align = props.align,
-	      classes = props.classes,
-	      classNameProp = props.className,
-	      componentProp = props.component,
-	      color = props.color,
-	      gutterBottom = props.gutterBottom,
-	      headlineMapping = props.headlineMapping,
-	      noWrap = props.noWrap,
-	      paragraph = props.paragraph,
-	      variant = props.variant,
-	      other = (0, _objectWithoutProperties2.default)(props, ["align", "classes", "className", "component", "color", "gutterBottom", "headlineMapping", "noWrap", "paragraph", "variant"]);
-	  var className = (0, _classnames.default)(classes.root, classes[variant], (_classNames = {}, (0, _defineProperty2.default)(_classNames, classes["color".concat((0, helpers.capitalize)(color))], color !== 'default'), (0, _defineProperty2.default)(_classNames, classes.noWrap, noWrap), (0, _defineProperty2.default)(_classNames, classes.gutterBottom, gutterBottom), (0, _defineProperty2.default)(_classNames, classes.paragraph, paragraph), (0, _defineProperty2.default)(_classNames, classes["align".concat((0, helpers.capitalize)(align))], align !== 'inherit'), _classNames), classNameProp);
-	  var Component = componentProp || (paragraph ? 'p' : headlineMapping[variant]) || 'span';
-	  return _react.default.createElement(Component, (0, _extends2.default)({
-	    className: className
-	  }, other));
-	}
-
-	Typography.propTypes = {
-	  /**
-	   * Set the text-align on the component.
-	   */
-	  align: _propTypes.default.oneOf(['inherit', 'left', 'center', 'right', 'justify']),
-
-	  /**
-	   * The content of the component.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * The color of the component. It supports those theme colors that make sense for this component.
-	   */
-	  color: _propTypes.default.oneOf(['inherit', 'primary', 'textSecondary', 'secondary', 'error', 'default']),
-
-	  /**
-	   * The component used for the root node.
-	   * Either a string to use a DOM element or a component.
-	   * By default, it maps the variant to a good default headline component.
-	   */
-	  component: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
-
-	  /**
-	   * If `true`, the text will have a bottom margin.
-	   */
-	  gutterBottom: _propTypes.default.bool,
-
-	  /**
-	   * We are empirically mapping the variant property to a range of different DOM element types.
-	   * For instance, h1 to h6. If you wish to change that mapping, you can provide your own.
-	   * Alternatively, you can use the `component` property.
-	   */
-	  headlineMapping: _propTypes.default.object,
-
-	  /**
-	   * If `true`, the text will not wrap, but instead will truncate with an ellipsis.
-	   */
-	  noWrap: _propTypes.default.bool,
-
-	  /**
-	   * If `true`, the text will have a bottom margin.
-	   */
-	  paragraph: _propTypes.default.bool,
-
-	  /**
-	   * Applies the theme typography styles.
-	   */
-	  variant: _propTypes.default.oneOf(['display4', 'display3', 'display2', 'display1', 'headline', 'title', 'subheading', 'body2', 'body1', 'caption', 'button'])
-	};
-	Typography.defaultProps = {
-	  align: 'inherit',
-	  color: 'default',
-	  gutterBottom: false,
-	  headlineMapping: {
-	    display4: 'h1',
-	    display3: 'h1',
-	    display2: 'h1',
-	    display1: 'h1',
-	    headline: 'h1',
-	    title: 'h2',
-	    subheading: 'h3',
-	    body2: 'aside',
-	    body1: 'p'
-	  },
-	  noWrap: false,
-	  paragraph: false,
-	  variant: 'body1'
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiTypography'
-	})(Typography);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(Typography_1);
-	var Typography_2 = Typography_1.styles;
-
-	var Typography$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _Typography.default;
-	  }
-	});
-
-	var _Typography = interopRequireDefault(Typography_1);
-	});
-
-	var Typography$2 = unwrapExports(Typography$1);
-
-	var CardHeader_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var _Typography = interopRequireDefault(Typography$1);
-
-	var styles = function styles(theme) {
-	  return {
-	    root: theme.mixins.gutters({
-	      display: 'flex',
-	      alignItems: 'center',
-	      paddingTop: theme.spacing.unit * 2,
-	      paddingBottom: theme.spacing.unit * 2
-	    }),
-	    avatar: {
-	      flex: '0 0 auto',
-	      marginRight: theme.spacing.unit * 2
-	    },
-	    action: {
-	      flex: '0 0 auto',
-	      alignSelf: 'flex-start',
-	      marginTop: theme.spacing.unit * -1,
-	      marginRight: theme.spacing.unit * -2
-	    },
-	    content: {
-	      flex: '1 1 auto'
-	    },
-	    title: {},
-	    subheader: {}
-	  };
-	};
-
-	exports.styles = styles;
-
-	function CardHeader(props) {
-	  var action = props.action,
-	      avatar = props.avatar,
-	      classes = props.classes,
-	      classNameProp = props.className,
-	      Component = props.component,
-	      subheader = props.subheader,
-	      title = props.title,
-	      other = (0, _objectWithoutProperties2.default)(props, ["action", "avatar", "classes", "className", "component", "subheader", "title"]);
-	  return _react.default.createElement(Component, (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, classNameProp)
-	  }, other), avatar && _react.default.createElement("div", {
-	    className: classes.avatar
-	  }, avatar), _react.default.createElement("div", {
-	    className: classes.content
-	  }, _react.default.createElement(_Typography.default, {
-	    variant: avatar ? 'body2' : 'headline',
-	    component: "span",
-	    className: classes.title
-	  }, title), subheader && _react.default.createElement(_Typography.default, {
-	    variant: avatar ? 'body2' : 'body1',
-	    component: "span",
-	    color: "textSecondary",
-	    className: classes.subheader
-	  }, subheader)), action && _react.default.createElement("div", {
-	    className: classes.action
-	  }, action));
-	}
-
-	CardHeader.propTypes = {
-	  /**
-	   * The action to display in the card header.
-	   */
-	  action: _propTypes.default.node,
-
-	  /**
-	   * The Avatar for the Card Header.
-	   */
-	  avatar: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * The component used for the root node.
-	   * Either a string to use a DOM element or a component.
-	   */
-	  component: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
-
-	  /**
-	   * The content of the component.
-	   */
-	  subheader: _propTypes.default.node,
-
-	  /**
-	   * The content of the Card Title.
-	   */
-	  title: _propTypes.default.node
-	};
-	CardHeader.defaultProps = {
-	  component: 'div'
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiCardHeader'
-	})(CardHeader);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(CardHeader_1);
-	var CardHeader_2 = CardHeader_1.styles;
-
-	var CardHeader$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _CardHeader.default;
-	  }
-	});
-
-	var _CardHeader = interopRequireDefault(CardHeader_1);
-	});
-
-	var CardHeader$2 = unwrapExports(CardHeader$1);
-
 	var classCallCheck$1 = createCommonjsModule(function (module, exports) {
 
 	exports.__esModule = true;
@@ -39073,26 +38610,22 @@
 
 	  render() {
 	    const {
+	      className,
 	      children,
 	      popover,
-	      icon
+	      iconProps
 	    } = this.props;
 	    const {
 	      open
 	    } = this.state;
-	    return react.createElement(react_5, null, icon && react.createElement(IconButton$2, {
+	    return react.createElement("div", {
+	      className: className
+	    }, react.createElement(IconButton$2, _extends$5({
 	      buttonRef: node => {
 	        this.anchorEl = node;
 	      },
 	      onClick: this.handleClickButton
-	    }, children), !icon && react.createElement(Button$2, {
-	      buttonRef: node => {
-	        this.anchorEl = node;
-	      },
-	      color: "primary",
-	      onClick: this.handleClickButton,
-	      size: "small"
-	    }, children), react.createElement(enhancedPopover, {
+	    }, iconProps), children), react.createElement(enhancedPopover, {
 	      anchorEl: this.anchorEl,
 	      onClose: this.handleClose,
 	      open: open
@@ -39103,22 +38636,245 @@
 
 	InfoButton.propTypes = {
 	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+	  className: propTypes.string,
 	  popover: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  icon: propTypes.bool
+	  iconProps: propTypes.object
 	};
+
+	var Typography_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.styles = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _classnames = interopRequireDefault(classnames);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+
+
+	var styles = function styles(theme) {
+	  return {
+	    root: {
+	      display: 'block',
+	      margin: 0
+	    },
+	    display4: theme.typography.display4,
+	    display3: theme.typography.display3,
+	    display2: theme.typography.display2,
+	    display1: theme.typography.display1,
+	    headline: theme.typography.headline,
+	    title: theme.typography.title,
+	    subheading: theme.typography.subheading,
+	    body2: theme.typography.body2,
+	    body1: theme.typography.body1,
+	    caption: theme.typography.caption,
+	    button: theme.typography.button,
+	    alignLeft: {
+	      textAlign: 'left'
+	    },
+	    alignCenter: {
+	      textAlign: 'center'
+	    },
+	    alignRight: {
+	      textAlign: 'right'
+	    },
+	    alignJustify: {
+	      textAlign: 'justify'
+	    },
+	    noWrap: {
+	      overflow: 'hidden',
+	      textOverflow: 'ellipsis',
+	      whiteSpace: 'nowrap'
+	    },
+	    gutterBottom: {
+	      marginBottom: '0.35em'
+	    },
+	    paragraph: {
+	      marginBottom: theme.spacing.unit * 2
+	    },
+	    colorInherit: {
+	      color: 'inherit'
+	    },
+	    colorPrimary: {
+	      color: theme.palette.primary.main
+	    },
+	    colorSecondary: {
+	      color: theme.palette.secondary.main
+	    },
+	    colorTextSecondary: {
+	      color: theme.palette.text.secondary
+	    },
+	    colorError: {
+	      color: theme.palette.error.main
+	    }
+	  };
+	};
+
+	exports.styles = styles;
+
+	function Typography(props) {
+	  var _classNames;
+
+	  var align = props.align,
+	      classes = props.classes,
+	      classNameProp = props.className,
+	      componentProp = props.component,
+	      color = props.color,
+	      gutterBottom = props.gutterBottom,
+	      headlineMapping = props.headlineMapping,
+	      noWrap = props.noWrap,
+	      paragraph = props.paragraph,
+	      variant = props.variant,
+	      other = (0, _objectWithoutProperties2.default)(props, ["align", "classes", "className", "component", "color", "gutterBottom", "headlineMapping", "noWrap", "paragraph", "variant"]);
+	  var className = (0, _classnames.default)(classes.root, classes[variant], (_classNames = {}, (0, _defineProperty2.default)(_classNames, classes["color".concat((0, helpers.capitalize)(color))], color !== 'default'), (0, _defineProperty2.default)(_classNames, classes.noWrap, noWrap), (0, _defineProperty2.default)(_classNames, classes.gutterBottom, gutterBottom), (0, _defineProperty2.default)(_classNames, classes.paragraph, paragraph), (0, _defineProperty2.default)(_classNames, classes["align".concat((0, helpers.capitalize)(align))], align !== 'inherit'), _classNames), classNameProp);
+	  var Component = componentProp || (paragraph ? 'p' : headlineMapping[variant]) || 'span';
+	  return _react.default.createElement(Component, (0, _extends2.default)({
+	    className: className
+	  }, other));
+	}
+
+	Typography.propTypes = {
+	  /**
+	   * Set the text-align on the component.
+	   */
+	  align: _propTypes.default.oneOf(['inherit', 'left', 'center', 'right', 'justify']),
+
+	  /**
+	   * The content of the component.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * @ignore
+	   */
+	  className: _propTypes.default.string,
+
+	  /**
+	   * The color of the component. It supports those theme colors that make sense for this component.
+	   */
+	  color: _propTypes.default.oneOf(['inherit', 'primary', 'textSecondary', 'secondary', 'error', 'default']),
+
+	  /**
+	   * The component used for the root node.
+	   * Either a string to use a DOM element or a component.
+	   * By default, it maps the variant to a good default headline component.
+	   */
+	  component: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
+
+	  /**
+	   * If `true`, the text will have a bottom margin.
+	   */
+	  gutterBottom: _propTypes.default.bool,
+
+	  /**
+	   * We are empirically mapping the variant property to a range of different DOM element types.
+	   * For instance, h1 to h6. If you wish to change that mapping, you can provide your own.
+	   * Alternatively, you can use the `component` property.
+	   */
+	  headlineMapping: _propTypes.default.object,
+
+	  /**
+	   * If `true`, the text will not wrap, but instead will truncate with an ellipsis.
+	   */
+	  noWrap: _propTypes.default.bool,
+
+	  /**
+	   * If `true`, the text will have a bottom margin.
+	   */
+	  paragraph: _propTypes.default.bool,
+
+	  /**
+	   * Applies the theme typography styles.
+	   */
+	  variant: _propTypes.default.oneOf(['display4', 'display3', 'display2', 'display1', 'headline', 'title', 'subheading', 'body2', 'body1', 'caption', 'button'])
+	};
+	Typography.defaultProps = {
+	  align: 'inherit',
+	  color: 'default',
+	  gutterBottom: false,
+	  headlineMapping: {
+	    display4: 'h1',
+	    display3: 'h1',
+	    display2: 'h1',
+	    display1: 'h1',
+	    headline: 'h1',
+	    title: 'h2',
+	    subheading: 'h3',
+	    body2: 'aside',
+	    body1: 'p'
+	  },
+	  noWrap: false,
+	  paragraph: false,
+	  variant: 'body1'
+	};
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiTypography'
+	})(Typography);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(Typography_1);
+	var Typography_2 = Typography_1.styles;
+
+	var Typography$1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "default", {
+	  enumerable: true,
+	  get: function get() {
+	    return _Typography.default;
+	  }
+	});
+
+	var _Typography = interopRequireDefault(Typography_1);
+	});
+
+	var Typography$2 = unwrapExports(Typography$1);
 
 	const styles$2 = {
 	  root: {
 	    textAlign: 'center',
-	    '& :last-child': {
-	      paddingBottom: 8
-	    }
+	    padding: 16,
+	    position: 'relative'
 	  },
-	  header: {
-	    padding: '8 16 0 16'
+	  info: {
+	    position: 'absolute',
+	    top: 0,
+	    right: 0
 	  },
-	  content: {
-	    padding: '0 16 0 16'
+	  iconButton: {
+	    height: 24,
+	    width: 24
+	  },
+	  helpIcon: {
+	    height: 18,
+	    width: 18
 	  }
 	};
 
@@ -39126,27 +38882,24 @@
 	  classes,
 	  className,
 	  helperText,
-	  children,
-	  title
+	  children
 	}) => react.createElement(Card$2, {
 	  className: classnames(classes.root, className)
-	}, react.createElement(CardHeader$2, {
-	  action: helperText && react.createElement(InfoButton, {
-	    icon: true,
-	    popover: react.createElement(Typography$2, null, helperText)
-	  }, react.createElement(HelpIcon, null)),
-	  className: classes.header,
-	  subheader: title
-	}), react.createElement(CardContent$2, {
-	  className: classes.content
-	}, children));
+	}, helperText && react.createElement(InfoButton, {
+	  className: classes.info,
+	  iconProps: {
+	    className: classes.iconButton
+	  },
+	  popover: react.createElement(Typography$2, null, helperText)
+	}, react.createElement(HelpIcon, {
+	  className: classes.helpIcon
+	})), children);
 
 	StatusCard.propTypes = {
 	  helperText: propTypes.string,
 	  classes: propTypes.object.isRequired,
 	  className: propTypes.string,
-	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  title: propTypes.string
+	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
 	};
 	const enhance = styles_3(styles$2)(StatusCard);
 
@@ -49287,7 +49040,9 @@
 	      miner,
 	      workerStats
 	    } = this.props;
-	    return react.createElement(enhance, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, {
+	      helperText: "This is the balance reported by the mining pool"
+	    }, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, (workerStats.unpaidBalance || 0).toFixed(10), " ", miner.currency), react.createElement(Typography$2, {
@@ -49329,7 +49084,9 @@
 	      classes,
 	      totalLoad
 	    } = this.props;
-	    return react.createElement(enhance, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, {
+	      helperText: "Your current CPU load"
+	    }, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, totalLoad.toString(), "%"), react.createElement(Typography$2, {
@@ -49374,7 +49131,9 @@
 	      classes,
 	      totalLoad
 	    } = this.props;
-	    return react.createElement(enhance, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, {
+	      helperText: "Your current GPU load"
+	    }, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, totalLoad.toString(), "%"), react.createElement(Typography$2, {
@@ -49421,7 +49180,9 @@
 	      classes,
 	      hashRate
 	    } = this.props;
-	    return react.createElement(enhance, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, {
+	      helperText: "The Hash Rate indicates your mining speed"
+	    }, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, hashRate, "H/s"), react.createElement(Typography$2, {
@@ -49818,7 +49579,6 @@
 	        endAdornment: react.createElement(InputAdornment$2, {
 	          position: "end"
 	        }, react.createElement(InfoButton, {
-	          icon: true,
 	          popover: react.createElement(Typography$2, null, isValidAddress ? 'Valid address' : `Invalid address! ${miner.addressHint}`)
 	        }, isValidAddress ? react.createElement(DoneIcon, null) : react.createElement(ErrorIcon, {
 	          color: "error"

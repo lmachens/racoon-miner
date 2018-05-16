@@ -17,7 +17,7 @@ class HashRateCard extends Component {
     const { classes, hashRate } = this.props;
 
     return (
-      <StatusCard>
+      <StatusCard helperText="The Hash Rate indicates your mining speed">
         <Typography className={classes.load} variant="display1">
           {hashRate}H/s
         </Typography>

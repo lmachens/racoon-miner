@@ -1,6 +1,4 @@
 import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import { HelpIcon } from '../icons';
 import { InfoButton } from './_InfoButton';
 import PropTypes from 'prop-types';
@@ -12,32 +10,36 @@ import { withStyles } from '@material-ui/core/styles';
 const styles = {
   root: {
     textAlign: 'center',
-    '& :last-child': {
-      paddingBottom: 8
-    }
+    padding: 16,
+    position: 'relative'
   },
-  header: {
-    padding: '8 16 0 16'
+  info: {
+    position: 'absolute',
+    top: 0,
+    right: 0
   },
-  content: {
-    padding: '0 16 0 16'
+  iconButton: {
+    height: 24,
+    width: 24
+  },
+  helpIcon: {
+    height: 18,
+    width: 18
   }
 };
 
-const StatusCard = ({ classes, className, helperText, children, title }) => (
+const StatusCard = ({ classes, className, helperText, children }) => (
   <Card className={classNames(classes.root, className)}>
-    <CardHeader
-      action={
-        helperText && (
-          <InfoButton icon popover={<Typography>{helperText}</Typography>}>
-            <HelpIcon />
-          </InfoButton>
-        )
-      }
-      className={classes.header}
-      subheader={title}
-    />
-    <CardContent className={classes.content}>{children}</CardContent>
+    {helperText && (
+      <InfoButton
+        className={classes.info}
+        iconProps={{ className: classes.iconButton }}
+        popover={<Typography>{helperText}</Typography>}
+      >
+        <HelpIcon className={classes.helpIcon} />
+      </InfoButton>
+    )}
+    {children}
   </Card>
 );
 
@@ -45,8 +47,7 @@ StatusCard.propTypes = {
   helperText: PropTypes.string,
   classes: PropTypes.object.isRequired,
   className: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
-  title: PropTypes.string
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 };
 
 const enhance = withStyles(styles)(StatusCard);
