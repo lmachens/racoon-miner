@@ -1,18 +1,19 @@
-export { default as Dialog } from '@material-ui/core/Dialog';
-export { default as DialogActions } from '@material-ui/core/DialogActions';
-export { default as DialogContent } from '@material-ui/core/DialogContent';
-export { default as DialogContentText } from '@material-ui/core/DialogContentText';
-export { default as DialogTitle } from '@material-ui/core/DialogTitle';
-
-import { AppBar, Button, Dialog, DialogContent, Toolbar, Typography } from '../generic';
 import React, { PureComponent } from 'react';
 
+import { AppBar } from './_AppBar';
+import { Button } from './_Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
 import PropTypes from 'prop-types';
+import { Toolbar } from './_Toolbar';
+import { Typography } from './_Typography';
 import { bindActionCreators } from 'redux';
 import { closeDialog } from '../../../store/actions';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
+
+export { default as DialogContentText } from '@material-ui/core/DialogContentText';
 
 const styles = {
   appBar: {

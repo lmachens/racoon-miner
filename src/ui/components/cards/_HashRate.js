@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
+import { StatusCard, Typography } from '../generic';
 
-import { CardLayout } from '../../layouts';
 import PropTypes from 'prop-types';
-import { Typography } from '../generic';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
@@ -18,12 +17,12 @@ class HashRateCard extends Component {
     const { classes, hashRate } = this.props;
 
     return (
-      <CardLayout>
+      <StatusCard>
         <Typography className={classes.load} variant="display1">
           {hashRate}H/s
         </Typography>
         <Typography variant="caption">Hash Rate</Typography>
-      </CardLayout>
+      </StatusCard>
     );
   }
 }

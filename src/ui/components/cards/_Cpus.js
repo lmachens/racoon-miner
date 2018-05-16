@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
+import { StatusCard, Typography } from '../generic';
 
-import { CardLayout } from '../../layouts';
 import PropTypes from 'prop-types';
-import { Typography } from '../generic';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
@@ -18,12 +17,12 @@ class CpusCard extends Component {
     const { classes, totalLoad } = this.props;
 
     return (
-      <CardLayout>
+      <StatusCard>
         <Typography className={classes.load} variant="display1">
           {totalLoad.toString()}%
         </Typography>
         <Typography variant="caption">CPU</Typography>
-      </CardLayout>
+      </StatusCard>
     );
   }
 }

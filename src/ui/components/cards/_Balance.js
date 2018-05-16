@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
+import { StatusCard, Typography } from '../generic';
 
-import { CardLayout } from '../../layouts';
 import PropTypes from 'prop-types';
-import { Typography } from '../generic';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
 import { getMiner } from '../../../api/mining';
@@ -19,12 +18,12 @@ class BalanceCard extends Component {
     const { classes, miner, workerStats } = this.props;
 
     return (
-      <CardLayout>
+      <StatusCard>
         <Typography className={classes.load} variant="display1">
           {(workerStats.unpaidBalance || 0).toFixed(10)} {miner.currency}
         </Typography>
         <Typography variant="caption">Unpaid Balance</Typography>
-      </CardLayout>
+      </StatusCard>
     );
   }
 }

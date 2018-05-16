@@ -33831,162 +33831,6 @@
 	var Card_2$1 = Card$1.CardContent;
 	var Card_3 = Card$1.CardHeader;
 
-	var reactHelpers = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.cloneElementWithClassName = cloneElementWithClassName;
-	exports.cloneChildrenWithClassName = cloneChildrenWithClassName;
-	exports.isMuiElement = isMuiElement;
-	exports.isMuiComponent = isMuiComponent;
-
-	var _react = interopRequireDefault(react);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	/* eslint-disable import/prefer-default-export */
-	function cloneElementWithClassName(child, className) {
-	  return _react.default.cloneElement(child, {
-	    className: (0, _classnames.default)(child.props.className, className)
-	  });
-	}
-
-	function cloneChildrenWithClassName(children, className) {
-	  return _react.default.Children.map(children, function (child) {
-	    return _react.default.isValidElement(child) && cloneElementWithClassName(child, className);
-	  });
-	}
-
-	function isMuiElement(element, muiNames) {
-	  return _react.default.isValidElement(element) && muiNames.indexOf(element.type.muiName) !== -1;
-	}
-
-	function isMuiComponent(element, muiNames) {
-	  return muiNames.indexOf(element.muiName) !== -1;
-	}
-	});
-
-	unwrapExports(reactHelpers);
-	var reactHelpers_1 = reactHelpers.cloneElementWithClassName;
-	var reactHelpers_2 = reactHelpers.cloneChildrenWithClassName;
-	var reactHelpers_3 = reactHelpers.isMuiElement;
-	var reactHelpers_4 = reactHelpers.isMuiComponent;
-
-	var CardActions_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-
-
-
-
-	// So we don't have any override priority issue.
-	var styles = function styles(theme) {
-	  return {
-	    root: (0, _defineProperty2.default)({
-	      display: 'flex',
-	      alignItems: 'center',
-	      boxSizing: 'border-box',
-	      padding: "".concat(theme.spacing.unit, "px ").concat(theme.spacing.unit / 2, "px")
-	    }, theme.breakpoints.up('sm'), {
-	      padding: "".concat(theme.spacing.unit, "px ").concat(theme.spacing.unit * 1.5, "px")
-	    }),
-	    action: {
-	      margin: "0 ".concat(theme.spacing.unit / 2, "px")
-	    }
-	  };
-	};
-
-	exports.styles = styles;
-
-	function CardActions(props) {
-	  var disableActionSpacing = props.disableActionSpacing,
-	      children = props.children,
-	      classes = props.classes,
-	      className = props.className,
-	      other = (0, _objectWithoutProperties2.default)(props, ["disableActionSpacing", "children", "classes", "className"]);
-	  return _react.default.createElement("div", (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, className)
-	  }, other), disableActionSpacing ? children : (0, reactHelpers.cloneChildrenWithClassName)(children, classes.action));
-	}
-
-	CardActions.propTypes = {
-	  /**
-	   * The content of the component.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * If `true`, the card actions do not have additional margin.
-	   */
-	  disableActionSpacing: _propTypes.default.bool
-	};
-	CardActions.defaultProps = {
-	  disableActionSpacing: false
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiCardActions'
-	})(CardActions);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(CardActions_1);
-	var CardActions_2 = CardActions_1.styles;
-
-	var CardActions$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _CardActions.default;
-	  }
-	});
-
-	var _CardActions = interopRequireDefault(CardActions_1);
-	});
-
-	unwrapExports(CardActions$1);
-
 	var CardContent_1 = createCommonjsModule(function (module, exports) {
 
 
@@ -34449,6 +34293,1447 @@
 	});
 
 	var CardHeader$2 = unwrapExports(CardHeader$1);
+
+	var classCallCheck$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+	exports.default = function (instance, Constructor) {
+	  if (!(instance instanceof Constructor)) {
+	    throw new TypeError("Cannot call a class as a function");
+	  }
+	};
+	});
+
+	unwrapExports(classCallCheck$1);
+
+	var iterator$2 = createCommonjsModule(function (module) {
+	module.exports = { "default": iterator, __esModule: true };
+	});
+
+	unwrapExports(iterator$2);
+
+	var symbol$2 = createCommonjsModule(function (module) {
+	module.exports = { "default": symbol, __esModule: true };
+	});
+
+	unwrapExports(symbol$2);
+
+	var _typeof_1$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+
+
+	var _iterator2 = _interopRequireDefault(iterator$2);
+
+
+
+	var _symbol2 = _interopRequireDefault(symbol$2);
+
+	var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.default) === "symbol" ? function (obj) {
+	  return typeof obj === "undefined" ? "undefined" : _typeof(obj);
+	} : function (obj) {
+	  return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
+	};
+	});
+
+	unwrapExports(_typeof_1$1);
+
+	var possibleConstructorReturn$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+
+
+	var _typeof3 = _interopRequireDefault(_typeof_1$1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (self, call) {
+	  if (!self) {
+	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+	  }
+
+	  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
+	};
+	});
+
+	unwrapExports(possibleConstructorReturn$1);
+
+	var setPrototypeOf$3 = createCommonjsModule(function (module) {
+	module.exports = { "default": setPrototypeOf, __esModule: true };
+	});
+
+	unwrapExports(setPrototypeOf$3);
+
+	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+	_export(_export.S, 'Object', { create: _objectCreate });
+
+	var $Object$2 = _core.Object;
+	var create = function create(P, D) {
+	  return $Object$2.create(P, D);
+	};
+
+	var create$1 = createCommonjsModule(function (module) {
+	module.exports = { "default": create, __esModule: true };
+	});
+
+	unwrapExports(create$1);
+
+	var inherits$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+
+
+	var _setPrototypeOf2 = _interopRequireDefault(setPrototypeOf$3);
+
+
+
+	var _create2 = _interopRequireDefault(create$1);
+
+
+
+	var _typeof3 = _interopRequireDefault(_typeof_1$1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (subClass, superClass) {
+	  if (typeof superClass !== "function" && superClass !== null) {
+	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : (0, _typeof3.default)(superClass)));
+	  }
+
+	  subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, {
+	    constructor: {
+	      value: subClass,
+	      enumerable: false,
+	      writable: true,
+	      configurable: true
+	    }
+	  });
+	  if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass;
+	};
+	});
+
+	unwrapExports(inherits$1);
+
+	var setStatic_1 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var setStatic = function setStatic(key, value) {
+	  return function (BaseComponent) {
+	    /* eslint-disable no-param-reassign */
+	    BaseComponent[key] = value;
+	    /* eslint-enable no-param-reassign */
+	    return BaseComponent;
+	  };
+	};
+
+	exports.default = setStatic;
+	});
+
+	unwrapExports(setStatic_1);
+
+	var setDisplayName_1 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+
+
+	var _setStatic2 = _interopRequireDefault(setStatic_1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var setDisplayName = function setDisplayName(displayName) {
+	  return (0, _setStatic2.default)('displayName', displayName);
+	};
+
+	exports.default = setDisplayName;
+	});
+
+	unwrapExports(setDisplayName_1);
+
+	var shouldUpdate_1 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+
+
+	var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
+
+
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
+
+
+
+	var _inherits3 = _interopRequireDefault(inherits$1);
+
+
+
+
+
+	var _setDisplayName2 = _interopRequireDefault(setDisplayName_1);
+
+
+
+	var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var shouldUpdate = function shouldUpdate(test) {
+	  return function (BaseComponent) {
+	    var factory = (0, react.createFactory)(BaseComponent);
+
+	    var ShouldUpdate = function (_Component) {
+	      (0, _inherits3.default)(ShouldUpdate, _Component);
+
+	      function ShouldUpdate() {
+	        (0, _classCallCheck3.default)(this, ShouldUpdate);
+	        return (0, _possibleConstructorReturn3.default)(this, _Component.apply(this, arguments));
+	      }
+
+	      ShouldUpdate.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps) {
+	        return test(this.props, nextProps);
+	      };
+
+	      ShouldUpdate.prototype.render = function render() {
+	        return factory(this.props);
+	      };
+
+	      return ShouldUpdate;
+	    }(react.Component);
+
+	    {
+	      return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'shouldUpdate'))(ShouldUpdate);
+	    }
+	    return ShouldUpdate;
+	  };
+	};
+
+	exports.default = shouldUpdate;
+	});
+
+	unwrapExports(shouldUpdate_1);
+
+	var shallowEqual$1 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+
+
+	var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = _shallowEqual2.default;
+	});
+
+	unwrapExports(shallowEqual$1);
+
+	var pure_1 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+
+
+	var _shouldUpdate2 = _interopRequireDefault(shouldUpdate_1);
+
+
+
+	var _shallowEqual2 = _interopRequireDefault(shallowEqual$1);
+
+
+
+	var _setDisplayName2 = _interopRequireDefault(setDisplayName_1);
+
+
+
+	var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var pure = function pure(BaseComponent) {
+	  var hoc = (0, _shouldUpdate2.default)(function (props, nextProps) {
+	    return !(0, _shallowEqual2.default)(props, nextProps);
+	  });
+
+	  {
+	    return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'pure'))(hoc(BaseComponent));
+	  }
+
+	  return hoc(BaseComponent);
+	};
+
+	exports.default = pure;
+	});
+
+	unwrapExports(pure_1);
+
+	var SvgIcon_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.styles = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _classnames = interopRequireDefault(classnames);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+
+
+	var styles = function styles(theme) {
+	  return {
+	    root: {
+	      userSelect: 'none',
+	      fontSize: 24,
+	      width: '1em',
+	      height: '1em',
+	      display: 'inline-block',
+	      fill: 'currentColor',
+	      flexShrink: 0,
+	      transition: theme.transitions.create('fill', {
+	        duration: theme.transitions.duration.shorter
+	      })
+	    },
+	    colorPrimary: {
+	      color: theme.palette.primary.main
+	    },
+	    colorSecondary: {
+	      color: theme.palette.secondary.main
+	    },
+	    colorAction: {
+	      color: theme.palette.action.active
+	    },
+	    colorError: {
+	      color: theme.palette.error.main
+	    },
+	    colorDisabled: {
+	      color: theme.palette.action.disabled
+	    }
+	  };
+	};
+
+	exports.styles = styles;
+
+	function SvgIcon(props) {
+	  var children = props.children,
+	      classes = props.classes,
+	      classNameProp = props.className,
+	      color = props.color,
+	      nativeColor = props.nativeColor,
+	      titleAccess = props.titleAccess,
+	      viewBox = props.viewBox,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "color", "nativeColor", "titleAccess", "viewBox"]);
+	  var className = (0, _classnames.default)(classes.root, (0, _defineProperty2.default)({}, classes["color".concat((0, helpers.capitalize)(color))], color !== 'inherit'), classNameProp);
+	  return _react.default.createElement("svg", (0, _extends2.default)({
+	    className: className,
+	    focusable: "false",
+	    viewBox: viewBox,
+	    color: nativeColor,
+	    "aria-hidden": titleAccess ? 'false' : 'true'
+	  }, other), titleAccess ? _react.default.createElement("title", null, titleAccess) : null, children);
+	}
+
+	SvgIcon.propTypes = {
+	  /**
+	   * Node passed into the SVG element.
+	   */
+	  children: _propTypes.default.node.isRequired,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * @ignore
+	   */
+	  className: _propTypes.default.string,
+
+	  /**
+	   * The color of the component. It supports those theme colors that make sense for this component.
+	   * You can use the `nativeColor` property to apply a color attribute to the SVG element.
+	   */
+	  color: _propTypes.default.oneOf(['inherit', 'primary', 'secondary', 'action', 'error', 'disabled']),
+
+	  /**
+	   * Applies a color attribute to the SVG element.
+	   */
+	  nativeColor: _propTypes.default.string,
+
+	  /**
+	   * Provides a human-readable title for the element that contains it.
+	   * https://www.w3.org/TR/SVG-access/#Equivalent
+	   */
+	  titleAccess: _propTypes.default.string,
+
+	  /**
+	   * Allows you to redefine what the coordinates without units mean inside an SVG element.
+	   * For example, if the SVG element is 500 (width) by 200 (height),
+	   * and you pass viewBox="0 0 50 20",
+	   * this means that the coordinates inside the SVG will go from the top left corner (0,0)
+	   * to bottom right (50,20) and each unit will be worth 10px.
+	   */
+	  viewBox: _propTypes.default.string
+	};
+	SvgIcon.defaultProps = {
+	  color: 'inherit',
+	  viewBox: '0 0 24 24'
+	};
+	SvgIcon.muiName = 'SvgIcon';
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiSvgIcon'
+	})(SvgIcon);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(SvgIcon_1);
+	var SvgIcon_2 = SvgIcon_1.styles;
+
+	var SvgIcon$1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "default", {
+	  enumerable: true,
+	  get: function get() {
+	    return _SvgIcon.default;
+	  }
+	});
+
+	var _SvgIcon = interopRequireDefault(SvgIcon_1);
+	});
+
+	unwrapExports(SvgIcon$1);
+
+	var createSvgIcon_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _pure = interopRequireDefault(pure_1);
+
+	var _SvgIcon = interopRequireDefault(SvgIcon$1);
+
+	var SvgIconCustom = typeof commonjsGlobal !== 'undefined' && commonjsGlobal.__MUI_SvgIcon__ || _SvgIcon.default;
+
+	function createSvgIcon(path, displayName) {
+	  var Icon = function Icon(props) {
+	    return _react.default.createElement(SvgIconCustom, props, path);
+	  };
+
+	  Icon.displayName = displayName;
+	  Icon = (0, _pure.default)(Icon);
+	  Icon.muiName = 'SvgIcon';
+	  return Icon;
+	}
+	var _default = createSvgIcon;
+	exports.default = _default;
+	});
+
+	unwrapExports(createSvgIcon_1);
+
+	var Assessment = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
+	})), 'Assessment');
+
+	exports.default = _default;
+	});
+
+	var AssessmentIcon = unwrapExports(Assessment);
+
+	var Close = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+	})), 'Close');
+
+	exports.default = _default;
+	});
+
+	unwrapExports(Close);
+
+	var Done = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"
+	})), 'Done');
+
+	exports.default = _default;
+	});
+
+	var DoneIcon = unwrapExports(Done);
+
+	var _Error = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
+	})), 'Error');
+
+	exports.default = _default;
+	});
+
+	var ErrorIcon = unwrapExports(_Error);
+
+	var Help = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"
+	})), 'Help');
+
+	exports.default = _default;
+	});
+
+	var HelpIcon = unwrapExports(Help);
+
+	var Settings = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _react = interopRequireDefault(react);
+
+	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
+
+	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
+	  d: "M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
+	})), 'Settings');
+
+	exports.default = _default;
+	});
+
+	var SettingsIcon = unwrapExports(Settings);
+
+	function _defineProperty$2(obj, key, value) {
+	  if (key in obj) {
+	    Object.defineProperty(obj, key, {
+	      value: value,
+	      enumerable: true,
+	      configurable: true,
+	      writable: true
+	    });
+	  } else {
+	    obj[key] = value;
+	  }
+
+	  return obj;
+	}
+
+	function _extends$5() {
+	  _extends$5 = Object.assign || function (target) {
+	    for (var i = 1; i < arguments.length; i++) {
+	      var source = arguments[i];
+
+	      for (var key in source) {
+	        if (Object.prototype.hasOwnProperty.call(source, key)) {
+	          target[key] = source[key];
+	        }
+	      }
+	    }
+
+	    return target;
+	  };
+
+	  return _extends$5.apply(this, arguments);
+	}
+
+	var IconButton_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.styles = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _classnames = interopRequireDefault(classnames);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+
+
+	var _ButtonBase = interopRequireDefault(ButtonBase$1);
+
+
+
+	// @inheritedComponent ButtonBase
+	var styles = function styles(theme) {
+	  return {
+	    root: {
+	      textAlign: 'center',
+	      flex: '0 0 auto',
+	      fontSize: theme.typography.pxToRem(24),
+	      width: 48,
+	      height: 48,
+	      padding: 0,
+	      borderRadius: '50%',
+	      color: theme.palette.action.active,
+	      transition: theme.transitions.create('background-color', {
+	        duration: theme.transitions.duration.shortest
+	      }),
+	      '&:hover': {
+	        backgroundColor: (0, colorManipulator.fade)(theme.palette.action.active, theme.palette.action.hoverOpacity),
+	        // Reset on touch devices, it doesn't add specificity
+	        '@media (hover: none)': {
+	          backgroundColor: 'transparent'
+	        },
+	        '&$disabled': {
+	          backgroundColor: 'transparent'
+	        }
+	      },
+	      '&$disabled': {
+	        color: theme.palette.action.disabled
+	      }
+	    },
+	    colorInherit: {
+	      color: 'inherit'
+	    },
+	    colorPrimary: {
+	      color: theme.palette.primary.main,
+	      '&:hover': {
+	        backgroundColor: (0, colorManipulator.fade)(theme.palette.primary.main, theme.palette.action.hoverOpacity),
+	        // Reset on touch devices, it doesn't add specificity
+	        '@media (hover: none)': {
+	          backgroundColor: 'transparent'
+	        }
+	      }
+	    },
+	    colorSecondary: {
+	      color: theme.palette.secondary.main,
+	      '&:hover': {
+	        backgroundColor: (0, colorManipulator.fade)(theme.palette.secondary.main, theme.palette.action.hoverOpacity),
+	        // Reset on touch devices, it doesn't add specificity
+	        '@media (hover: none)': {
+	          backgroundColor: 'transparent'
+	        }
+	      }
+	    },
+	    disabled: {},
+	    label: {
+	      width: '100%',
+	      display: 'flex',
+	      alignItems: 'inherit',
+	      justifyContent: 'inherit'
+	    }
+	  };
+	};
+	/**
+	 * Refer to the [Icons](/style/icons) section of the documentation
+	 * regarding the available icon options.
+	 */
+
+
+	exports.styles = styles;
+
+	function IconButton(props) {
+	  var _classNames;
+
+	  var children = props.children,
+	      classes = props.classes,
+	      className = props.className,
+	      color = props.color,
+	      disabled = props.disabled,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "color", "disabled"]);
+	  return _react.default.createElement(_ButtonBase.default, (0, _extends2.default)({
+	    className: (0, _classnames.default)(classes.root, (_classNames = {}, (0, _defineProperty2.default)(_classNames, classes["color".concat((0, helpers.capitalize)(color))], color !== 'default'), (0, _defineProperty2.default)(_classNames, classes.disabled, disabled), _classNames), className),
+	    centerRipple: true,
+	    focusRipple: true,
+	    disabled: disabled
+	  }, other), _react.default.createElement("span", {
+	    className: classes.label
+	  }, children));
+	}
+
+	IconButton.propTypes = {
+	  /**
+	   * The icon element.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * @ignore
+	   */
+	  className: _propTypes.default.string,
+
+	  /**
+	   * The color of the component. It supports those theme colors that make sense for this component.
+	   */
+	  color: _propTypes.default.oneOf(['default', 'inherit', 'primary', 'secondary']),
+
+	  /**
+	   * If `true`, the button will be disabled.
+	   */
+	  disabled: _propTypes.default.bool,
+
+	  /**
+	   * If `true`, the ripple will be disabled.
+	   */
+	  disableRipple: _propTypes.default.bool
+	};
+	IconButton.defaultProps = {
+	  color: 'default',
+	  disabled: false
+	};
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiIconButton'
+	})(IconButton);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(IconButton_1);
+	var IconButton_2 = IconButton_1.styles;
+
+	var IconButton$1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "default", {
+	  enumerable: true,
+	  get: function get() {
+	    return _IconButton.default;
+	  }
+	});
+
+	var _IconButton = interopRequireDefault(IconButton_1);
+	});
+
+	var IconButton$2 = unwrapExports(IconButton$1);
+
+	/**
+	 * Gets the timestamp of the number of milliseconds that have elapsed since
+	 * the Unix epoch (1 January 1970 00:00:00 UTC).
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 2.4.0
+	 * @category Date
+	 * @returns {number} Returns the timestamp.
+	 * @example
+	 *
+	 * _.defer(function(stamp) {
+	 *   console.log(_.now() - stamp);
+	 * }, _.now());
+	 * // => Logs the number of milliseconds it took for the deferred invocation.
+	 */
+	var now = function() {
+	  return _root.Date.now();
+	};
+
+	var now_1 = now;
+
+	/** Used as references for various `Number` constants. */
+	var NAN = 0 / 0;
+
+	/** Used to match leading and trailing whitespace. */
+	var reTrim = /^\s+|\s+$/g;
+
+	/** Used to detect bad signed hexadecimal string values. */
+	var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+	/** Used to detect binary string values. */
+	var reIsBinary = /^0b[01]+$/i;
+
+	/** Used to detect octal string values. */
+	var reIsOctal = /^0o[0-7]+$/i;
+
+	/** Built-in method references without a dependency on `root`. */
+	var freeParseInt = parseInt;
+
+	/**
+	 * Converts `value` to a number.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 4.0.0
+	 * @category Lang
+	 * @param {*} value The value to process.
+	 * @returns {number} Returns the number.
+	 * @example
+	 *
+	 * _.toNumber(3.2);
+	 * // => 3.2
+	 *
+	 * _.toNumber(Number.MIN_VALUE);
+	 * // => 5e-324
+	 *
+	 * _.toNumber(Infinity);
+	 * // => Infinity
+	 *
+	 * _.toNumber('3.2');
+	 * // => 3.2
+	 */
+	function toNumber(value) {
+	  if (typeof value == 'number') {
+	    return value;
+	  }
+	  if (isSymbol_1(value)) {
+	    return NAN;
+	  }
+	  if (isObject_1(value)) {
+	    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+	    value = isObject_1(other) ? (other + '') : other;
+	  }
+	  if (typeof value != 'string') {
+	    return value === 0 ? value : +value;
+	  }
+	  value = value.replace(reTrim, '');
+	  var isBinary = reIsBinary.test(value);
+	  return (isBinary || reIsOctal.test(value))
+	    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+	    : (reIsBadHex.test(value) ? NAN : +value);
+	}
+
+	var toNumber_1 = toNumber;
+
+	/** Error message constants. */
+	var FUNC_ERROR_TEXT$1 = 'Expected a function';
+
+	/* Built-in method references for those with the same name as other `lodash` methods. */
+	var nativeMax = Math.max,
+	    nativeMin = Math.min;
+
+	/**
+	 * Creates a debounced function that delays invoking `func` until after `wait`
+	 * milliseconds have elapsed since the last time the debounced function was
+	 * invoked. The debounced function comes with a `cancel` method to cancel
+	 * delayed `func` invocations and a `flush` method to immediately invoke them.
+	 * Provide `options` to indicate whether `func` should be invoked on the
+	 * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+	 * with the last arguments provided to the debounced function. Subsequent
+	 * calls to the debounced function return the result of the last `func`
+	 * invocation.
+	 *
+	 * **Note:** If `leading` and `trailing` options are `true`, `func` is
+	 * invoked on the trailing edge of the timeout only if the debounced function
+	 * is invoked more than once during the `wait` timeout.
+	 *
+	 * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+	 * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+	 *
+	 * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+	 * for details over the differences between `_.debounce` and `_.throttle`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @since 0.1.0
+	 * @category Function
+	 * @param {Function} func The function to debounce.
+	 * @param {number} [wait=0] The number of milliseconds to delay.
+	 * @param {Object} [options={}] The options object.
+	 * @param {boolean} [options.leading=false]
+	 *  Specify invoking on the leading edge of the timeout.
+	 * @param {number} [options.maxWait]
+	 *  The maximum time `func` is allowed to be delayed before it's invoked.
+	 * @param {boolean} [options.trailing=true]
+	 *  Specify invoking on the trailing edge of the timeout.
+	 * @returns {Function} Returns the new debounced function.
+	 * @example
+	 *
+	 * // Avoid costly calculations while the window size is in flux.
+	 * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+	 *
+	 * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+	 * jQuery(element).on('click', _.debounce(sendMail, 300, {
+	 *   'leading': true,
+	 *   'trailing': false
+	 * }));
+	 *
+	 * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+	 * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+	 * var source = new EventSource('/stream');
+	 * jQuery(source).on('message', debounced);
+	 *
+	 * // Cancel the trailing debounced invocation.
+	 * jQuery(window).on('popstate', debounced.cancel);
+	 */
+	function debounce(func, wait, options) {
+	  var lastArgs,
+	      lastThis,
+	      maxWait,
+	      result,
+	      timerId,
+	      lastCallTime,
+	      lastInvokeTime = 0,
+	      leading = false,
+	      maxing = false,
+	      trailing = true;
+
+	  if (typeof func != 'function') {
+	    throw new TypeError(FUNC_ERROR_TEXT$1);
+	  }
+	  wait = toNumber_1(wait) || 0;
+	  if (isObject_1(options)) {
+	    leading = !!options.leading;
+	    maxing = 'maxWait' in options;
+	    maxWait = maxing ? nativeMax(toNumber_1(options.maxWait) || 0, wait) : maxWait;
+	    trailing = 'trailing' in options ? !!options.trailing : trailing;
+	  }
+
+	  function invokeFunc(time) {
+	    var args = lastArgs,
+	        thisArg = lastThis;
+
+	    lastArgs = lastThis = undefined;
+	    lastInvokeTime = time;
+	    result = func.apply(thisArg, args);
+	    return result;
+	  }
+
+	  function leadingEdge(time) {
+	    // Reset any `maxWait` timer.
+	    lastInvokeTime = time;
+	    // Start the timer for the trailing edge.
+	    timerId = setTimeout(timerExpired, wait);
+	    // Invoke the leading edge.
+	    return leading ? invokeFunc(time) : result;
+	  }
+
+	  function remainingWait(time) {
+	    var timeSinceLastCall = time - lastCallTime,
+	        timeSinceLastInvoke = time - lastInvokeTime,
+	        timeWaiting = wait - timeSinceLastCall;
+
+	    return maxing
+	      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+	      : timeWaiting;
+	  }
+
+	  function shouldInvoke(time) {
+	    var timeSinceLastCall = time - lastCallTime,
+	        timeSinceLastInvoke = time - lastInvokeTime;
+
+	    // Either this is the first call, activity has stopped and we're at the
+	    // trailing edge, the system time has gone backwards and we're treating
+	    // it as the trailing edge, or we've hit the `maxWait` limit.
+	    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+	      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+	  }
+
+	  function timerExpired() {
+	    var time = now_1();
+	    if (shouldInvoke(time)) {
+	      return trailingEdge(time);
+	    }
+	    // Restart the timer.
+	    timerId = setTimeout(timerExpired, remainingWait(time));
+	  }
+
+	  function trailingEdge(time) {
+	    timerId = undefined;
+
+	    // Only invoke if we have `lastArgs` which means `func` has been
+	    // debounced at least once.
+	    if (trailing && lastArgs) {
+	      return invokeFunc(time);
+	    }
+	    lastArgs = lastThis = undefined;
+	    return result;
+	  }
+
+	  function cancel() {
+	    if (timerId !== undefined) {
+	      clearTimeout(timerId);
+	    }
+	    lastInvokeTime = 0;
+	    lastArgs = lastCallTime = lastThis = timerId = undefined;
+	  }
+
+	  function flush() {
+	    return timerId === undefined ? result : trailingEdge(now_1());
+	  }
+
+	  function debounced() {
+	    var time = now_1(),
+	        isInvoking = shouldInvoke(time);
+
+	    lastArgs = arguments;
+	    lastThis = this;
+	    lastCallTime = time;
+
+	    if (isInvoking) {
+	      if (timerId === undefined) {
+	        return leadingEdge(lastCallTime);
+	      }
+	      if (maxing) {
+	        // Handle invocations in a tight loop.
+	        timerId = setTimeout(timerExpired, wait);
+	        return invokeFunc(lastCallTime);
+	      }
+	    }
+	    if (timerId === undefined) {
+	      timerId = setTimeout(timerExpired, wait);
+	    }
+	    return result;
+	  }
+	  debounced.cancel = cancel;
+	  debounced.flush = flush;
+	  return debounced;
+	}
+
+	var debounce_1 = debounce;
+
+	var getPrototypeOf$2 = createCommonjsModule(function (module) {
+	module.exports = { "default": getPrototypeOf, __esModule: true };
+	});
+
+	unwrapExports(getPrototypeOf$2);
+
+	var defineProperty$5 = createCommonjsModule(function (module) {
+	module.exports = { "default": defineProperty$1, __esModule: true };
+	});
+
+	unwrapExports(defineProperty$5);
+
+	var createClass$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+
+
+	var _defineProperty2 = _interopRequireDefault(defineProperty$5);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function () {
+	  function defineProperties(target, props) {
+	    for (var i = 0; i < props.length; i++) {
+	      var descriptor = props[i];
+	      descriptor.enumerable = descriptor.enumerable || false;
+	      descriptor.configurable = true;
+	      if ("value" in descriptor) descriptor.writable = true;
+	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
+	    }
+	  }
+
+	  return function (Constructor, protoProps, staticProps) {
+	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+	    if (staticProps) defineProperties(Constructor, staticProps);
+	    return Constructor;
+	  };
+	}();
+	});
+
+	unwrapExports(createClass$1);
+
+	var keys$2 = createCommonjsModule(function (module) {
+	module.exports = { "default": keys, __esModule: true };
+	});
+
+	unwrapExports(keys$2);
+
+	var objectWithoutProperties$1 = createCommonjsModule(function (module, exports) {
+
+	exports.__esModule = true;
+
+	exports.default = function (obj, keys) {
+	  var target = {};
+
+	  for (var i in obj) {
+	    if (keys.indexOf(i) >= 0) continue;
+	    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
+	    target[i] = obj[i];
+	  }
+
+	  return target;
+	};
+	});
+
+	unwrapExports(objectWithoutProperties$1);
+
+	var assign$2 = createCommonjsModule(function (module) {
+	module.exports = { "default": assign, __esModule: true };
+	});
+
+	unwrapExports(assign$2);
+
+	var supports = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.passiveOption = undefined;
+
+
+
+	var _defineProperty2 = _interopRequireDefault(defineProperty$5);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function defineProperty(object, property, attr) {
+	  return (0, _defineProperty2.default)(object, property, attr);
+	}
+
+	// Passive options
+	// Inspired by https://github.com/Modernizr/Modernizr/blob/master/feature-detects/dom/passiveeventlisteners.js
+	var passiveOption = exports.passiveOption = function () {
+	  var cache = null;
+
+	  return function () {
+	    if (cache !== null) {
+	      return cache;
+	    }
+
+	    var supportsPassiveOption = false;
+
+	    try {
+	      window.addEventListener('test', null, defineProperty({}, 'passive', {
+	        get: function get() {
+	          supportsPassiveOption = true;
+	        }
+	      }));
+	    } catch (err) {
+	      //
+	    }
+
+	    cache = supportsPassiveOption;
+
+	    return supportsPassiveOption;
+	  }();
+	}();
+
+	exports.default = {};
+	});
+
+	unwrapExports(supports);
+	var supports_1 = supports.passiveOption;
+
+	var lib$8 = createCommonjsModule(function (module, exports) {
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+
+
+	var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
+
+
+
+	var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
+
+
+
+	var _createClass3 = _interopRequireDefault(createClass$1);
+
+
+
+	var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
+
+
+
+	var _inherits3 = _interopRequireDefault(inherits$1);
+
+
+
+	var _typeof3 = _interopRequireDefault(_typeof_1$1);
+
+
+
+	var _keys2 = _interopRequireDefault(keys$2);
+
+
+
+	var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
+
+
+
+	var _assign2 = _interopRequireDefault(assign$2);
+
+	exports.withOptions = withOptions;
+
+
+
+	var _react2 = _interopRequireDefault(react);
+
+
+
+	var _propTypes2 = _interopRequireDefault(propTypes);
+
+
+
+	var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
+
+
+
+	var _warning2 = _interopRequireDefault(browser);
+
+
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var defaultEventOptions = {
+	  capture: false,
+	  passive: false
+	};
+
+	function mergeDefaultEventOptions(options) {
+	  return (0, _assign2.default)({}, defaultEventOptions, options);
+	}
+
+	function getEventListenerArgs(eventName, callback, options) {
+	  var args = [eventName, callback];
+	  args.push(supports.passiveOption ? options : options.capture);
+	  return args;
+	}
+
+	function on(target, eventName, callback, options) {
+	  // eslint-disable-next-line prefer-spread
+	  target.addEventListener.apply(target, getEventListenerArgs(eventName, callback, options));
+	}
+
+	function off(target, eventName, callback, options) {
+	  // eslint-disable-next-line prefer-spread
+	  target.removeEventListener.apply(target, getEventListenerArgs(eventName, callback, options));
+	}
+
+	function forEachListener(props, iteratee) {
+	  var children = props.children,
+	      target = props.target,
+	      eventProps = (0, _objectWithoutProperties3.default)(props, ['children', 'target']);
+
+
+	  (0, _keys2.default)(eventProps).forEach(function (name) {
+	    if (name.substring(0, 2) !== 'on') {
+	      return;
+	    }
+
+	    var prop = eventProps[name];
+	    var type = typeof prop === 'undefined' ? 'undefined' : (0, _typeof3.default)(prop);
+	    var isObject = type === 'object';
+	    var isFunction = type === 'function';
+
+	    if (!isObject && !isFunction) {
+	      return;
+	    }
+
+	    var capture = name.substr(-7).toLowerCase() === 'capture';
+	    var eventName = name.substring(2).toLowerCase();
+	    eventName = capture ? eventName.substring(0, eventName.length - 7) : eventName;
+
+	    if (isObject) {
+	      iteratee(eventName, prop.handler, prop.options);
+	    } else {
+	      iteratee(eventName, prop, mergeDefaultEventOptions({ capture: capture }));
+	    }
+	  });
+	}
+
+	function withOptions(handler, options) {
+	  (0, _warning2.default)(options, 'react-event-listener: should be specified options in withOptions.');
+
+	  return {
+	    handler: handler,
+	    options: mergeDefaultEventOptions(options)
+	  };
+	}
+
+	var EventListener = function (_React$Component) {
+	  (0, _inherits3.default)(EventListener, _React$Component);
+
+	  function EventListener() {
+	    (0, _classCallCheck3.default)(this, EventListener);
+	    return (0, _possibleConstructorReturn3.default)(this, (EventListener.__proto__ || (0, _getPrototypeOf2.default)(EventListener)).apply(this, arguments));
+	  }
+
+	  (0, _createClass3.default)(EventListener, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.addListeners();
+	    }
+	  }, {
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps) {
+	      return !(0, _shallowEqual2.default)(this.props, nextProps);
+	    }
+	  }, {
+	    key: 'componentWillUpdate',
+	    value: function componentWillUpdate() {
+	      this.removeListeners();
+	    }
+	  }, {
+	    key: 'componentDidUpdate',
+	    value: function componentDidUpdate() {
+	      this.addListeners();
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.removeListeners();
+	    }
+	  }, {
+	    key: 'addListeners',
+	    value: function addListeners() {
+	      this.applyListeners(on);
+	    }
+	  }, {
+	    key: 'removeListeners',
+	    value: function removeListeners() {
+	      this.applyListeners(off);
+	    }
+	  }, {
+	    key: 'applyListeners',
+	    value: function applyListeners(onOrOff) {
+	      var target = this.props.target;
+
+
+	      if (target) {
+	        var element = target;
+
+	        if (typeof target === 'string') {
+	          element = window[target];
+	        }
+
+	        forEachListener(this.props, onOrOff.bind(null, element));
+	      }
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return this.props.children || null;
+	    }
+	  }]);
+	  return EventListener;
+	}(_react2.default.Component);
+
+	EventListener.propTypes = {
+	  /**
+	   * You can provide a single child too.
+	   */
+	  children: _propTypes2.default.node,
+	  /**
+	   * The DOM target to listen to.
+	   */
+	  target: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.string]).isRequired
+	};
+
+	exports.default = EventListener;
+	});
+
+	unwrapExports(lib$8);
+	var lib_1$2 = lib$8.withOptions;
 
 	var activeElement_1 = createCommonjsModule(function (module, exports) {
 
@@ -36527,6 +37812,1344 @@
 	unwrapExports(Modal$1);
 	var Modal_1$1 = Modal$1.ModalManager;
 
+	var Grow_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _objectSpread2 = interopRequireDefault(objectSpread);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
+
+	var _classCallCheck2 = interopRequireDefault(classCallCheck);
+
+	var _createClass2 = interopRequireDefault(createClass);
+
+	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
+
+	var _inherits2 = interopRequireDefault(inherits);
+
+	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _Transition = interopRequireDefault(Transition_1);
+
+	var _withTheme = interopRequireDefault(withTheme_1);
+
+
+
+	// @inheritedComponent Transition
+	function getScale(value) {
+	  return "scale(".concat(value, ", ").concat(Math.pow(value, 2), ")");
+	}
+
+	var styles = {
+	  entering: {
+	    opacity: 1,
+	    transform: getScale(1)
+	  },
+	  entered: {
+	    opacity: 1,
+	    transform: getScale(1)
+	  }
+	};
+	/**
+	 * The Grow transition is used by the [Popover](/utils/popovers) component.
+	 * It uses [react-transition-group](https://github.com/reactjs/react-transition-group) internally.
+	 */
+
+	var Grow =
+	/*#__PURE__*/
+	function (_React$Component) {
+	  (0, _inherits2.default)(Grow, _React$Component);
+
+	  function Grow() {
+	    var _ref;
+
+	    var _temp, _this;
+
+	    (0, _classCallCheck2.default)(this, Grow);
+
+	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return (0, _possibleConstructorReturn2.default)(_this, (_temp = _this = (0, _possibleConstructorReturn2.default)(this, (_ref = Grow.__proto__ || (0, _getPrototypeOf.default)(Grow)).call.apply(_ref, [this].concat(args))), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "autoTimeout", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: undefined
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "timer", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: null
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleEnter", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(node) {
+	        var _this$props = _this.props,
+	            theme = _this$props.theme,
+	            timeout = _this$props.timeout;
+	        (0, utils.reflow)(node); // So the animation always start from the start.
+
+	        var _getTransitionProps = (0, utils.getTransitionProps)(_this.props, {
+	          mode: 'enter'
+	        }),
+	            transitionDuration = _getTransitionProps.duration,
+	            delay = _getTransitionProps.delay;
+
+	        var duration = 0;
+
+	        if (timeout === 'auto') {
+	          duration = theme.transitions.getAutoHeightDuration(node.clientHeight);
+	          _this.autoTimeout = duration;
+	        } else {
+	          duration = transitionDuration;
+	        }
+
+	        node.style.transition = [theme.transitions.create('opacity', {
+	          duration: duration,
+	          delay: delay
+	        }), theme.transitions.create('transform', {
+	          duration: duration * 0.666,
+	          delay: delay
+	        })].join(',');
+
+	        if (_this.props.onEnter) {
+	          _this.props.onEnter(node);
+	        }
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleExit", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(node) {
+	        var _this$props2 = _this.props,
+	            theme = _this$props2.theme,
+	            timeout = _this$props2.timeout;
+	        var duration = 0;
+
+	        var _getTransitionProps2 = (0, utils.getTransitionProps)(_this.props, {
+	          mode: 'exit'
+	        }),
+	            transitionDuration = _getTransitionProps2.duration,
+	            delay = _getTransitionProps2.delay;
+
+	        if (timeout === 'auto') {
+	          duration = theme.transitions.getAutoHeightDuration(node.clientHeight);
+	          _this.autoTimeout = duration;
+	        } else {
+	          duration = transitionDuration;
+	        }
+
+	        node.style.transition = [theme.transitions.create('opacity', {
+	          duration: duration,
+	          delay: delay
+	        }), theme.transitions.create('transform', {
+	          duration: duration * 0.666,
+	          delay: delay || duration * 0.333
+	        })].join(',');
+	        node.style.opacity = '0';
+	        node.style.transform = getScale(0.75);
+
+	        if (_this.props.onExit) {
+	          _this.props.onExit(node);
+	        }
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "addEndListener", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(_, next) {
+	        if (_this.props.timeout === 'auto') {
+	          _this.timer = setTimeout(next, _this.autoTimeout || 0);
+	        }
+	      }
+	    }), _temp));
+	  }
+
+	  (0, _createClass2.default)(Grow, [{
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      clearTimeout(this.timer);
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      var _props = this.props,
+	          children = _props.children,
+	          onEnter = _props.onEnter,
+	          onExit = _props.onExit,
+	          styleProp = _props.style,
+	          theme = _props.theme,
+	          timeout = _props.timeout,
+	          other = (0, _objectWithoutProperties2.default)(_props, ["children", "onEnter", "onExit", "style", "theme", "timeout"]);
+	      var style = (0, _objectSpread2.default)({}, styleProp, _react.default.isValidElement(children) ? children.props.style : {});
+	      return _react.default.createElement(_Transition.default, (0, _extends2.default)({
+	        appear: true,
+	        onEnter: this.handleEnter,
+	        onExit: this.handleExit,
+	        addEndListener: this.addEndListener,
+	        timeout: timeout === 'auto' ? null : timeout
+	      }, other), function (state, childProps) {
+	        return _react.default.cloneElement(children, (0, _objectSpread2.default)({
+	          style: (0, _objectSpread2.default)({
+	            opacity: 0,
+	            transform: getScale(0.75)
+	          }, styles[state], style)
+	        }, childProps));
+	      });
+	    }
+	  }]);
+	  return Grow;
+	}(_react.default.Component);
+
+	Grow.propTypes = {
+	  /**
+	   * A single child content element.
+	   */
+	  children: _propTypes.default.oneOfType([_propTypes.default.element, _propTypes.default.func]),
+
+	  /**
+	   * If `true`, show the component; triggers the enter or exit animation.
+	   */
+	  in: _propTypes.default.bool,
+
+	  /**
+	   * @ignore
+	   */
+	  onEnter: _propTypes.default.func,
+
+	  /**
+	   * @ignore
+	   */
+	  onExit: _propTypes.default.func,
+
+	  /**
+	   * @ignore
+	   */
+	  style: _propTypes.default.object,
+
+	  /**
+	   * @ignore
+	   */
+	  theme: _propTypes.default.object.isRequired,
+
+	  /**
+	   * The duration for the transition, in milliseconds.
+	   * You may specify a single timeout for all transitions, or individually with an object.
+	   *
+	   * Set to 'auto' to automatically calculate transition time based on height.
+	   */
+	  timeout: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.shape({
+	    enter: _propTypes.default.number,
+	    exit: _propTypes.default.number
+	  }), _propTypes.default.oneOf(['auto'])])
+	};
+	Grow.defaultProps = {
+	  timeout: 'auto'
+	};
+
+	var _default = (0, _withTheme.default)()(Grow);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(Grow_1);
+
+	var Grow$1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "default", {
+	  enumerable: true,
+	  get: function get() {
+	    return _Grow.default;
+	  }
+	});
+
+	var _Grow = interopRequireDefault(Grow_1);
+	});
+
+	unwrapExports(Grow$1);
+
+	var Popover_1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = exports.styles = void 0;
+
+	var _extends2 = interopRequireDefault(_extends_1);
+
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
+
+	var _classCallCheck2 = interopRequireDefault(classCallCheck);
+
+	var _createClass2 = interopRequireDefault(createClass);
+
+	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
+
+	var _inherits2 = interopRequireDefault(inherits);
+
+	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _reactDom = interopRequireDefault(reactDom);
+
+	var _warning = interopRequireDefault(browser);
+
+	var _contains = interopRequireDefault(contains);
+
+	var _ownerDocument = interopRequireDefault(ownerDocument_1);
+
+	var _debounce = interopRequireDefault(debounce_1);
+
+	var _reactEventListener = interopRequireDefault(lib$8);
+
+	var _ownerWindow = interopRequireDefault(ownerWindow_1);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+	var _Modal = interopRequireDefault(Modal$1);
+
+	var _Grow = interopRequireDefault(Grow$1);
+
+	var _Paper = interopRequireDefault(Paper$1);
+
+	// @inheritedComponent Modal
+	function getOffsetTop(rect, vertical) {
+	  var offset = 0;
+
+	  if (typeof vertical === 'number') {
+	    offset = vertical;
+	  } else if (vertical === 'center') {
+	    offset = rect.height / 2;
+	  } else if (vertical === 'bottom') {
+	    offset = rect.height;
+	  }
+
+	  return offset;
+	}
+
+	function getOffsetLeft(rect, horizontal) {
+	  var offset = 0;
+
+	  if (typeof horizontal === 'number') {
+	    offset = horizontal;
+	  } else if (horizontal === 'center') {
+	    offset = rect.width / 2;
+	  } else if (horizontal === 'right') {
+	    offset = rect.width;
+	  }
+
+	  return offset;
+	}
+
+	function getTransformOriginValue(transformOrigin) {
+	  return [transformOrigin.horizontal, transformOrigin.vertical].map(function (n) {
+	    return typeof n === 'number' ? "".concat(n, "px") : n;
+	  }).join(' ');
+	} // Sum the scrollTop between two elements.
+
+
+	function getScrollParent(parent, child) {
+	  var element = child;
+	  var scrollTop = 0;
+
+	  while (element && element !== parent) {
+	    element = element.parentNode;
+	    scrollTop += element.scrollTop;
+	  }
+
+	  return scrollTop;
+	}
+
+	function getAnchorEl(anchorEl) {
+	  return typeof anchorEl === 'function' ? anchorEl() : anchorEl;
+	}
+
+	var styles = {
+	  paper: {
+	    position: 'absolute',
+	    overflowY: 'auto',
+	    overflowX: 'hidden',
+	    // So we see the popover when it's empty.
+	    // It's most likely on issue on userland.
+	    minWidth: 16,
+	    minHeight: 16,
+	    maxWidth: 'calc(100% - 32px)',
+	    maxHeight: 'calc(100% - 32px)',
+	    // We disable the focus ring for mouse, touch and keyboard users.
+	    outline: 'none'
+	  }
+	};
+	exports.styles = styles;
+
+	var Popover =
+	/*#__PURE__*/
+	function (_React$Component) {
+	  (0, _inherits2.default)(Popover, _React$Component);
+
+	  function Popover() {
+	    var _ref;
+
+	    var _temp, _this;
+
+	    (0, _classCallCheck2.default)(this, Popover);
+
+	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+	      args[_key] = arguments[_key];
+	    }
+
+	    return (0, _possibleConstructorReturn2.default)(_this, (_temp = _this = (0, _possibleConstructorReturn2.default)(this, (_ref = Popover.__proto__ || (0, _getPrototypeOf.default)(Popover)).call.apply(_ref, [this].concat(args))), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "componentWillUnmount", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value() {
+	        _this.handleResize.cancel();
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "setPositioningStyles", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(element) {
+	        if (element && element.style) {
+	          var positioning = _this.getPositioningStyle(element);
+
+	          if (positioning.top !== null) {
+	            element.style.top = positioning.top;
+	          }
+
+	          if (positioning.left !== null) {
+	            element.style.left = positioning.left;
+	          }
+
+	          element.style.transformOrigin = positioning.transformOrigin;
+	        }
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "getPositioningStyle", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(element) {
+	        var _this$props = _this.props,
+	            anchorEl = _this$props.anchorEl,
+	            anchorReference = _this$props.anchorReference,
+	            marginThreshold = _this$props.marginThreshold; // Check if the parent has requested anchoring on an inner content node
+
+	        var contentAnchorOffset = _this.getContentAnchorOffset(element);
+
+	        var elemRect = {
+	          width: element.clientWidth,
+	          height: element.clientHeight
+	        }; // Get the transform origin point on the element itself
+
+	        var transformOrigin = _this.getTransformOrigin(elemRect, contentAnchorOffset);
+
+	        if (anchorReference === 'none') {
+	          return {
+	            top: null,
+	            left: null,
+	            transformOrigin: getTransformOriginValue(transformOrigin)
+	          };
+	        } // Get the offset of of the anchoring element
+
+
+	        var anchorOffset = _this.getAnchorOffset(contentAnchorOffset); // Calculate element positioning
+
+
+	        var top = anchorOffset.top - transformOrigin.vertical;
+	        var left = anchorOffset.left - transformOrigin.horizontal;
+	        var bottom = top + elemRect.height;
+	        var right = left + elemRect.width; // Use the parent window of the anchorEl if provided
+
+	        var containerWindow = (0, _ownerWindow.default)(getAnchorEl(anchorEl)); // Window thresholds taking required margin into account
+
+	        var heightThreshold = containerWindow.innerHeight - marginThreshold;
+	        var widthThreshold = containerWindow.innerWidth - marginThreshold; // Check if the vertical axis needs shifting
+
+	        if (top < marginThreshold) {
+	          var diff = top - marginThreshold;
+	          top -= diff;
+	          transformOrigin.vertical += diff;
+	        } else if (bottom > heightThreshold) {
+	          var _diff = bottom - heightThreshold;
+
+	          top -= _diff;
+	          transformOrigin.vertical += _diff;
+	        }
+
+	        (0, _warning.default)(elemRect.height < heightThreshold || !elemRect.height || !heightThreshold, ['Material-UI: the popover component is too tall.', "Some part of it can not be seen on the screen (".concat(elemRect.height - heightThreshold, "px)."), 'Please consider adding a `max-height` to improve the user-experience.'].join('\n')); // Check if the horizontal axis needs shifting
+
+	        if (left < marginThreshold) {
+	          var _diff2 = left - marginThreshold;
+
+	          left -= _diff2;
+	          transformOrigin.horizontal += _diff2;
+	        } else if (right > widthThreshold) {
+	          var _diff3 = right - widthThreshold;
+
+	          left -= _diff3;
+	          transformOrigin.horizontal += _diff3;
+	        }
+
+	        return {
+	          top: "".concat(top, "px"),
+	          left: "".concat(left, "px"),
+	          transformOrigin: getTransformOriginValue(transformOrigin)
+	        };
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "transitionEl", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: undefined
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleGetOffsetTop", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: getOffsetTop
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleGetOffsetLeft", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: getOffsetLeft
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleEnter", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: function value(element) {
+	        if (_this.props.onEnter) {
+	          _this.props.onEnter(element);
+	        }
+
+	        _this.setPositioningStyles(element);
+	      }
+	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleResize", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: (0, _debounce.default)(function () {
+	        var element = _reactDom.default.findDOMNode(_this.transitionEl);
+
+	        _this.setPositioningStyles(element);
+	      }, 166)
+	    }), _temp));
+	  }
+
+	  (0, _createClass2.default)(Popover, [{
+	    key: "componentDidMount",
+	    value: function componentDidMount() {
+	      if (this.props.action) {
+	        this.props.action({
+	          updatePosition: this.handleResize
+	        });
+	      }
+	    }
+	  }, {
+	    key: "getAnchorOffset",
+	    // Returns the top/left offset of the position
+	    // to attach to on the anchor element (or body if none is provided)
+	    value: function getAnchorOffset(contentAnchorOffset) {
+	      var _props = this.props,
+	          anchorEl = _props.anchorEl,
+	          anchorOrigin = _props.anchorOrigin,
+	          anchorReference = _props.anchorReference,
+	          anchorPosition = _props.anchorPosition;
+
+	      if (anchorReference === 'anchorPosition') {
+	        (0, _warning.default)(anchorPosition, 'Material-UI: you need to provide a `anchorPosition` property when using ' + '<Popover anchorReference="anchorPosition" />.');
+	        return anchorPosition;
+	      } // If an anchor element wasn't provided, just use the parent body element of this Popover
+
+
+	      var anchorElement = getAnchorEl(anchorEl) || (0, _ownerDocument.default)(_reactDom.default.findDOMNode(this.transitionEl)).body;
+	      var anchorRect = anchorElement.getBoundingClientRect();
+	      var anchorVertical = contentAnchorOffset === 0 ? anchorOrigin.vertical : 'center';
+	      return {
+	        top: anchorRect.top + this.handleGetOffsetTop(anchorRect, anchorVertical),
+	        left: anchorRect.left + this.handleGetOffsetLeft(anchorRect, anchorOrigin.horizontal)
+	      };
+	    } // Returns the vertical offset of inner content to anchor the transform on if provided
+
+	  }, {
+	    key: "getContentAnchorOffset",
+	    value: function getContentAnchorOffset(element) {
+	      var _props2 = this.props,
+	          getContentAnchorEl = _props2.getContentAnchorEl,
+	          anchorReference = _props2.anchorReference;
+	      var contentAnchorOffset = 0;
+
+	      if (getContentAnchorEl && anchorReference === 'anchorEl') {
+	        var contentAnchorEl = getContentAnchorEl(element);
+
+	        if (contentAnchorEl && (0, _contains.default)(element, contentAnchorEl)) {
+	          var scrollTop = getScrollParent(element, contentAnchorEl);
+	          contentAnchorOffset = contentAnchorEl.offsetTop + contentAnchorEl.clientHeight / 2 - scrollTop || 0;
+	        } // != the default value
+
+
+	        (0, _warning.default)(this.props.anchorOrigin.vertical === 'top', ['Material-UI: you can not change the default `anchorOrigin.vertical` value ', 'when also providing the `getContentAnchorEl` property to the popover component.', 'Only use one of the two properties.', 'Set `getContentAnchorEl` to null or left `anchorOrigin.vertical` unchanged.'].join('\n'));
+	      }
+
+	      return contentAnchorOffset;
+	    } // Return the base transform origin using the element
+	    // and taking the content anchor offset into account if in use
+
+	  }, {
+	    key: "getTransformOrigin",
+	    value: function getTransformOrigin(elemRect) {
+	      var contentAnchorOffset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+	      var transformOrigin = this.props.transformOrigin;
+	      return {
+	        vertical: this.handleGetOffsetTop(elemRect, transformOrigin.vertical) + contentAnchorOffset,
+	        horizontal: this.handleGetOffsetLeft(elemRect, transformOrigin.horizontal)
+	      };
+	    }
+	  }, {
+	    key: "render",
+	    // Corresponds to 10 frames at 60 Hz.
+	    value: function render() {
+	      var _this2 = this;
+
+	      var _props3 = this.props,
+	          action = _props3.action,
+	          anchorEl = _props3.anchorEl,
+	          anchorOrigin = _props3.anchorOrigin,
+	          anchorPosition = _props3.anchorPosition,
+	          anchorReference = _props3.anchorReference,
+	          children = _props3.children,
+	          classes = _props3.classes,
+	          containerProp = _props3.container,
+	          elevation = _props3.elevation,
+	          getContentAnchorEl = _props3.getContentAnchorEl,
+	          marginThreshold = _props3.marginThreshold,
+	          onEnter = _props3.onEnter,
+	          onEntered = _props3.onEntered,
+	          onEntering = _props3.onEntering,
+	          onExit = _props3.onExit,
+	          onExited = _props3.onExited,
+	          onExiting = _props3.onExiting,
+	          open = _props3.open,
+	          PaperProps = _props3.PaperProps,
+	          role = _props3.role,
+	          transformOrigin = _props3.transformOrigin,
+	          TransitionComponent = _props3.TransitionComponent,
+	          transitionDuration = _props3.transitionDuration,
+	          TransitionProps = _props3.TransitionProps,
+	          other = (0, _objectWithoutProperties2.default)(_props3, ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "classes", "container", "elevation", "getContentAnchorEl", "marginThreshold", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "open", "PaperProps", "role", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps"]); // If the container prop is provided, use that
+	      // If the anchorEl prop is provided, use its parent body element as the container
+	      // If neither are provided let the Modal take care of choosing the container
+
+	      var container = containerProp || (anchorEl ? (0, _ownerDocument.default)(getAnchorEl(anchorEl)).body : undefined);
+	      return _react.default.createElement(_Modal.default, (0, _extends2.default)({
+	        container: container,
+	        open: open,
+	        BackdropProps: {
+	          invisible: true
+	        }
+	      }, other), _react.default.createElement(TransitionComponent, (0, _extends2.default)({
+	        appear: true,
+	        "in": open,
+	        onEnter: this.handleEnter,
+	        onEntered: onEntered,
+	        onEntering: onEntering,
+	        onExit: onExit,
+	        onExited: onExited,
+	        onExiting: onExiting,
+	        role: role,
+	        ref: function ref(node) {
+	          _this2.transitionEl = node;
+	        }
+	      }, TransitionProps), _react.default.createElement(_Paper.default, (0, _extends2.default)({
+	        className: classes.paper,
+	        elevation: elevation
+	      }, PaperProps), _react.default.createElement(_reactEventListener.default, {
+	        target: "window",
+	        onResize: this.handleResize
+	      }), children)));
+	    }
+	  }]);
+	  return Popover;
+	}(_react.default.Component);
+
+	Popover.propTypes = {
+	  /**
+	   * This is callback property. It's called by the component on mount.
+	   * This is useful when you want to trigger an action programmatically.
+	   * It currently only supports updatePosition() action.
+	   *
+	   * @param {object} actions This object contains all posible actions
+	   * that can be triggered programmatically.
+	   */
+	  action: _propTypes.default.func,
+
+	  /**
+	   * This is the DOM element, or a function that returns the DOM element,
+	   * that may be used to set the position of the popover.
+	   */
+	  anchorEl: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+
+	  /**
+	   * This is the point on the anchor where the popover's
+	   * `anchorEl` will attach to. This is not used when the
+	   * anchorReference is 'anchorPosition'.
+	   *
+	   * Options:
+	   * vertical: [top, center, bottom];
+	   * horizontal: [left, center, right].
+	   */
+	  anchorOrigin: _propTypes.default.shape({
+	    horizontal: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['left', 'center', 'right'])]),
+	    vertical: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['top', 'center', 'bottom'])])
+	  }),
+
+	  /**
+	   * This is the position that may be used
+	   * to set the position of the popover.
+	   * The coordinates are relative to
+	   * the application's client area.
+	   */
+	  anchorPosition: _propTypes.default.shape({
+	    top: _propTypes.default.number,
+	    left: _propTypes.default.number
+	  }),
+
+	  /*
+	   * This determines which anchor prop to refer to to set
+	   * the position of the popover.
+	   */
+	  anchorReference: _propTypes.default.oneOf(['anchorEl', 'anchorPosition', 'none']),
+
+	  /**
+	   * The content of the component.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * A node, component instance, or function that returns either.
+	   * The `container` will passed to the Modal component.
+	   * By default, it uses the body of the anchorEl's top-level document object,
+	   * so it's simply `document.body` most of the time.
+	   */
+	  container: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
+
+	  /**
+	   * The elevation of the popover.
+	   */
+	  elevation: _propTypes.default.number,
+
+	  /**
+	   * This function is called in order to retrieve the content anchor element.
+	   * It's the opposite of the `anchorEl` property.
+	   * The content anchor element should be an element inside the popover.
+	   * It's used to correctly scroll and set the position of the popover.
+	   * The positioning strategy tries to make the content anchor element just above the
+	   * anchor element.
+	   */
+	  getContentAnchorEl: _propTypes.default.func,
+
+	  /**
+	   * Specifies how close to the edge of the window the popover can appear.
+	   */
+	  marginThreshold: _propTypes.default.number,
+
+	  /**
+	   * Callback fired when the component requests to be closed.
+	   *
+	   * @param {object} event The event source of the callback.
+	   */
+	  onClose: _propTypes.default.func,
+
+	  /**
+	   * Callback fired before the component is entering.
+	   */
+	  onEnter: _propTypes.default.func,
+
+	  /**
+	   * Callback fired when the component has entered.
+	   */
+	  onEntered: _propTypes.default.func,
+
+	  /**
+	   * Callback fired when the component is entering.
+	   */
+	  onEntering: _propTypes.default.func,
+
+	  /**
+	   * Callback fired before the component is exiting.
+	   */
+	  onExit: _propTypes.default.func,
+
+	  /**
+	   * Callback fired when the component has exited.
+	   */
+	  onExited: _propTypes.default.func,
+
+	  /**
+	   * Callback fired when the component is exiting.
+	   */
+	  onExiting: _propTypes.default.func,
+
+	  /**
+	   * If `true`, the popover is visible.
+	   */
+	  open: _propTypes.default.bool.isRequired,
+
+	  /**
+	   * Properties applied to the `Paper` element.
+	   */
+	  PaperProps: _propTypes.default.object,
+
+	  /**
+	   * @ignore
+	   */
+	  role: _propTypes.default.string,
+
+	  /**
+	   * This is the point on the popover which
+	   * will attach to the anchor's origin.
+	   *
+	   * Options:
+	   * vertical: [top, center, bottom, x(px)];
+	   * horizontal: [left, center, right, x(px)].
+	   */
+	  transformOrigin: _propTypes.default.shape({
+	    horizontal: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['left', 'center', 'right'])]),
+	    vertical: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['top', 'center', 'bottom'])])
+	  }),
+
+	  /**
+	   * Transition component.
+	   */
+	  TransitionComponent: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
+
+	  /**
+	   * Set to 'auto' to automatically calculate transition time based on height.
+	   */
+	  transitionDuration: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.shape({
+	    enter: _propTypes.default.number,
+	    exit: _propTypes.default.number
+	  }), _propTypes.default.oneOf(['auto'])]),
+
+	  /**
+	   * Properties applied to the `Transition` element.
+	   */
+	  TransitionProps: _propTypes.default.object
+	};
+	Popover.defaultProps = {
+	  anchorReference: 'anchorEl',
+	  anchorOrigin: {
+	    vertical: 'top',
+	    horizontal: 'left'
+	  },
+	  elevation: 8,
+	  marginThreshold: 16,
+	  transformOrigin: {
+	    vertical: 'top',
+	    horizontal: 'left'
+	  },
+	  TransitionComponent: _Grow.default,
+	  transitionDuration: 'auto'
+	};
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiPopover'
+	})(Popover);
+
+	exports.default = _default;
+	});
+
+	unwrapExports(Popover_1);
+	var Popover_2 = Popover_1.styles;
+
+	var Popover$1 = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "default", {
+	  enumerable: true,
+	  get: function get() {
+	    return _Popover.default;
+	  }
+	});
+
+	var _Popover = interopRequireDefault(Popover_1);
+	});
+
+	var MUI_Popover = unwrapExports(Popover$1);
+
+	function createBroadcast (initialState) {
+	  var listeners = {};
+	  var id = 1;
+	  var _state = initialState;
+
+	  function getState () {
+	    return _state
+	  }
+
+	  function setState (state) {
+	    _state = state;
+	    var keys = Object.keys(listeners);
+	    var i = 0;
+	    var len = keys.length;
+	    for (; i < len; i++) {
+	      // if a listener gets unsubscribed during setState we just skip it
+	      if (listeners[keys[i]]) { listeners[keys[i]](state); }
+	    }
+	  }
+
+	  // subscribe to changes and return the subscriptionId
+	  function subscribe (listener) {
+	    if (typeof listener !== 'function') {
+	      throw new Error('listener must be a function.')
+	    }
+	    var currentId = id;
+	    listeners[currentId] = listener;
+	    id += 1;
+	    return currentId
+	  }
+
+	  // remove subscription by removing the listener function
+	  function unsubscribe (id) {
+	    listeners[id] = undefined;
+	  }
+
+	  return { getState: getState, setState: setState, subscribe: subscribe, unsubscribe: unsubscribe }
+	}
+
+	var brcast_es = /*#__PURE__*/Object.freeze({
+		default: createBroadcast
+	});
+
+	var _brcast = ( brcast_es && createBroadcast ) || brcast_es;
+
+	var MuiThemeProvider_1 = createCommonjsModule(function (module, exports) {
+
+
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = void 0;
+
+	var _objectSpread2 = interopRequireDefault(objectSpread);
+
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
+	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
+
+	var _classCallCheck2 = interopRequireDefault(classCallCheck);
+
+	var _createClass2 = interopRequireDefault(createClass);
+
+	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
+
+	var _inherits2 = interopRequireDefault(inherits);
+
+	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
+
+	var _react = interopRequireDefault(react);
+
+	var _propTypes = interopRequireDefault(propTypes);
+
+	var _warning = interopRequireDefault(browser);
+
+	var _brcast$$1 = interopRequireDefault(_brcast);
+
+	var _themeListener = interopRequireWildcard(themeListener_1);
+
+	var _exactProp = interopRequireDefault(exactProp_1);
+
+	/**
+	 * This component takes a `theme` property.
+	 * It makes the `theme` available down the React tree thanks to React context.
+	 * This component should preferably be used at **the root of your component tree**.
+	 */
+	var MuiThemeProvider =
+	/*#__PURE__*/
+	function (_React$Component) {
+	  (0, _inherits2.default)(MuiThemeProvider, _React$Component);
+
+	  function MuiThemeProvider(props, context) {
+	    var _this;
+
+	    (0, _classCallCheck2.default)(this, MuiThemeProvider);
+	    _this = (0, _possibleConstructorReturn2.default)(this, (MuiThemeProvider.__proto__ || (0, _getPrototypeOf.default)(MuiThemeProvider)).call(this, props, context)); // Get the outer theme from the context, can be null
+
+	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "broadcast", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: (0, _brcast$$1.default)()
+	    });
+	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "unsubscribeId", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: null
+	    });
+	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "outerTheme", {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: null
+	    });
+	    _this.outerTheme = _themeListener.default.initial(context); // Propagate the theme so it can be accessed by the children
+
+	    _this.broadcast.setState(_this.mergeOuterLocalTheme(_this.props.theme));
+
+	    return _this;
+	  }
+
+	  (0, _createClass2.default)(MuiThemeProvider, [{
+	    key: "getChildContext",
+	    value: function getChildContext() {
+	      var _ref;
+
+	      var _props = this.props,
+	          sheetsManager = _props.sheetsManager,
+	          disableStylesGeneration = _props.disableStylesGeneration;
+	      var muiThemeProviderOptions = this.context.muiThemeProviderOptions || {};
+
+	      if (sheetsManager !== undefined) {
+	        muiThemeProviderOptions.sheetsManager = sheetsManager;
+	      }
+
+	      if (disableStylesGeneration !== undefined) {
+	        muiThemeProviderOptions.disableStylesGeneration = disableStylesGeneration;
+	      }
+
+	      return _ref = {}, (0, _defineProperty2.default)(_ref, _themeListener.CHANNEL, this.broadcast), (0, _defineProperty2.default)(_ref, "muiThemeProviderOptions", muiThemeProviderOptions), _ref;
+	    }
+	  }, {
+	    key: "componentDidMount",
+	    value: function componentDidMount() {
+	      var _this2 = this;
+
+	      // Subscribe on the outer theme, if present
+	      this.unsubscribeId = _themeListener.default.subscribe(this.context, function (outerTheme) {
+	        _this2.outerTheme = outerTheme; // Forward the parent theme update to the children
+
+	        _this2.broadcast.setState(_this2.mergeOuterLocalTheme(_this2.props.theme));
+	      });
+	    }
+	  }, {
+	    key: "componentDidUpdate",
+	    value: function componentDidUpdate(prevProps) {
+	      // Propagate a local theme update
+	      if (this.props.theme !== prevProps.theme) {
+	        this.broadcast.setState(this.mergeOuterLocalTheme(this.props.theme));
+	      }
+	    }
+	  }, {
+	    key: "componentWillUnmount",
+	    value: function componentWillUnmount() {
+	      if (this.unsubscribeId !== null) {
+	        _themeListener.default.unsubscribe(this.context, this.unsubscribeId);
+	      }
+	    }
+	  }, {
+	    key: "mergeOuterLocalTheme",
+	    // Simple merge between the outer theme and the local theme
+	    value: function mergeOuterLocalTheme(localTheme) {
+	      // To support composition of theme.
+	      if (typeof localTheme === 'function') {
+	        (0, _warning.default)(this.outerTheme, ['Material-UI: you are providing a theme function property ' + 'to the MuiThemeProvider component:', '<MuiThemeProvider theme={outerTheme => outerTheme} />', '', 'However, no outer theme is present.', 'Make sure a theme is already injected higher in the React tree ' + 'or provide a theme object.'].join('\n'));
+	        return localTheme(this.outerTheme);
+	      }
+
+	      if (!this.outerTheme) {
+	        return localTheme;
+	      }
+
+	      return (0, _objectSpread2.default)({}, this.outerTheme, localTheme);
+	    }
+	  }, {
+	    key: "render",
+	    value: function render() {
+	      // TODO move the sheetsManager property to a different component.
+	      // warning(
+	      //   typeof window !== 'undefined' || this.props.sheetsManager,
+	      //   [
+	      //     'Material-UI: you need to provide a sheetsManager to the MuiThemeProvider ' +
+	      //       'when rendering on the server.',
+	      //     'If you do not, you might experience a memory leak',
+	      //   ].join('\n'),
+	      // );
+	      return this.props.children;
+	    }
+	  }]);
+	  return MuiThemeProvider;
+	}(_react.default.Component);
+
+	MuiThemeProvider.propTypes = {
+	  /**
+	   * You can wrap a node.
+	   */
+	  children: _propTypes.default.node.isRequired,
+
+	  /**
+	   * You can disable the generation of the styles with this option.
+	   * It can be useful when traversing the React tree outside of the HTML
+	   * rendering step on the server.
+	   * Let's say you are using react-apollo to extract all
+	   * the queries made by the interface server side.
+	   * You can significantly speed up the traversal with this property.
+	   */
+	  disableStylesGeneration: _propTypes.default.bool,
+
+	  /**
+	   * The sheetsManager is used to deduplicate style sheet injection in the page.
+	   * It's deduplicating using the (theme, styles) couple.
+	   * On the server, you should provide a new instance for each request.
+	   */
+	  sheetsManager: _propTypes.default.object,
+
+	  /**
+	   * A theme object.
+	   */
+	  theme: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]).isRequired
+	};
+	MuiThemeProvider.propTypes = (0, _exactProp.default)(MuiThemeProvider.propTypes, 'MuiThemeProvider');
+	MuiThemeProvider.childContextTypes = (0, _objectSpread2.default)({}, _themeListener.default.contextTypes, {
+	  muiThemeProviderOptions: _propTypes.default.object
+	});
+	MuiThemeProvider.contextTypes = (0, _objectSpread2.default)({}, _themeListener.default.contextTypes, {
+	  muiThemeProviderOptions: _propTypes.default.object
+	});
+	var _default = MuiThemeProvider;
+	exports.default = _default;
+	});
+
+	unwrapExports(MuiThemeProvider_1);
+
+	var styles = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	Object.defineProperty(exports, "createGenerateClassName", {
+	  enumerable: true,
+	  get: function get() {
+	    return _createGenerateClassName.default;
+	  }
+	});
+	Object.defineProperty(exports, "createMuiTheme", {
+	  enumerable: true,
+	  get: function get() {
+	    return _createMuiTheme.default;
+	  }
+	});
+	Object.defineProperty(exports, "jssPreset", {
+	  enumerable: true,
+	  get: function get() {
+	    return _jssPreset.default;
+	  }
+	});
+	Object.defineProperty(exports, "MuiThemeProvider", {
+	  enumerable: true,
+	  get: function get() {
+	    return _MuiThemeProvider.default;
+	  }
+	});
+	Object.defineProperty(exports, "withStyles", {
+	  enumerable: true,
+	  get: function get() {
+	    return _withStyles.default;
+	  }
+	});
+	Object.defineProperty(exports, "withTheme", {
+	  enumerable: true,
+	  get: function get() {
+	    return _withTheme.default;
+	  }
+	});
+
+	var _createGenerateClassName = interopRequireDefault(createGenerateClassName_1);
+
+	var _createMuiTheme = interopRequireDefault(createMuiTheme_1);
+
+	var _jssPreset = interopRequireDefault(jssPreset_1);
+
+	var _MuiThemeProvider = interopRequireDefault(MuiThemeProvider_1);
+
+	var _withStyles = interopRequireDefault(withStyles_1);
+
+	var _withTheme = interopRequireDefault(withTheme_1);
+	});
+
+	unwrapExports(styles);
+	var styles_1 = styles.MuiThemeProvider;
+	var styles_2 = styles.createMuiTheme;
+	var styles_3 = styles.withStyles;
+	var styles_4 = styles.withTheme;
+	var styles_5 = styles.createGenerateClassName;
+	var styles_6 = styles.jssPreset;
+
+	const styles$1 = theme => ({
+	  popoverPaper: {
+	    padding: theme.spacing.unit * 2
+	  }
+	});
+
+	const Popover$2 = ({
+	  classes,
+	  children,
+	  ...other
+	}) => react.createElement(MUI_Popover, _extends$5({
+	  anchorOrigin: {
+	    vertical: 'bottom',
+	    horizontal: 'center'
+	  },
+	  classes: {
+	    paper: classes.popoverPaper
+	  },
+	  transformOrigin: {
+	    vertical: 'top',
+	    horizontal: 'center'
+	  }
+	}, other), children);
+
+	Popover$2.propTypes = {
+	  classes: propTypes.object.isRequired,
+	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
+	};
+	const enhancedPopover = styles_3(styles$1)(Popover$2);
+
+	class InfoButton extends react_1 {
+	  constructor(...args) {
+	    var _temp;
+
+	    return _temp = super(...args), _defineProperty$2(this, "state", {
+	      open: false
+	    }), _defineProperty$2(this, "handleClickButton", () => {
+	      this.setState({
+	        open: true
+	      });
+	    }), _defineProperty$2(this, "handleClose", () => {
+	      this.setState({
+	        open: false
+	      });
+	    }), _defineProperty$2(this, "anchorEl", null), _temp;
+	  }
+
+	  render() {
+	    const {
+	      children,
+	      popover,
+	      icon
+	    } = this.props;
+	    const {
+	      open
+	    } = this.state;
+	    return react.createElement(react_5, null, icon && react.createElement(IconButton$2, {
+	      buttonRef: node => {
+	        this.anchorEl = node;
+	      },
+	      onClick: this.handleClickButton
+	    }, children), !icon && react.createElement(Button$2, {
+	      buttonRef: node => {
+	        this.anchorEl = node;
+	      },
+	      color: "primary",
+	      onClick: this.handleClickButton,
+	      size: "small"
+	    }, children), react.createElement(enhancedPopover, {
+	      anchorEl: this.anchorEl,
+	      onClose: this.handleClose,
+	      open: open
+	    }, popover));
+	  }
+
+	}
+
+	InfoButton.propTypes = {
+	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+	  popover: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+	  icon: propTypes.bool
+	};
+
+	const styles$2 = {
+	  root: {
+	    textAlign: 'center',
+	    '& :last-child': {
+	      paddingBottom: 8
+	    }
+	  },
+	  header: {
+	    padding: '8 16 0 16'
+	  },
+	  content: {
+	    padding: '0 16 0 16'
+	  }
+	};
+
+	const StatusCard = ({
+	  classes,
+	  className,
+	  helperText,
+	  children,
+	  title
+	}) => react.createElement(Card$2, {
+	  className: classnames(classes.root, className)
+	}, react.createElement(CardHeader$2, {
+	  action: helperText && react.createElement(InfoButton, {
+	    icon: true,
+	    popover: react.createElement(Typography$2, null, helperText)
+	  }, react.createElement(HelpIcon, null)),
+	  className: classes.header,
+	  subheader: title
+	}), react.createElement(CardContent$2, {
+	  className: classes.content
+	}, children));
+
+	StatusCard.propTypes = {
+	  helperText: propTypes.string,
+	  classes: propTypes.object.isRequired,
+	  className: propTypes.string,
+	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+	  title: propTypes.string
+	};
+	const enhance = styles_3(styles$2)(StatusCard);
+
 	var Dialog_1 = createCommonjsModule(function (module, exports) {
 
 
@@ -36838,116 +39461,6 @@
 	var Dialog_3 = Dialog$1.DialogContentText;
 	var Dialog_4 = Dialog$1.DialogTitle;
 
-	var DialogActions_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-
-
-
-
-	// So we don't have any override priority issue.
-	var styles = function styles(theme) {
-	  return {
-	    root: {
-	      display: 'flex',
-	      alignItems: 'center',
-	      justifyContent: 'flex-end',
-	      flex: '0 0 auto',
-	      margin: "".concat(theme.spacing.unit, "px ").concat(theme.spacing.unit / 2, "px")
-	    },
-	    action: {
-	      margin: "0 ".concat(theme.spacing.unit / 2, "px"),
-	      minWidth: 64
-	    }
-	  };
-	};
-
-	exports.styles = styles;
-
-	function DialogActions(props) {
-	  var disableActionSpacing = props.disableActionSpacing,
-	      children = props.children,
-	      classes = props.classes,
-	      className = props.className,
-	      other = (0, _objectWithoutProperties2.default)(props, ["disableActionSpacing", "children", "classes", "className"]);
-	  return _react.default.createElement("div", (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, className)
-	  }, other), disableActionSpacing ? children : (0, reactHelpers.cloneChildrenWithClassName)(children, classes.action));
-	}
-
-	DialogActions.propTypes = {
-	  /**
-	   * The content of the component.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * If `true`, the dialog actions do not have additional margin.
-	   */
-	  disableActionSpacing: _propTypes.default.bool
-	};
-	DialogActions.defaultProps = {
-	  disableActionSpacing: false
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiDialogActions'
-	})(DialogActions);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(DialogActions_1);
-	var DialogActions_2 = DialogActions_1.styles;
-
-	var DialogActions$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _DialogActions.default;
-	  }
-	});
-
-	var _DialogActions = interopRequireDefault(DialogActions_1);
-	});
-
-	unwrapExports(DialogActions$1);
-
 	var DialogContent_1 = createCommonjsModule(function (module, exports) {
 
 
@@ -37044,7 +39557,7 @@
 
 	var DialogContent$2 = unwrapExports(DialogContent$1);
 
-	var DialogContentText_1 = createCommonjsModule(function (module, exports) {
+	var Toolbar_1 = createCommonjsModule(function (module, exports) {
 
 
 
@@ -37055,7 +39568,11 @@
 
 	var _extends2 = interopRequireDefault(_extends_1);
 
+	var _defineProperty2 = interopRequireDefault(defineProperty$3);
+
 	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
+
+	var _objectSpread2 = interopRequireDefault(objectSpread);
 
 	var _react = interopRequireDefault(react);
 
@@ -37065,131 +39582,36 @@
 
 	var _withStyles = interopRequireDefault(withStyles_1);
 
-	var _Typography = interopRequireDefault(Typography$1);
-
-	// @inheritedComponent Typography
 	var styles = function styles(theme) {
 	  return {
-	    root: {
-	      color: theme.palette.text.secondary
-	    }
+	    root: (0, _objectSpread2.default)({}, theme.mixins.toolbar, {
+	      position: 'relative',
+	      display: 'flex',
+	      alignItems: 'center'
+	    }),
+	    gutters: theme.mixins.gutters()
 	  };
 	};
 
 	exports.styles = styles;
 
-	function DialogContentText(props) {
+	function Toolbar(props) {
 	  var children = props.children,
 	      classes = props.classes,
-	      className = props.className,
-	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className"]);
-	  return _react.default.createElement(_Typography.default, (0, _extends2.default)({
-	    component: "p",
-	    variant: "subheading",
-	    className: (0, _classnames.default)(classes.root, className)
+	      classNameProp = props.className,
+	      disableGutters = props.disableGutters,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "disableGutters"]);
+	  var className = (0, _classnames.default)(classes.root, (0, _defineProperty2.default)({}, classes.gutters, !disableGutters), classNameProp);
+	  return _react.default.createElement("div", (0, _extends2.default)({
+	    className: className
 	  }, other), children);
 	}
 
-	DialogContentText.propTypes = {
+	Toolbar.propTypes = {
 	  /**
-	   * The content of the component.
+	   * Toolbar children, usually a mixture of `IconButton`, `Button` and `Typography`.
 	   */
 	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiDialogContentText'
-	})(DialogContentText);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(DialogContentText_1);
-	var DialogContentText_2 = DialogContentText_1.styles;
-
-	var DialogContentText$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _DialogContentText.default;
-	  }
-	});
-
-	var _DialogContentText = interopRequireDefault(DialogContentText_1);
-	});
-
-	var DialogContentText$2 = unwrapExports(DialogContentText$1);
-
-	var DialogTitle_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var _Typography = interopRequireDefault(Typography$1);
-
-	var styles = function styles(theme) {
-	  return {
-	    root: {
-	      margin: 0,
-	      padding: "".concat(theme.spacing.unit * 3, "px ").concat(theme.spacing.unit * 3, "px       20px ").concat(theme.spacing.unit * 3, "px"),
-	      flex: '0 0 auto'
-	    }
-	  };
-	};
-
-	exports.styles = styles;
-
-	function DialogTitle(props) {
-	  var children = props.children,
-	      classes = props.classes,
-	      className = props.className,
-	      disableTypography = props.disableTypography,
-	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "disableTypography"]);
-	  return _react.default.createElement("div", (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, className)
-	  }, other), disableTypography ? children : _react.default.createElement(_Typography.default, {
-	    variant: "title"
-	  }, children));
-	}
-
-	DialogTitle.propTypes = {
-	  /**
-	   * The content of the component.
-	   */
-	  children: _propTypes.default.node.isRequired,
 
 	  /**
 	   * Override or extend the styles applied to the component.
@@ -37203,26 +39625,25 @@
 	  className: _propTypes.default.string,
 
 	  /**
-	   * If `true`, the children won't be wrapped by a typography component.
-	   * For instance, this can be useful to render an h4 instead of the default h2.
+	   * If `true`, disables gutter padding.
 	   */
-	  disableTypography: _propTypes.default.bool
+	  disableGutters: _propTypes.default.bool
 	};
-	DialogTitle.defaultProps = {
-	  disableTypography: false
+	Toolbar.defaultProps = {
+	  disableGutters: false
 	};
 
 	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiDialogTitle'
-	})(DialogTitle);
+	  name: 'MuiToolbar'
+	})(Toolbar);
 
 	exports.default = _default;
 	});
 
-	unwrapExports(DialogTitle_1);
-	var DialogTitle_2 = DialogTitle_1.styles;
+	unwrapExports(Toolbar_1);
+	var Toolbar_2 = Toolbar_1.styles;
 
-	var DialogTitle$1 = createCommonjsModule(function (module, exports) {
+	var Toolbar$1 = createCommonjsModule(function (module, exports) {
 
 
 
@@ -37232,14 +39653,14 @@
 	Object.defineProperty(exports, "default", {
 	  enumerable: true,
 	  get: function get() {
-	    return _DialogTitle.default;
+	    return _Toolbar.default;
 	  }
 	});
 
-	var _DialogTitle = interopRequireDefault(DialogTitle_1);
+	var _Toolbar = interopRequireDefault(Toolbar_1);
 	});
 
-	unwrapExports(DialogTitle$1);
+	var Toolbar$2 = unwrapExports(Toolbar$1);
 
 	var compose_1 = createCommonjsModule(function (module, exports) {
 
@@ -37307,11 +39728,11 @@
 	  /* eslint-enable no-empty */
 	}
 
-	function _classCallCheck$1(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn$1(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	function _possibleConstructorReturn$2(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits$1(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var didWarnAboutReceivingStore = false;
 	function warnAboutReceivingStore() {
@@ -37332,7 +39753,7 @@
 	  var subscriptionKey = subKey || storeKey + 'Subscription';
 
 	  var Provider = function (_Component) {
-	    _inherits$1(Provider, _Component);
+	    _inherits$2(Provider, _Component);
 
 	    Provider.prototype.getChildContext = function getChildContext() {
 	      var _ref;
@@ -37341,9 +39762,9 @@
 	    };
 
 	    function Provider(props, context) {
-	      _classCallCheck$1(this, Provider);
+	      _classCallCheck$2(this, Provider);
 
-	      var _this = _possibleConstructorReturn$1(this, _Component.call(this, props, context));
+	      var _this = _possibleConstructorReturn$2(this, _Component.call(this, props, context));
 
 	      _this[storeKey] = props.store;
 	      return _this;
@@ -37495,7 +39916,7 @@
 
 	var browser$1 = invariant$2;
 
-	function _classCallCheck$2(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	// encapsulates the subscription logic for connecting a component to the redux store, as
 	// well as nesting subscriptions of descendant components, so that we can ensure the
@@ -37544,7 +39965,7 @@
 
 	var Subscription = function () {
 	  function Subscription(store, parentSub, onStateChange) {
-	    _classCallCheck$2(this, Subscription);
+	    _classCallCheck$3(this, Subscription);
 
 	    this.store = store;
 	    this.parentSub = parentSub;
@@ -37586,15 +40007,15 @@
 	  return Subscription;
 	}();
 
-	var _extends$5 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	var _extends$6 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	function _classCallCheck$3(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	function _classCallCheck$4(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	function _possibleConstructorReturn$2(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	function _possibleConstructorReturn$3(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-	function _inherits$2(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	function _inherits$3(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	function _objectWithoutProperties$2(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+	function _objectWithoutProperties$3(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 	var hotReloadingVersion = 0;
 	var dummyState = {};
@@ -37653,7 +40074,7 @@
 	      storeKey = _ref$storeKey === undefined ? 'store' : _ref$storeKey,
 	      _ref$withRef = _ref.withRef,
 	      withRef = _ref$withRef === undefined ? false : _ref$withRef,
-	      connectOptions = _objectWithoutProperties$2(_ref, ['getDisplayName', 'methodName', 'renderCountProp', 'shouldHandleStateChanges', 'storeKey', 'withRef']);
+	      connectOptions = _objectWithoutProperties$3(_ref, ['getDisplayName', 'methodName', 'renderCountProp', 'shouldHandleStateChanges', 'storeKey', 'withRef']);
 
 	  var subscriptionKey = storeKey + 'Subscription';
 	  var version = hotReloadingVersion++;
@@ -37668,7 +40089,7 @@
 
 	    var displayName = getDisplayName(wrappedComponentName);
 
-	    var selectorFactoryOptions = _extends$5({}, connectOptions, {
+	    var selectorFactoryOptions = _extends$6({}, connectOptions, {
 	      getDisplayName: getDisplayName,
 	      methodName: methodName,
 	      renderCountProp: renderCountProp,
@@ -37681,12 +40102,12 @@
 	    });
 
 	    var Connect = function (_Component) {
-	      _inherits$2(Connect, _Component);
+	      _inherits$3(Connect, _Component);
 
 	      function Connect(props, context) {
-	        _classCallCheck$3(this, Connect);
+	        _classCallCheck$4(this, Connect);
 
-	        var _this = _possibleConstructorReturn$2(this, _Component.call(this, props, context));
+	        var _this = _possibleConstructorReturn$3(this, _Component.call(this, props, context));
 
 	        _this.version = version;
 	        _this.state = {};
@@ -37807,7 +40228,7 @@
 	        // this is especially important for 'ref' since that's a reference back to the component
 	        // instance. a singleton memoized selector would then be holding a reference to the
 	        // instance, preventing the instance from being garbage collected, and that would be bad
-	        var withExtras = _extends$5({}, props);
+	        var withExtras = _extends$6({}, props);
 	        if (withRef) withExtras.ref = this.setWrappedInstance;
 	        if (renderCountProp) withExtras[renderCountProp] = this.renderCount++;
 	        if (this.propsMode && this.subscription) withExtras[subscriptionKey] = this.subscription;
@@ -37879,7 +40300,7 @@
 	  }
 	}
 
-	function shallowEqual$1(objA, objB) {
+	function shallowEqual$3(objA, objB) {
 	  if (is$2(objA, objB)) return true;
 
 	  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
@@ -38203,10 +40624,10 @@
 
 	var defaultMapStateToPropsFactories = [whenMapStateToPropsIsFunction, whenMapStateToPropsIsMissing];
 
-	var _extends$6 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	var _extends$7 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	function defaultMergeProps(stateProps, dispatchProps, ownProps) {
-	  return _extends$6({}, ownProps, stateProps, dispatchProps);
+	  return _extends$7({}, ownProps, stateProps, dispatchProps);
 	}
 
 	function wrapMergePropsFunc(mergeProps) {
@@ -38263,7 +40684,7 @@
 	  verify(mergeProps, 'mergeProps', displayName);
 	}
 
-	function _objectWithoutProperties$3(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+	function _objectWithoutProperties$4(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 	function impureFinalPropsSelectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch) {
 	  return function impureFinalPropsSelector(state, ownProps) {
@@ -38349,7 +40770,7 @@
 	  var initMapStateToProps = _ref2.initMapStateToProps,
 	      initMapDispatchToProps = _ref2.initMapDispatchToProps,
 	      initMergeProps = _ref2.initMergeProps,
-	      options = _objectWithoutProperties$3(_ref2, ['initMapStateToProps', 'initMapDispatchToProps', 'initMergeProps']);
+	      options = _objectWithoutProperties$4(_ref2, ['initMapStateToProps', 'initMapDispatchToProps', 'initMergeProps']);
 
 	  var mapStateToProps = initMapStateToProps(dispatch, options);
 	  var mapDispatchToProps = initMapDispatchToProps(dispatch, options);
@@ -38364,9 +40785,9 @@
 	  return selectorFactory(mapStateToProps, mapDispatchToProps, mergeProps, dispatch, options);
 	}
 
-	var _extends$7 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	var _extends$8 = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-	function _objectWithoutProperties$4(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+	function _objectWithoutProperties$5(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 	/*
 	  connect is a facade over connectAdvanced. It turns its args into a compatible
@@ -38422,18 +40843,18 @@
 	        _ref2$areStatesEqual = _ref2.areStatesEqual,
 	        areStatesEqual = _ref2$areStatesEqual === undefined ? strictEqual : _ref2$areStatesEqual,
 	        _ref2$areOwnPropsEqua = _ref2.areOwnPropsEqual,
-	        areOwnPropsEqual = _ref2$areOwnPropsEqua === undefined ? shallowEqual$1 : _ref2$areOwnPropsEqua,
+	        areOwnPropsEqual = _ref2$areOwnPropsEqua === undefined ? shallowEqual$3 : _ref2$areOwnPropsEqua,
 	        _ref2$areStatePropsEq = _ref2.areStatePropsEqual,
-	        areStatePropsEqual = _ref2$areStatePropsEq === undefined ? shallowEqual$1 : _ref2$areStatePropsEq,
+	        areStatePropsEqual = _ref2$areStatePropsEq === undefined ? shallowEqual$3 : _ref2$areStatePropsEq,
 	        _ref2$areMergedPropsE = _ref2.areMergedPropsEqual,
-	        areMergedPropsEqual = _ref2$areMergedPropsE === undefined ? shallowEqual$1 : _ref2$areMergedPropsE,
-	        extraOptions = _objectWithoutProperties$4(_ref2, ['pure', 'areStatesEqual', 'areOwnPropsEqual', 'areStatePropsEqual', 'areMergedPropsEqual']);
+	        areMergedPropsEqual = _ref2$areMergedPropsE === undefined ? shallowEqual$3 : _ref2$areMergedPropsE,
+	        extraOptions = _objectWithoutProperties$5(_ref2, ['pure', 'areStatesEqual', 'areOwnPropsEqual', 'areStatePropsEqual', 'areMergedPropsEqual']);
 
 	    var initMapStateToProps = match(mapStateToProps, mapStateToPropsFactories, 'mapStateToProps');
 	    var initMapDispatchToProps = match(mapDispatchToProps, mapDispatchToPropsFactories, 'mapDispatchToProps');
 	    var initMergeProps = match(mergeProps, mergePropsFactories, 'mergeProps');
 
-	    return connectHOC(selectorFactory, _extends$7({
+	    return connectHOC(selectorFactory, _extends$8({
 	      // used in error messages
 	      methodName: 'connect',
 
@@ -38461,319 +40882,100 @@
 
 	var connect = createConnect();
 
-	function createBroadcast (initialState) {
-	  var listeners = {};
-	  var id = 1;
-	  var _state = initialState;
-
-	  function getState () {
-	    return _state
-	  }
-
-	  function setState (state) {
-	    _state = state;
-	    var keys = Object.keys(listeners);
-	    var i = 0;
-	    var len = keys.length;
-	    for (; i < len; i++) {
-	      // if a listener gets unsubscribed during setState we just skip it
-	      if (listeners[keys[i]]) { listeners[keys[i]](state); }
-	    }
-	  }
-
-	  // subscribe to changes and return the subscriptionId
-	  function subscribe (listener) {
-	    if (typeof listener !== 'function') {
-	      throw new Error('listener must be a function.')
-	    }
-	    var currentId = id;
-	    listeners[currentId] = listener;
-	    id += 1;
-	    return currentId
-	  }
-
-	  // remove subscription by removing the listener function
-	  function unsubscribe (id) {
-	    listeners[id] = undefined;
-	  }
-
-	  return { getState: getState, setState: setState, subscribe: subscribe, unsubscribe: unsubscribe }
-	}
-
-	var brcast_es = /*#__PURE__*/Object.freeze({
-		default: createBroadcast
-	});
-
-	var _brcast = ( brcast_es && createBroadcast ) || brcast_es;
-
-	var MuiThemeProvider_1 = createCommonjsModule(function (module, exports) {
-
-
+	var DialogContentText_1 = createCommonjsModule(function (module, exports) {
 
 
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.default = void 0;
+	exports.default = exports.styles = void 0;
 
-	var _objectSpread2 = interopRequireDefault(objectSpread);
+	var _extends2 = interopRequireDefault(_extends_1);
 
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
-
-	var _classCallCheck2 = interopRequireDefault(classCallCheck);
-
-	var _createClass2 = interopRequireDefault(createClass);
-
-	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
-
-	var _inherits2 = interopRequireDefault(inherits);
-
-	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
+	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
 
 	var _react = interopRequireDefault(react);
 
 	var _propTypes = interopRequireDefault(propTypes);
 
-	var _warning = interopRequireDefault(browser);
+	var _classnames = interopRequireDefault(classnames);
 
-	var _brcast$$1 = interopRequireDefault(_brcast);
+	var _withStyles = interopRequireDefault(withStyles_1);
 
-	var _themeListener = interopRequireWildcard(themeListener_1);
+	var _Typography = interopRequireDefault(Typography$1);
 
-	var _exactProp = interopRequireDefault(exactProp_1);
-
-	/**
-	 * This component takes a `theme` property.
-	 * It makes the `theme` available down the React tree thanks to React context.
-	 * This component should preferably be used at **the root of your component tree**.
-	 */
-	var MuiThemeProvider =
-	/*#__PURE__*/
-	function (_React$Component) {
-	  (0, _inherits2.default)(MuiThemeProvider, _React$Component);
-
-	  function MuiThemeProvider(props, context) {
-	    var _this;
-
-	    (0, _classCallCheck2.default)(this, MuiThemeProvider);
-	    _this = (0, _possibleConstructorReturn2.default)(this, (MuiThemeProvider.__proto__ || (0, _getPrototypeOf.default)(MuiThemeProvider)).call(this, props, context)); // Get the outer theme from the context, can be null
-
-	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "broadcast", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: (0, _brcast$$1.default)()
-	    });
-	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "unsubscribeId", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: null
-	    });
-	    Object.defineProperty((0, _assertThisInitialized2.default)(_this), "outerTheme", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: null
-	    });
-	    _this.outerTheme = _themeListener.default.initial(context); // Propagate the theme so it can be accessed by the children
-
-	    _this.broadcast.setState(_this.mergeOuterLocalTheme(_this.props.theme));
-
-	    return _this;
-	  }
-
-	  (0, _createClass2.default)(MuiThemeProvider, [{
-	    key: "getChildContext",
-	    value: function getChildContext() {
-	      var _ref;
-
-	      var _props = this.props,
-	          sheetsManager = _props.sheetsManager,
-	          disableStylesGeneration = _props.disableStylesGeneration;
-	      var muiThemeProviderOptions = this.context.muiThemeProviderOptions || {};
-
-	      if (sheetsManager !== undefined) {
-	        muiThemeProviderOptions.sheetsManager = sheetsManager;
-	      }
-
-	      if (disableStylesGeneration !== undefined) {
-	        muiThemeProviderOptions.disableStylesGeneration = disableStylesGeneration;
-	      }
-
-	      return _ref = {}, (0, _defineProperty2.default)(_ref, _themeListener.CHANNEL, this.broadcast), (0, _defineProperty2.default)(_ref, "muiThemeProviderOptions", muiThemeProviderOptions), _ref;
+	// @inheritedComponent Typography
+	var styles = function styles(theme) {
+	  return {
+	    root: {
+	      color: theme.palette.text.secondary
 	    }
-	  }, {
-	    key: "componentDidMount",
-	    value: function componentDidMount() {
-	      var _this2 = this;
-
-	      // Subscribe on the outer theme, if present
-	      this.unsubscribeId = _themeListener.default.subscribe(this.context, function (outerTheme) {
-	        _this2.outerTheme = outerTheme; // Forward the parent theme update to the children
-
-	        _this2.broadcast.setState(_this2.mergeOuterLocalTheme(_this2.props.theme));
-	      });
-	    }
-	  }, {
-	    key: "componentDidUpdate",
-	    value: function componentDidUpdate(prevProps) {
-	      // Propagate a local theme update
-	      if (this.props.theme !== prevProps.theme) {
-	        this.broadcast.setState(this.mergeOuterLocalTheme(this.props.theme));
-	      }
-	    }
-	  }, {
-	    key: "componentWillUnmount",
-	    value: function componentWillUnmount() {
-	      if (this.unsubscribeId !== null) {
-	        _themeListener.default.unsubscribe(this.context, this.unsubscribeId);
-	      }
-	    }
-	  }, {
-	    key: "mergeOuterLocalTheme",
-	    // Simple merge between the outer theme and the local theme
-	    value: function mergeOuterLocalTheme(localTheme) {
-	      // To support composition of theme.
-	      if (typeof localTheme === 'function') {
-	        (0, _warning.default)(this.outerTheme, ['Material-UI: you are providing a theme function property ' + 'to the MuiThemeProvider component:', '<MuiThemeProvider theme={outerTheme => outerTheme} />', '', 'However, no outer theme is present.', 'Make sure a theme is already injected higher in the React tree ' + 'or provide a theme object.'].join('\n'));
-	        return localTheme(this.outerTheme);
-	      }
-
-	      if (!this.outerTheme) {
-	        return localTheme;
-	      }
-
-	      return (0, _objectSpread2.default)({}, this.outerTheme, localTheme);
-	    }
-	  }, {
-	    key: "render",
-	    value: function render() {
-	      // TODO move the sheetsManager property to a different component.
-	      // warning(
-	      //   typeof window !== 'undefined' || this.props.sheetsManager,
-	      //   [
-	      //     'Material-UI: you need to provide a sheetsManager to the MuiThemeProvider ' +
-	      //       'when rendering on the server.',
-	      //     'If you do not, you might experience a memory leak',
-	      //   ].join('\n'),
-	      // );
-	      return this.props.children;
-	    }
-	  }]);
-	  return MuiThemeProvider;
-	}(_react.default.Component);
-
-	MuiThemeProvider.propTypes = {
-	  /**
-	   * You can wrap a node.
-	   */
-	  children: _propTypes.default.node.isRequired,
-
-	  /**
-	   * You can disable the generation of the styles with this option.
-	   * It can be useful when traversing the React tree outside of the HTML
-	   * rendering step on the server.
-	   * Let's say you are using react-apollo to extract all
-	   * the queries made by the interface server side.
-	   * You can significantly speed up the traversal with this property.
-	   */
-	  disableStylesGeneration: _propTypes.default.bool,
-
-	  /**
-	   * The sheetsManager is used to deduplicate style sheet injection in the page.
-	   * It's deduplicating using the (theme, styles) couple.
-	   * On the server, you should provide a new instance for each request.
-	   */
-	  sheetsManager: _propTypes.default.object,
-
-	  /**
-	   * A theme object.
-	   */
-	  theme: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]).isRequired
+	  };
 	};
-	MuiThemeProvider.propTypes = (0, _exactProp.default)(MuiThemeProvider.propTypes, 'MuiThemeProvider');
-	MuiThemeProvider.childContextTypes = (0, _objectSpread2.default)({}, _themeListener.default.contextTypes, {
-	  muiThemeProviderOptions: _propTypes.default.object
-	});
-	MuiThemeProvider.contextTypes = (0, _objectSpread2.default)({}, _themeListener.default.contextTypes, {
-	  muiThemeProviderOptions: _propTypes.default.object
-	});
-	var _default = MuiThemeProvider;
+
+	exports.styles = styles;
+
+	function DialogContentText(props) {
+	  var children = props.children,
+	      classes = props.classes,
+	      className = props.className,
+	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className"]);
+	  return _react.default.createElement(_Typography.default, (0, _extends2.default)({
+	    component: "p",
+	    variant: "subheading",
+	    className: (0, _classnames.default)(classes.root, className)
+	  }, other), children);
+	}
+
+	DialogContentText.propTypes = {
+	  /**
+	   * The content of the component.
+	   */
+	  children: _propTypes.default.node,
+
+	  /**
+	   * Override or extend the styles applied to the component.
+	   * See [CSS API](#css-api) below for more details.
+	   */
+	  classes: _propTypes.default.object.isRequired,
+
+	  /**
+	   * @ignore
+	   */
+	  className: _propTypes.default.string
+	};
+
+	var _default = (0, _withStyles.default)(styles, {
+	  name: 'MuiDialogContentText'
+	})(DialogContentText);
+
 	exports.default = _default;
 	});
 
-	unwrapExports(MuiThemeProvider_1);
+	unwrapExports(DialogContentText_1);
+	var DialogContentText_2 = DialogContentText_1.styles;
 
-	var styles = createCommonjsModule(function (module, exports) {
+	var DialogContentText$1 = createCommonjsModule(function (module, exports) {
 
 
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	Object.defineProperty(exports, "createGenerateClassName", {
+	Object.defineProperty(exports, "default", {
 	  enumerable: true,
 	  get: function get() {
-	    return _createGenerateClassName.default;
-	  }
-	});
-	Object.defineProperty(exports, "createMuiTheme", {
-	  enumerable: true,
-	  get: function get() {
-	    return _createMuiTheme.default;
-	  }
-	});
-	Object.defineProperty(exports, "jssPreset", {
-	  enumerable: true,
-	  get: function get() {
-	    return _jssPreset.default;
-	  }
-	});
-	Object.defineProperty(exports, "MuiThemeProvider", {
-	  enumerable: true,
-	  get: function get() {
-	    return _MuiThemeProvider.default;
-	  }
-	});
-	Object.defineProperty(exports, "withStyles", {
-	  enumerable: true,
-	  get: function get() {
-	    return _withStyles.default;
-	  }
-	});
-	Object.defineProperty(exports, "withTheme", {
-	  enumerable: true,
-	  get: function get() {
-	    return _withTheme.default;
+	    return _DialogContentText.default;
 	  }
 	});
 
-	var _createGenerateClassName = interopRequireDefault(createGenerateClassName_1);
-
-	var _createMuiTheme = interopRequireDefault(createMuiTheme_1);
-
-	var _jssPreset = interopRequireDefault(jssPreset_1);
-
-	var _MuiThemeProvider = interopRequireDefault(MuiThemeProvider_1);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var _withTheme = interopRequireDefault(withTheme_1);
+	var _DialogContentText = interopRequireDefault(DialogContentText_1);
 	});
 
-	unwrapExports(styles);
-	var styles_1 = styles.MuiThemeProvider;
-	var styles_2 = styles.createMuiTheme;
-	var styles_3 = styles.withStyles;
-	var styles_4 = styles.withTheme;
-	var styles_5 = styles.createGenerateClassName;
-	var styles_6 = styles.jssPreset;
+	var DialogContentText$2 = unwrapExports(DialogContentText$1);
 
-	const styles$1 = {
+	const styles$3 = {
 	  appBar: {
 	    position: 'relative'
 	  },
@@ -38830,748 +41032,7 @@
 	  };
 	};
 
-	const enhanced$$1 = compose$1(styles_3(styles$1), connect(null, mapDispatchToProps))(FullScreenDialog);
-
-	/**
-	 * Gets the timestamp of the number of milliseconds that have elapsed since
-	 * the Unix epoch (1 January 1970 00:00:00 UTC).
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 2.4.0
-	 * @category Date
-	 * @returns {number} Returns the timestamp.
-	 * @example
-	 *
-	 * _.defer(function(stamp) {
-	 *   console.log(_.now() - stamp);
-	 * }, _.now());
-	 * // => Logs the number of milliseconds it took for the deferred invocation.
-	 */
-	var now = function() {
-	  return _root.Date.now();
-	};
-
-	var now_1 = now;
-
-	/** Used as references for various `Number` constants. */
-	var NAN = 0 / 0;
-
-	/** Used to match leading and trailing whitespace. */
-	var reTrim = /^\s+|\s+$/g;
-
-	/** Used to detect bad signed hexadecimal string values. */
-	var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-
-	/** Used to detect binary string values. */
-	var reIsBinary = /^0b[01]+$/i;
-
-	/** Used to detect octal string values. */
-	var reIsOctal = /^0o[0-7]+$/i;
-
-	/** Built-in method references without a dependency on `root`. */
-	var freeParseInt = parseInt;
-
-	/**
-	 * Converts `value` to a number.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 4.0.0
-	 * @category Lang
-	 * @param {*} value The value to process.
-	 * @returns {number} Returns the number.
-	 * @example
-	 *
-	 * _.toNumber(3.2);
-	 * // => 3.2
-	 *
-	 * _.toNumber(Number.MIN_VALUE);
-	 * // => 5e-324
-	 *
-	 * _.toNumber(Infinity);
-	 * // => Infinity
-	 *
-	 * _.toNumber('3.2');
-	 * // => 3.2
-	 */
-	function toNumber(value) {
-	  if (typeof value == 'number') {
-	    return value;
-	  }
-	  if (isSymbol_1(value)) {
-	    return NAN;
-	  }
-	  if (isObject_1(value)) {
-	    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
-	    value = isObject_1(other) ? (other + '') : other;
-	  }
-	  if (typeof value != 'string') {
-	    return value === 0 ? value : +value;
-	  }
-	  value = value.replace(reTrim, '');
-	  var isBinary = reIsBinary.test(value);
-	  return (isBinary || reIsOctal.test(value))
-	    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
-	    : (reIsBadHex.test(value) ? NAN : +value);
-	}
-
-	var toNumber_1 = toNumber;
-
-	/** Error message constants. */
-	var FUNC_ERROR_TEXT$1 = 'Expected a function';
-
-	/* Built-in method references for those with the same name as other `lodash` methods. */
-	var nativeMax = Math.max,
-	    nativeMin = Math.min;
-
-	/**
-	 * Creates a debounced function that delays invoking `func` until after `wait`
-	 * milliseconds have elapsed since the last time the debounced function was
-	 * invoked. The debounced function comes with a `cancel` method to cancel
-	 * delayed `func` invocations and a `flush` method to immediately invoke them.
-	 * Provide `options` to indicate whether `func` should be invoked on the
-	 * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
-	 * with the last arguments provided to the debounced function. Subsequent
-	 * calls to the debounced function return the result of the last `func`
-	 * invocation.
-	 *
-	 * **Note:** If `leading` and `trailing` options are `true`, `func` is
-	 * invoked on the trailing edge of the timeout only if the debounced function
-	 * is invoked more than once during the `wait` timeout.
-	 *
-	 * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
-	 * until to the next tick, similar to `setTimeout` with a timeout of `0`.
-	 *
-	 * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
-	 * for details over the differences between `_.debounce` and `_.throttle`.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @since 0.1.0
-	 * @category Function
-	 * @param {Function} func The function to debounce.
-	 * @param {number} [wait=0] The number of milliseconds to delay.
-	 * @param {Object} [options={}] The options object.
-	 * @param {boolean} [options.leading=false]
-	 *  Specify invoking on the leading edge of the timeout.
-	 * @param {number} [options.maxWait]
-	 *  The maximum time `func` is allowed to be delayed before it's invoked.
-	 * @param {boolean} [options.trailing=true]
-	 *  Specify invoking on the trailing edge of the timeout.
-	 * @returns {Function} Returns the new debounced function.
-	 * @example
-	 *
-	 * // Avoid costly calculations while the window size is in flux.
-	 * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
-	 *
-	 * // Invoke `sendMail` when clicked, debouncing subsequent calls.
-	 * jQuery(element).on('click', _.debounce(sendMail, 300, {
-	 *   'leading': true,
-	 *   'trailing': false
-	 * }));
-	 *
-	 * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
-	 * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
-	 * var source = new EventSource('/stream');
-	 * jQuery(source).on('message', debounced);
-	 *
-	 * // Cancel the trailing debounced invocation.
-	 * jQuery(window).on('popstate', debounced.cancel);
-	 */
-	function debounce(func, wait, options) {
-	  var lastArgs,
-	      lastThis,
-	      maxWait,
-	      result,
-	      timerId,
-	      lastCallTime,
-	      lastInvokeTime = 0,
-	      leading = false,
-	      maxing = false,
-	      trailing = true;
-
-	  if (typeof func != 'function') {
-	    throw new TypeError(FUNC_ERROR_TEXT$1);
-	  }
-	  wait = toNumber_1(wait) || 0;
-	  if (isObject_1(options)) {
-	    leading = !!options.leading;
-	    maxing = 'maxWait' in options;
-	    maxWait = maxing ? nativeMax(toNumber_1(options.maxWait) || 0, wait) : maxWait;
-	    trailing = 'trailing' in options ? !!options.trailing : trailing;
-	  }
-
-	  function invokeFunc(time) {
-	    var args = lastArgs,
-	        thisArg = lastThis;
-
-	    lastArgs = lastThis = undefined;
-	    lastInvokeTime = time;
-	    result = func.apply(thisArg, args);
-	    return result;
-	  }
-
-	  function leadingEdge(time) {
-	    // Reset any `maxWait` timer.
-	    lastInvokeTime = time;
-	    // Start the timer for the trailing edge.
-	    timerId = setTimeout(timerExpired, wait);
-	    // Invoke the leading edge.
-	    return leading ? invokeFunc(time) : result;
-	  }
-
-	  function remainingWait(time) {
-	    var timeSinceLastCall = time - lastCallTime,
-	        timeSinceLastInvoke = time - lastInvokeTime,
-	        timeWaiting = wait - timeSinceLastCall;
-
-	    return maxing
-	      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
-	      : timeWaiting;
-	  }
-
-	  function shouldInvoke(time) {
-	    var timeSinceLastCall = time - lastCallTime,
-	        timeSinceLastInvoke = time - lastInvokeTime;
-
-	    // Either this is the first call, activity has stopped and we're at the
-	    // trailing edge, the system time has gone backwards and we're treating
-	    // it as the trailing edge, or we've hit the `maxWait` limit.
-	    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
-	      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
-	  }
-
-	  function timerExpired() {
-	    var time = now_1();
-	    if (shouldInvoke(time)) {
-	      return trailingEdge(time);
-	    }
-	    // Restart the timer.
-	    timerId = setTimeout(timerExpired, remainingWait(time));
-	  }
-
-	  function trailingEdge(time) {
-	    timerId = undefined;
-
-	    // Only invoke if we have `lastArgs` which means `func` has been
-	    // debounced at least once.
-	    if (trailing && lastArgs) {
-	      return invokeFunc(time);
-	    }
-	    lastArgs = lastThis = undefined;
-	    return result;
-	  }
-
-	  function cancel() {
-	    if (timerId !== undefined) {
-	      clearTimeout(timerId);
-	    }
-	    lastInvokeTime = 0;
-	    lastArgs = lastCallTime = lastThis = timerId = undefined;
-	  }
-
-	  function flush() {
-	    return timerId === undefined ? result : trailingEdge(now_1());
-	  }
-
-	  function debounced() {
-	    var time = now_1(),
-	        isInvoking = shouldInvoke(time);
-
-	    lastArgs = arguments;
-	    lastThis = this;
-	    lastCallTime = time;
-
-	    if (isInvoking) {
-	      if (timerId === undefined) {
-	        return leadingEdge(lastCallTime);
-	      }
-	      if (maxing) {
-	        // Handle invocations in a tight loop.
-	        timerId = setTimeout(timerExpired, wait);
-	        return invokeFunc(lastCallTime);
-	      }
-	    }
-	    if (timerId === undefined) {
-	      timerId = setTimeout(timerExpired, wait);
-	    }
-	    return result;
-	  }
-	  debounced.cancel = cancel;
-	  debounced.flush = flush;
-	  return debounced;
-	}
-
-	var debounce_1 = debounce;
-
-	var getPrototypeOf$2 = createCommonjsModule(function (module) {
-	module.exports = { "default": getPrototypeOf, __esModule: true };
-	});
-
-	unwrapExports(getPrototypeOf$2);
-
-	var classCallCheck$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-	exports.default = function (instance, Constructor) {
-	  if (!(instance instanceof Constructor)) {
-	    throw new TypeError("Cannot call a class as a function");
-	  }
-	};
-	});
-
-	unwrapExports(classCallCheck$1);
-
-	var defineProperty$5 = createCommonjsModule(function (module) {
-	module.exports = { "default": defineProperty$1, __esModule: true };
-	});
-
-	unwrapExports(defineProperty$5);
-
-	var createClass$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-
-
-	var _defineProperty2 = _interopRequireDefault(defineProperty$5);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function () {
-	  function defineProperties(target, props) {
-	    for (var i = 0; i < props.length; i++) {
-	      var descriptor = props[i];
-	      descriptor.enumerable = descriptor.enumerable || false;
-	      descriptor.configurable = true;
-	      if ("value" in descriptor) descriptor.writable = true;
-	      (0, _defineProperty2.default)(target, descriptor.key, descriptor);
-	    }
-	  }
-
-	  return function (Constructor, protoProps, staticProps) {
-	    if (protoProps) defineProperties(Constructor.prototype, protoProps);
-	    if (staticProps) defineProperties(Constructor, staticProps);
-	    return Constructor;
-	  };
-	}();
-	});
-
-	unwrapExports(createClass$1);
-
-	var iterator$2 = createCommonjsModule(function (module) {
-	module.exports = { "default": iterator, __esModule: true };
-	});
-
-	unwrapExports(iterator$2);
-
-	var symbol$2 = createCommonjsModule(function (module) {
-	module.exports = { "default": symbol, __esModule: true };
-	});
-
-	unwrapExports(symbol$2);
-
-	var _typeof_1$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-
-
-	var _iterator2 = _interopRequireDefault(iterator$2);
-
-
-
-	var _symbol2 = _interopRequireDefault(symbol$2);
-
-	var _typeof = typeof _symbol2.default === "function" && typeof _iterator2.default === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj; };
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = typeof _symbol2.default === "function" && _typeof(_iterator2.default) === "symbol" ? function (obj) {
-	  return typeof obj === "undefined" ? "undefined" : _typeof(obj);
-	} : function (obj) {
-	  return obj && typeof _symbol2.default === "function" && obj.constructor === _symbol2.default && obj !== _symbol2.default.prototype ? "symbol" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
-	};
-	});
-
-	unwrapExports(_typeof_1$1);
-
-	var possibleConstructorReturn$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-
-
-	var _typeof3 = _interopRequireDefault(_typeof_1$1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function (self, call) {
-	  if (!self) {
-	    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
-	  }
-
-	  return call && ((typeof call === "undefined" ? "undefined" : (0, _typeof3.default)(call)) === "object" || typeof call === "function") ? call : self;
-	};
-	});
-
-	unwrapExports(possibleConstructorReturn$1);
-
-	var setPrototypeOf$3 = createCommonjsModule(function (module) {
-	module.exports = { "default": setPrototypeOf, __esModule: true };
-	});
-
-	unwrapExports(setPrototypeOf$3);
-
-	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-	_export(_export.S, 'Object', { create: _objectCreate });
-
-	var $Object$2 = _core.Object;
-	var create = function create(P, D) {
-	  return $Object$2.create(P, D);
-	};
-
-	var create$1 = createCommonjsModule(function (module) {
-	module.exports = { "default": create, __esModule: true };
-	});
-
-	unwrapExports(create$1);
-
-	var inherits$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-
-
-	var _setPrototypeOf2 = _interopRequireDefault(setPrototypeOf$3);
-
-
-
-	var _create2 = _interopRequireDefault(create$1);
-
-
-
-	var _typeof3 = _interopRequireDefault(_typeof_1$1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function (subClass, superClass) {
-	  if (typeof superClass !== "function" && superClass !== null) {
-	    throw new TypeError("Super expression must either be null or a function, not " + (typeof superClass === "undefined" ? "undefined" : (0, _typeof3.default)(superClass)));
-	  }
-
-	  subClass.prototype = (0, _create2.default)(superClass && superClass.prototype, {
-	    constructor: {
-	      value: subClass,
-	      enumerable: false,
-	      writable: true,
-	      configurable: true
-	    }
-	  });
-	  if (superClass) _setPrototypeOf2.default ? (0, _setPrototypeOf2.default)(subClass, superClass) : subClass.__proto__ = superClass;
-	};
-	});
-
-	unwrapExports(inherits$1);
-
-	var keys$2 = createCommonjsModule(function (module) {
-	module.exports = { "default": keys, __esModule: true };
-	});
-
-	unwrapExports(keys$2);
-
-	var objectWithoutProperties$1 = createCommonjsModule(function (module, exports) {
-
-	exports.__esModule = true;
-
-	exports.default = function (obj, keys) {
-	  var target = {};
-
-	  for (var i in obj) {
-	    if (keys.indexOf(i) >= 0) continue;
-	    if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;
-	    target[i] = obj[i];
-	  }
-
-	  return target;
-	};
-	});
-
-	unwrapExports(objectWithoutProperties$1);
-
-	var assign$2 = createCommonjsModule(function (module) {
-	module.exports = { "default": assign, __esModule: true };
-	});
-
-	unwrapExports(assign$2);
-
-	var supports = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.passiveOption = undefined;
-
-
-
-	var _defineProperty2 = _interopRequireDefault(defineProperty$5);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function defineProperty(object, property, attr) {
-	  return (0, _defineProperty2.default)(object, property, attr);
-	}
-
-	// Passive options
-	// Inspired by https://github.com/Modernizr/Modernizr/blob/master/feature-detects/dom/passiveeventlisteners.js
-	var passiveOption = exports.passiveOption = function () {
-	  var cache = null;
-
-	  return function () {
-	    if (cache !== null) {
-	      return cache;
-	    }
-
-	    var supportsPassiveOption = false;
-
-	    try {
-	      window.addEventListener('test', null, defineProperty({}, 'passive', {
-	        get: function get() {
-	          supportsPassiveOption = true;
-	        }
-	      }));
-	    } catch (err) {
-	      //
-	    }
-
-	    cache = supportsPassiveOption;
-
-	    return supportsPassiveOption;
-	  }();
-	}();
-
-	exports.default = {};
-	});
-
-	unwrapExports(supports);
-	var supports_1 = supports.passiveOption;
-
-	var lib$8 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-
-
-	var _getPrototypeOf2 = _interopRequireDefault(getPrototypeOf$2);
-
-
-
-	var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
-
-
-
-	var _createClass3 = _interopRequireDefault(createClass$1);
-
-
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
-
-
-
-	var _inherits3 = _interopRequireDefault(inherits$1);
-
-
-
-	var _typeof3 = _interopRequireDefault(_typeof_1$1);
-
-
-
-	var _keys2 = _interopRequireDefault(keys$2);
-
-
-
-	var _objectWithoutProperties3 = _interopRequireDefault(objectWithoutProperties$1);
-
-
-
-	var _assign2 = _interopRequireDefault(assign$2);
-
-	exports.withOptions = withOptions;
-
-
-
-	var _react2 = _interopRequireDefault(react);
-
-
-
-	var _propTypes2 = _interopRequireDefault(propTypes);
-
-
-
-	var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
-
-
-
-	var _warning2 = _interopRequireDefault(browser);
-
-
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var defaultEventOptions = {
-	  capture: false,
-	  passive: false
-	};
-
-	function mergeDefaultEventOptions(options) {
-	  return (0, _assign2.default)({}, defaultEventOptions, options);
-	}
-
-	function getEventListenerArgs(eventName, callback, options) {
-	  var args = [eventName, callback];
-	  args.push(supports.passiveOption ? options : options.capture);
-	  return args;
-	}
-
-	function on(target, eventName, callback, options) {
-	  // eslint-disable-next-line prefer-spread
-	  target.addEventListener.apply(target, getEventListenerArgs(eventName, callback, options));
-	}
-
-	function off(target, eventName, callback, options) {
-	  // eslint-disable-next-line prefer-spread
-	  target.removeEventListener.apply(target, getEventListenerArgs(eventName, callback, options));
-	}
-
-	function forEachListener(props, iteratee) {
-	  var children = props.children,
-	      target = props.target,
-	      eventProps = (0, _objectWithoutProperties3.default)(props, ['children', 'target']);
-
-
-	  (0, _keys2.default)(eventProps).forEach(function (name) {
-	    if (name.substring(0, 2) !== 'on') {
-	      return;
-	    }
-
-	    var prop = eventProps[name];
-	    var type = typeof prop === 'undefined' ? 'undefined' : (0, _typeof3.default)(prop);
-	    var isObject = type === 'object';
-	    var isFunction = type === 'function';
-
-	    if (!isObject && !isFunction) {
-	      return;
-	    }
-
-	    var capture = name.substr(-7).toLowerCase() === 'capture';
-	    var eventName = name.substring(2).toLowerCase();
-	    eventName = capture ? eventName.substring(0, eventName.length - 7) : eventName;
-
-	    if (isObject) {
-	      iteratee(eventName, prop.handler, prop.options);
-	    } else {
-	      iteratee(eventName, prop, mergeDefaultEventOptions({ capture: capture }));
-	    }
-	  });
-	}
-
-	function withOptions(handler, options) {
-	  (0, _warning2.default)(options, 'react-event-listener: should be specified options in withOptions.');
-
-	  return {
-	    handler: handler,
-	    options: mergeDefaultEventOptions(options)
-	  };
-	}
-
-	var EventListener = function (_React$Component) {
-	  (0, _inherits3.default)(EventListener, _React$Component);
-
-	  function EventListener() {
-	    (0, _classCallCheck3.default)(this, EventListener);
-	    return (0, _possibleConstructorReturn3.default)(this, (EventListener.__proto__ || (0, _getPrototypeOf2.default)(EventListener)).apply(this, arguments));
-	  }
-
-	  (0, _createClass3.default)(EventListener, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.addListeners();
-	    }
-	  }, {
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate(nextProps) {
-	      return !(0, _shallowEqual2.default)(this.props, nextProps);
-	    }
-	  }, {
-	    key: 'componentWillUpdate',
-	    value: function componentWillUpdate() {
-	      this.removeListeners();
-	    }
-	  }, {
-	    key: 'componentDidUpdate',
-	    value: function componentDidUpdate() {
-	      this.addListeners();
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.removeListeners();
-	    }
-	  }, {
-	    key: 'addListeners',
-	    value: function addListeners() {
-	      this.applyListeners(on);
-	    }
-	  }, {
-	    key: 'removeListeners',
-	    value: function removeListeners() {
-	      this.applyListeners(off);
-	    }
-	  }, {
-	    key: 'applyListeners',
-	    value: function applyListeners(onOrOff) {
-	      var target = this.props.target;
-
-
-	      if (target) {
-	        var element = target;
-
-	        if (typeof target === 'string') {
-	          element = window[target];
-	        }
-
-	        forEachListener(this.props, onOrOff.bind(null, element));
-	      }
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      return this.props.children || null;
-	    }
-	  }]);
-	  return EventListener;
-	}(_react2.default.Component);
-
-	EventListener.propTypes = {
-	  /**
-	   * You can provide a single child too.
-	   */
-	  children: _propTypes2.default.node,
-	  /**
-	   * The DOM target to listen to.
-	   */
-	  target: _propTypes2.default.oneOfType([_propTypes2.default.object, _propTypes2.default.string]).isRequired
-	};
-
-	exports.default = EventListener;
-	});
-
-	unwrapExports(lib$8);
-	var lib_1$2 = lib$8.withOptions;
+	const enhanced = compose$1(styles_3(styles$3), connect(null, mapDispatchToProps))(FullScreenDialog);
 
 	var Textarea_1 = createCommonjsModule(function (module, exports) {
 
@@ -40668,6 +42129,50 @@
 	var Input_4 = Input_1.isAdornedStart;
 	var Input_5 = Input_1.styles;
 
+	var reactHelpers = createCommonjsModule(function (module, exports) {
+
+
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.cloneElementWithClassName = cloneElementWithClassName;
+	exports.cloneChildrenWithClassName = cloneChildrenWithClassName;
+	exports.isMuiElement = isMuiElement;
+	exports.isMuiComponent = isMuiComponent;
+
+	var _react = interopRequireDefault(react);
+
+	var _classnames = interopRequireDefault(classnames);
+
+	/* eslint-disable import/prefer-default-export */
+	function cloneElementWithClassName(child, className) {
+	  return _react.default.cloneElement(child, {
+	    className: (0, _classnames.default)(child.props.className, className)
+	  });
+	}
+
+	function cloneChildrenWithClassName(children, className) {
+	  return _react.default.Children.map(children, function (child) {
+	    return _react.default.isValidElement(child) && cloneElementWithClassName(child, className);
+	  });
+	}
+
+	function isMuiElement(element, muiNames) {
+	  return _react.default.isValidElement(element) && muiNames.indexOf(element.type.muiName) !== -1;
+	}
+
+	function isMuiComponent(element, muiNames) {
+	  return muiNames.indexOf(element.muiName) !== -1;
+	}
+	});
+
+	unwrapExports(reactHelpers);
+	var reactHelpers_1 = reactHelpers.cloneElementWithClassName;
+	var reactHelpers_2 = reactHelpers.cloneChildrenWithClassName;
+	var reactHelpers_3 = reactHelpers.isMuiElement;
+	var reactHelpers_4 = reactHelpers.isMuiComponent;
+
 	var FormControl_1 = createCommonjsModule(function (module, exports) {
 
 
@@ -41587,1218 +43092,19 @@
 
 	var Grid$2 = unwrapExports(Grid$1);
 
-	var IconButton_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-
-
-	var _ButtonBase = interopRequireDefault(ButtonBase$1);
-
-
-
-	// @inheritedComponent ButtonBase
-	var styles = function styles(theme) {
-	  return {
-	    root: {
-	      textAlign: 'center',
-	      flex: '0 0 auto',
-	      fontSize: theme.typography.pxToRem(24),
-	      width: 48,
-	      height: 48,
-	      padding: 0,
-	      borderRadius: '50%',
-	      color: theme.palette.action.active,
-	      transition: theme.transitions.create('background-color', {
-	        duration: theme.transitions.duration.shortest
-	      }),
-	      '&:hover': {
-	        backgroundColor: (0, colorManipulator.fade)(theme.palette.action.active, theme.palette.action.hoverOpacity),
-	        // Reset on touch devices, it doesn't add specificity
-	        '@media (hover: none)': {
-	          backgroundColor: 'transparent'
-	        },
-	        '&$disabled': {
-	          backgroundColor: 'transparent'
-	        }
-	      },
-	      '&$disabled': {
-	        color: theme.palette.action.disabled
-	      }
-	    },
-	    colorInherit: {
-	      color: 'inherit'
-	    },
-	    colorPrimary: {
-	      color: theme.palette.primary.main,
-	      '&:hover': {
-	        backgroundColor: (0, colorManipulator.fade)(theme.palette.primary.main, theme.palette.action.hoverOpacity),
-	        // Reset on touch devices, it doesn't add specificity
-	        '@media (hover: none)': {
-	          backgroundColor: 'transparent'
-	        }
-	      }
-	    },
-	    colorSecondary: {
-	      color: theme.palette.secondary.main,
-	      '&:hover': {
-	        backgroundColor: (0, colorManipulator.fade)(theme.palette.secondary.main, theme.palette.action.hoverOpacity),
-	        // Reset on touch devices, it doesn't add specificity
-	        '@media (hover: none)': {
-	          backgroundColor: 'transparent'
-	        }
-	      }
-	    },
-	    disabled: {},
-	    label: {
-	      width: '100%',
-	      display: 'flex',
-	      alignItems: 'inherit',
-	      justifyContent: 'inherit'
-	    }
-	  };
-	};
-	/**
-	 * Refer to the [Icons](/style/icons) section of the documentation
-	 * regarding the available icon options.
-	 */
-
-
-	exports.styles = styles;
-
-	function IconButton(props) {
-	  var _classNames;
-
-	  var children = props.children,
-	      classes = props.classes,
-	      className = props.className,
-	      color = props.color,
-	      disabled = props.disabled,
-	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "color", "disabled"]);
-	  return _react.default.createElement(_ButtonBase.default, (0, _extends2.default)({
-	    className: (0, _classnames.default)(classes.root, (_classNames = {}, (0, _defineProperty2.default)(_classNames, classes["color".concat((0, helpers.capitalize)(color))], color !== 'default'), (0, _defineProperty2.default)(_classNames, classes.disabled, disabled), _classNames), className),
-	    centerRipple: true,
-	    focusRipple: true,
-	    disabled: disabled
-	  }, other), _react.default.createElement("span", {
-	    className: classes.label
-	  }, children));
-	}
-
-	IconButton.propTypes = {
-	  /**
-	   * The icon element.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * The color of the component. It supports those theme colors that make sense for this component.
-	   */
-	  color: _propTypes.default.oneOf(['default', 'inherit', 'primary', 'secondary']),
-
-	  /**
-	   * If `true`, the button will be disabled.
-	   */
-	  disabled: _propTypes.default.bool,
-
-	  /**
-	   * If `true`, the ripple will be disabled.
-	   */
-	  disableRipple: _propTypes.default.bool
-	};
-	IconButton.defaultProps = {
-	  color: 'default',
-	  disabled: false
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiIconButton'
-	})(IconButton);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(IconButton_1);
-	var IconButton_2 = IconButton_1.styles;
-
-	var IconButton$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _IconButton.default;
-	  }
-	});
-
-	var _IconButton = interopRequireDefault(IconButton_1);
-	});
-
-	var IconButton$2 = unwrapExports(IconButton$1);
-
-	function _defineProperty$2(obj, key, value) {
-	  if (key in obj) {
-	    Object.defineProperty(obj, key, {
-	      value: value,
-	      enumerable: true,
-	      configurable: true,
-	      writable: true
-	    });
-	  } else {
-	    obj[key] = value;
-	  }
-
-	  return obj;
-	}
-
-	function _extends$8() {
-	  _extends$8 = Object.assign || function (target) {
-	    for (var i = 1; i < arguments.length; i++) {
-	      var source = arguments[i];
-
-	      for (var key in source) {
-	        if (Object.prototype.hasOwnProperty.call(source, key)) {
-	          target[key] = source[key];
-	        }
-	      }
-	    }
-
-	    return target;
-	  };
-
-	  return _extends$8.apply(this, arguments);
-	}
-
 	const ImageButton = ({
 	  src,
 	  imgProps,
 	  ...other
-	}) => react.createElement(ButtonBase$2, _extends$8({
+	}) => react.createElement(ButtonBase$2, _extends$5({
 	  focusRipple: true
-	}, other), react.createElement("img", _extends$8({
+	}, other), react.createElement("img", _extends$5({
 	  src: src
 	}, imgProps)));
 
 	ImageButton.propTypes = {
 	  src: propTypes.string.isRequired,
 	  imgProps: propTypes.object
-	};
-
-	var Grow_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectSpread2 = interopRequireDefault(objectSpread);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
-
-	var _classCallCheck2 = interopRequireDefault(classCallCheck);
-
-	var _createClass2 = interopRequireDefault(createClass);
-
-	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
-
-	var _inherits2 = interopRequireDefault(inherits);
-
-	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _Transition = interopRequireDefault(Transition_1);
-
-	var _withTheme = interopRequireDefault(withTheme_1);
-
-
-
-	// @inheritedComponent Transition
-	function getScale(value) {
-	  return "scale(".concat(value, ", ").concat(Math.pow(value, 2), ")");
-	}
-
-	var styles = {
-	  entering: {
-	    opacity: 1,
-	    transform: getScale(1)
-	  },
-	  entered: {
-	    opacity: 1,
-	    transform: getScale(1)
-	  }
-	};
-	/**
-	 * The Grow transition is used by the [Popover](/utils/popovers) component.
-	 * It uses [react-transition-group](https://github.com/reactjs/react-transition-group) internally.
-	 */
-
-	var Grow =
-	/*#__PURE__*/
-	function (_React$Component) {
-	  (0, _inherits2.default)(Grow, _React$Component);
-
-	  function Grow() {
-	    var _ref;
-
-	    var _temp, _this;
-
-	    (0, _classCallCheck2.default)(this, Grow);
-
-	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-
-	    return (0, _possibleConstructorReturn2.default)(_this, (_temp = _this = (0, _possibleConstructorReturn2.default)(this, (_ref = Grow.__proto__ || (0, _getPrototypeOf.default)(Grow)).call.apply(_ref, [this].concat(args))), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "autoTimeout", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: undefined
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "timer", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: null
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleEnter", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(node) {
-	        var _this$props = _this.props,
-	            theme = _this$props.theme,
-	            timeout = _this$props.timeout;
-	        (0, utils.reflow)(node); // So the animation always start from the start.
-
-	        var _getTransitionProps = (0, utils.getTransitionProps)(_this.props, {
-	          mode: 'enter'
-	        }),
-	            transitionDuration = _getTransitionProps.duration,
-	            delay = _getTransitionProps.delay;
-
-	        var duration = 0;
-
-	        if (timeout === 'auto') {
-	          duration = theme.transitions.getAutoHeightDuration(node.clientHeight);
-	          _this.autoTimeout = duration;
-	        } else {
-	          duration = transitionDuration;
-	        }
-
-	        node.style.transition = [theme.transitions.create('opacity', {
-	          duration: duration,
-	          delay: delay
-	        }), theme.transitions.create('transform', {
-	          duration: duration * 0.666,
-	          delay: delay
-	        })].join(',');
-
-	        if (_this.props.onEnter) {
-	          _this.props.onEnter(node);
-	        }
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleExit", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(node) {
-	        var _this$props2 = _this.props,
-	            theme = _this$props2.theme,
-	            timeout = _this$props2.timeout;
-	        var duration = 0;
-
-	        var _getTransitionProps2 = (0, utils.getTransitionProps)(_this.props, {
-	          mode: 'exit'
-	        }),
-	            transitionDuration = _getTransitionProps2.duration,
-	            delay = _getTransitionProps2.delay;
-
-	        if (timeout === 'auto') {
-	          duration = theme.transitions.getAutoHeightDuration(node.clientHeight);
-	          _this.autoTimeout = duration;
-	        } else {
-	          duration = transitionDuration;
-	        }
-
-	        node.style.transition = [theme.transitions.create('opacity', {
-	          duration: duration,
-	          delay: delay
-	        }), theme.transitions.create('transform', {
-	          duration: duration * 0.666,
-	          delay: delay || duration * 0.333
-	        })].join(',');
-	        node.style.opacity = '0';
-	        node.style.transform = getScale(0.75);
-
-	        if (_this.props.onExit) {
-	          _this.props.onExit(node);
-	        }
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "addEndListener", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(_, next) {
-	        if (_this.props.timeout === 'auto') {
-	          _this.timer = setTimeout(next, _this.autoTimeout || 0);
-	        }
-	      }
-	    }), _temp));
-	  }
-
-	  (0, _createClass2.default)(Grow, [{
-	    key: "componentWillUnmount",
-	    value: function componentWillUnmount() {
-	      clearTimeout(this.timer);
-	    }
-	  }, {
-	    key: "render",
-	    value: function render() {
-	      var _props = this.props,
-	          children = _props.children,
-	          onEnter = _props.onEnter,
-	          onExit = _props.onExit,
-	          styleProp = _props.style,
-	          theme = _props.theme,
-	          timeout = _props.timeout,
-	          other = (0, _objectWithoutProperties2.default)(_props, ["children", "onEnter", "onExit", "style", "theme", "timeout"]);
-	      var style = (0, _objectSpread2.default)({}, styleProp, _react.default.isValidElement(children) ? children.props.style : {});
-	      return _react.default.createElement(_Transition.default, (0, _extends2.default)({
-	        appear: true,
-	        onEnter: this.handleEnter,
-	        onExit: this.handleExit,
-	        addEndListener: this.addEndListener,
-	        timeout: timeout === 'auto' ? null : timeout
-	      }, other), function (state, childProps) {
-	        return _react.default.cloneElement(children, (0, _objectSpread2.default)({
-	          style: (0, _objectSpread2.default)({
-	            opacity: 0,
-	            transform: getScale(0.75)
-	          }, styles[state], style)
-	        }, childProps));
-	      });
-	    }
-	  }]);
-	  return Grow;
-	}(_react.default.Component);
-
-	Grow.propTypes = {
-	  /**
-	   * A single child content element.
-	   */
-	  children: _propTypes.default.oneOfType([_propTypes.default.element, _propTypes.default.func]),
-
-	  /**
-	   * If `true`, show the component; triggers the enter or exit animation.
-	   */
-	  in: _propTypes.default.bool,
-
-	  /**
-	   * @ignore
-	   */
-	  onEnter: _propTypes.default.func,
-
-	  /**
-	   * @ignore
-	   */
-	  onExit: _propTypes.default.func,
-
-	  /**
-	   * @ignore
-	   */
-	  style: _propTypes.default.object,
-
-	  /**
-	   * @ignore
-	   */
-	  theme: _propTypes.default.object.isRequired,
-
-	  /**
-	   * The duration for the transition, in milliseconds.
-	   * You may specify a single timeout for all transitions, or individually with an object.
-	   *
-	   * Set to 'auto' to automatically calculate transition time based on height.
-	   */
-	  timeout: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.shape({
-	    enter: _propTypes.default.number,
-	    exit: _propTypes.default.number
-	  }), _propTypes.default.oneOf(['auto'])])
-	};
-	Grow.defaultProps = {
-	  timeout: 'auto'
-	};
-
-	var _default = (0, _withTheme.default)()(Grow);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(Grow_1);
-
-	var Grow$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _Grow.default;
-	  }
-	});
-
-	var _Grow = interopRequireDefault(Grow_1);
-	});
-
-	unwrapExports(Grow$1);
-
-	var Popover_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _getPrototypeOf = interopRequireDefault(getPrototypeOf$1);
-
-	var _classCallCheck2 = interopRequireDefault(classCallCheck);
-
-	var _createClass2 = interopRequireDefault(createClass);
-
-	var _possibleConstructorReturn2 = interopRequireDefault(possibleConstructorReturn);
-
-	var _inherits2 = interopRequireDefault(inherits);
-
-	var _assertThisInitialized2 = interopRequireDefault(assertThisInitialized);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _reactDom = interopRequireDefault(reactDom);
-
-	var _warning = interopRequireDefault(browser);
-
-	var _contains = interopRequireDefault(contains);
-
-	var _ownerDocument = interopRequireDefault(ownerDocument_1);
-
-	var _debounce = interopRequireDefault(debounce_1);
-
-	var _reactEventListener = interopRequireDefault(lib$8);
-
-	var _ownerWindow = interopRequireDefault(ownerWindow_1);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var _Modal = interopRequireDefault(Modal$1);
-
-	var _Grow = interopRequireDefault(Grow$1);
-
-	var _Paper = interopRequireDefault(Paper$1);
-
-	// @inheritedComponent Modal
-	function getOffsetTop(rect, vertical) {
-	  var offset = 0;
-
-	  if (typeof vertical === 'number') {
-	    offset = vertical;
-	  } else if (vertical === 'center') {
-	    offset = rect.height / 2;
-	  } else if (vertical === 'bottom') {
-	    offset = rect.height;
-	  }
-
-	  return offset;
-	}
-
-	function getOffsetLeft(rect, horizontal) {
-	  var offset = 0;
-
-	  if (typeof horizontal === 'number') {
-	    offset = horizontal;
-	  } else if (horizontal === 'center') {
-	    offset = rect.width / 2;
-	  } else if (horizontal === 'right') {
-	    offset = rect.width;
-	  }
-
-	  return offset;
-	}
-
-	function getTransformOriginValue(transformOrigin) {
-	  return [transformOrigin.horizontal, transformOrigin.vertical].map(function (n) {
-	    return typeof n === 'number' ? "".concat(n, "px") : n;
-	  }).join(' ');
-	} // Sum the scrollTop between two elements.
-
-
-	function getScrollParent(parent, child) {
-	  var element = child;
-	  var scrollTop = 0;
-
-	  while (element && element !== parent) {
-	    element = element.parentNode;
-	    scrollTop += element.scrollTop;
-	  }
-
-	  return scrollTop;
-	}
-
-	function getAnchorEl(anchorEl) {
-	  return typeof anchorEl === 'function' ? anchorEl() : anchorEl;
-	}
-
-	var styles = {
-	  paper: {
-	    position: 'absolute',
-	    overflowY: 'auto',
-	    overflowX: 'hidden',
-	    // So we see the popover when it's empty.
-	    // It's most likely on issue on userland.
-	    minWidth: 16,
-	    minHeight: 16,
-	    maxWidth: 'calc(100% - 32px)',
-	    maxHeight: 'calc(100% - 32px)',
-	    // We disable the focus ring for mouse, touch and keyboard users.
-	    outline: 'none'
-	  }
-	};
-	exports.styles = styles;
-
-	var Popover =
-	/*#__PURE__*/
-	function (_React$Component) {
-	  (0, _inherits2.default)(Popover, _React$Component);
-
-	  function Popover() {
-	    var _ref;
-
-	    var _temp, _this;
-
-	    (0, _classCallCheck2.default)(this, Popover);
-
-	    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-	      args[_key] = arguments[_key];
-	    }
-
-	    return (0, _possibleConstructorReturn2.default)(_this, (_temp = _this = (0, _possibleConstructorReturn2.default)(this, (_ref = Popover.__proto__ || (0, _getPrototypeOf.default)(Popover)).call.apply(_ref, [this].concat(args))), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "componentWillUnmount", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value() {
-	        _this.handleResize.cancel();
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "setPositioningStyles", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(element) {
-	        if (element && element.style) {
-	          var positioning = _this.getPositioningStyle(element);
-
-	          if (positioning.top !== null) {
-	            element.style.top = positioning.top;
-	          }
-
-	          if (positioning.left !== null) {
-	            element.style.left = positioning.left;
-	          }
-
-	          element.style.transformOrigin = positioning.transformOrigin;
-	        }
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "getPositioningStyle", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(element) {
-	        var _this$props = _this.props,
-	            anchorEl = _this$props.anchorEl,
-	            anchorReference = _this$props.anchorReference,
-	            marginThreshold = _this$props.marginThreshold; // Check if the parent has requested anchoring on an inner content node
-
-	        var contentAnchorOffset = _this.getContentAnchorOffset(element);
-
-	        var elemRect = {
-	          width: element.clientWidth,
-	          height: element.clientHeight
-	        }; // Get the transform origin point on the element itself
-
-	        var transformOrigin = _this.getTransformOrigin(elemRect, contentAnchorOffset);
-
-	        if (anchorReference === 'none') {
-	          return {
-	            top: null,
-	            left: null,
-	            transformOrigin: getTransformOriginValue(transformOrigin)
-	          };
-	        } // Get the offset of of the anchoring element
-
-
-	        var anchorOffset = _this.getAnchorOffset(contentAnchorOffset); // Calculate element positioning
-
-
-	        var top = anchorOffset.top - transformOrigin.vertical;
-	        var left = anchorOffset.left - transformOrigin.horizontal;
-	        var bottom = top + elemRect.height;
-	        var right = left + elemRect.width; // Use the parent window of the anchorEl if provided
-
-	        var containerWindow = (0, _ownerWindow.default)(getAnchorEl(anchorEl)); // Window thresholds taking required margin into account
-
-	        var heightThreshold = containerWindow.innerHeight - marginThreshold;
-	        var widthThreshold = containerWindow.innerWidth - marginThreshold; // Check if the vertical axis needs shifting
-
-	        if (top < marginThreshold) {
-	          var diff = top - marginThreshold;
-	          top -= diff;
-	          transformOrigin.vertical += diff;
-	        } else if (bottom > heightThreshold) {
-	          var _diff = bottom - heightThreshold;
-
-	          top -= _diff;
-	          transformOrigin.vertical += _diff;
-	        }
-
-	        (0, _warning.default)(elemRect.height < heightThreshold || !elemRect.height || !heightThreshold, ['Material-UI: the popover component is too tall.', "Some part of it can not be seen on the screen (".concat(elemRect.height - heightThreshold, "px)."), 'Please consider adding a `max-height` to improve the user-experience.'].join('\n')); // Check if the horizontal axis needs shifting
-
-	        if (left < marginThreshold) {
-	          var _diff2 = left - marginThreshold;
-
-	          left -= _diff2;
-	          transformOrigin.horizontal += _diff2;
-	        } else if (right > widthThreshold) {
-	          var _diff3 = right - widthThreshold;
-
-	          left -= _diff3;
-	          transformOrigin.horizontal += _diff3;
-	        }
-
-	        return {
-	          top: "".concat(top, "px"),
-	          left: "".concat(left, "px"),
-	          transformOrigin: getTransformOriginValue(transformOrigin)
-	        };
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "transitionEl", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: undefined
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleGetOffsetTop", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: getOffsetTop
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleGetOffsetLeft", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: getOffsetLeft
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleEnter", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: function value(element) {
-	        if (_this.props.onEnter) {
-	          _this.props.onEnter(element);
-	        }
-
-	        _this.setPositioningStyles(element);
-	      }
-	    }), Object.defineProperty((0, _assertThisInitialized2.default)(_this), "handleResize", {
-	      configurable: true,
-	      enumerable: true,
-	      writable: true,
-	      value: (0, _debounce.default)(function () {
-	        var element = _reactDom.default.findDOMNode(_this.transitionEl);
-
-	        _this.setPositioningStyles(element);
-	      }, 166)
-	    }), _temp));
-	  }
-
-	  (0, _createClass2.default)(Popover, [{
-	    key: "componentDidMount",
-	    value: function componentDidMount() {
-	      if (this.props.action) {
-	        this.props.action({
-	          updatePosition: this.handleResize
-	        });
-	      }
-	    }
-	  }, {
-	    key: "getAnchorOffset",
-	    // Returns the top/left offset of the position
-	    // to attach to on the anchor element (or body if none is provided)
-	    value: function getAnchorOffset(contentAnchorOffset) {
-	      var _props = this.props,
-	          anchorEl = _props.anchorEl,
-	          anchorOrigin = _props.anchorOrigin,
-	          anchorReference = _props.anchorReference,
-	          anchorPosition = _props.anchorPosition;
-
-	      if (anchorReference === 'anchorPosition') {
-	        (0, _warning.default)(anchorPosition, 'Material-UI: you need to provide a `anchorPosition` property when using ' + '<Popover anchorReference="anchorPosition" />.');
-	        return anchorPosition;
-	      } // If an anchor element wasn't provided, just use the parent body element of this Popover
-
-
-	      var anchorElement = getAnchorEl(anchorEl) || (0, _ownerDocument.default)(_reactDom.default.findDOMNode(this.transitionEl)).body;
-	      var anchorRect = anchorElement.getBoundingClientRect();
-	      var anchorVertical = contentAnchorOffset === 0 ? anchorOrigin.vertical : 'center';
-	      return {
-	        top: anchorRect.top + this.handleGetOffsetTop(anchorRect, anchorVertical),
-	        left: anchorRect.left + this.handleGetOffsetLeft(anchorRect, anchorOrigin.horizontal)
-	      };
-	    } // Returns the vertical offset of inner content to anchor the transform on if provided
-
-	  }, {
-	    key: "getContentAnchorOffset",
-	    value: function getContentAnchorOffset(element) {
-	      var _props2 = this.props,
-	          getContentAnchorEl = _props2.getContentAnchorEl,
-	          anchorReference = _props2.anchorReference;
-	      var contentAnchorOffset = 0;
-
-	      if (getContentAnchorEl && anchorReference === 'anchorEl') {
-	        var contentAnchorEl = getContentAnchorEl(element);
-
-	        if (contentAnchorEl && (0, _contains.default)(element, contentAnchorEl)) {
-	          var scrollTop = getScrollParent(element, contentAnchorEl);
-	          contentAnchorOffset = contentAnchorEl.offsetTop + contentAnchorEl.clientHeight / 2 - scrollTop || 0;
-	        } // != the default value
-
-
-	        (0, _warning.default)(this.props.anchorOrigin.vertical === 'top', ['Material-UI: you can not change the default `anchorOrigin.vertical` value ', 'when also providing the `getContentAnchorEl` property to the popover component.', 'Only use one of the two properties.', 'Set `getContentAnchorEl` to null or left `anchorOrigin.vertical` unchanged.'].join('\n'));
-	      }
-
-	      return contentAnchorOffset;
-	    } // Return the base transform origin using the element
-	    // and taking the content anchor offset into account if in use
-
-	  }, {
-	    key: "getTransformOrigin",
-	    value: function getTransformOrigin(elemRect) {
-	      var contentAnchorOffset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-	      var transformOrigin = this.props.transformOrigin;
-	      return {
-	        vertical: this.handleGetOffsetTop(elemRect, transformOrigin.vertical) + contentAnchorOffset,
-	        horizontal: this.handleGetOffsetLeft(elemRect, transformOrigin.horizontal)
-	      };
-	    }
-	  }, {
-	    key: "render",
-	    // Corresponds to 10 frames at 60 Hz.
-	    value: function render() {
-	      var _this2 = this;
-
-	      var _props3 = this.props,
-	          action = _props3.action,
-	          anchorEl = _props3.anchorEl,
-	          anchorOrigin = _props3.anchorOrigin,
-	          anchorPosition = _props3.anchorPosition,
-	          anchorReference = _props3.anchorReference,
-	          children = _props3.children,
-	          classes = _props3.classes,
-	          containerProp = _props3.container,
-	          elevation = _props3.elevation,
-	          getContentAnchorEl = _props3.getContentAnchorEl,
-	          marginThreshold = _props3.marginThreshold,
-	          onEnter = _props3.onEnter,
-	          onEntered = _props3.onEntered,
-	          onEntering = _props3.onEntering,
-	          onExit = _props3.onExit,
-	          onExited = _props3.onExited,
-	          onExiting = _props3.onExiting,
-	          open = _props3.open,
-	          PaperProps = _props3.PaperProps,
-	          role = _props3.role,
-	          transformOrigin = _props3.transformOrigin,
-	          TransitionComponent = _props3.TransitionComponent,
-	          transitionDuration = _props3.transitionDuration,
-	          TransitionProps = _props3.TransitionProps,
-	          other = (0, _objectWithoutProperties2.default)(_props3, ["action", "anchorEl", "anchorOrigin", "anchorPosition", "anchorReference", "children", "classes", "container", "elevation", "getContentAnchorEl", "marginThreshold", "onEnter", "onEntered", "onEntering", "onExit", "onExited", "onExiting", "open", "PaperProps", "role", "transformOrigin", "TransitionComponent", "transitionDuration", "TransitionProps"]); // If the container prop is provided, use that
-	      // If the anchorEl prop is provided, use its parent body element as the container
-	      // If neither are provided let the Modal take care of choosing the container
-
-	      var container = containerProp || (anchorEl ? (0, _ownerDocument.default)(getAnchorEl(anchorEl)).body : undefined);
-	      return _react.default.createElement(_Modal.default, (0, _extends2.default)({
-	        container: container,
-	        open: open,
-	        BackdropProps: {
-	          invisible: true
-	        }
-	      }, other), _react.default.createElement(TransitionComponent, (0, _extends2.default)({
-	        appear: true,
-	        "in": open,
-	        onEnter: this.handleEnter,
-	        onEntered: onEntered,
-	        onEntering: onEntering,
-	        onExit: onExit,
-	        onExited: onExited,
-	        onExiting: onExiting,
-	        role: role,
-	        ref: function ref(node) {
-	          _this2.transitionEl = node;
-	        }
-	      }, TransitionProps), _react.default.createElement(_Paper.default, (0, _extends2.default)({
-	        className: classes.paper,
-	        elevation: elevation
-	      }, PaperProps), _react.default.createElement(_reactEventListener.default, {
-	        target: "window",
-	        onResize: this.handleResize
-	      }), children)));
-	    }
-	  }]);
-	  return Popover;
-	}(_react.default.Component);
-
-	Popover.propTypes = {
-	  /**
-	   * This is callback property. It's called by the component on mount.
-	   * This is useful when you want to trigger an action programmatically.
-	   * It currently only supports updatePosition() action.
-	   *
-	   * @param {object} actions This object contains all posible actions
-	   * that can be triggered programmatically.
-	   */
-	  action: _propTypes.default.func,
-
-	  /**
-	   * This is the DOM element, or a function that returns the DOM element,
-	   * that may be used to set the position of the popover.
-	   */
-	  anchorEl: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
-
-	  /**
-	   * This is the point on the anchor where the popover's
-	   * `anchorEl` will attach to. This is not used when the
-	   * anchorReference is 'anchorPosition'.
-	   *
-	   * Options:
-	   * vertical: [top, center, bottom];
-	   * horizontal: [left, center, right].
-	   */
-	  anchorOrigin: _propTypes.default.shape({
-	    horizontal: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['left', 'center', 'right'])]),
-	    vertical: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['top', 'center', 'bottom'])])
-	  }),
-
-	  /**
-	   * This is the position that may be used
-	   * to set the position of the popover.
-	   * The coordinates are relative to
-	   * the application's client area.
-	   */
-	  anchorPosition: _propTypes.default.shape({
-	    top: _propTypes.default.number,
-	    left: _propTypes.default.number
-	  }),
-
-	  /*
-	   * This determines which anchor prop to refer to to set
-	   * the position of the popover.
-	   */
-	  anchorReference: _propTypes.default.oneOf(['anchorEl', 'anchorPosition', 'none']),
-
-	  /**
-	   * The content of the component.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * A node, component instance, or function that returns either.
-	   * The `container` will passed to the Modal component.
-	   * By default, it uses the body of the anchorEl's top-level document object,
-	   * so it's simply `document.body` most of the time.
-	   */
-	  container: _propTypes.default.oneOfType([_propTypes.default.object, _propTypes.default.func]),
-
-	  /**
-	   * The elevation of the popover.
-	   */
-	  elevation: _propTypes.default.number,
-
-	  /**
-	   * This function is called in order to retrieve the content anchor element.
-	   * It's the opposite of the `anchorEl` property.
-	   * The content anchor element should be an element inside the popover.
-	   * It's used to correctly scroll and set the position of the popover.
-	   * The positioning strategy tries to make the content anchor element just above the
-	   * anchor element.
-	   */
-	  getContentAnchorEl: _propTypes.default.func,
-
-	  /**
-	   * Specifies how close to the edge of the window the popover can appear.
-	   */
-	  marginThreshold: _propTypes.default.number,
-
-	  /**
-	   * Callback fired when the component requests to be closed.
-	   *
-	   * @param {object} event The event source of the callback.
-	   */
-	  onClose: _propTypes.default.func,
-
-	  /**
-	   * Callback fired before the component is entering.
-	   */
-	  onEnter: _propTypes.default.func,
-
-	  /**
-	   * Callback fired when the component has entered.
-	   */
-	  onEntered: _propTypes.default.func,
-
-	  /**
-	   * Callback fired when the component is entering.
-	   */
-	  onEntering: _propTypes.default.func,
-
-	  /**
-	   * Callback fired before the component is exiting.
-	   */
-	  onExit: _propTypes.default.func,
-
-	  /**
-	   * Callback fired when the component has exited.
-	   */
-	  onExited: _propTypes.default.func,
-
-	  /**
-	   * Callback fired when the component is exiting.
-	   */
-	  onExiting: _propTypes.default.func,
-
-	  /**
-	   * If `true`, the popover is visible.
-	   */
-	  open: _propTypes.default.bool.isRequired,
-
-	  /**
-	   * Properties applied to the `Paper` element.
-	   */
-	  PaperProps: _propTypes.default.object,
-
-	  /**
-	   * @ignore
-	   */
-	  role: _propTypes.default.string,
-
-	  /**
-	   * This is the point on the popover which
-	   * will attach to the anchor's origin.
-	   *
-	   * Options:
-	   * vertical: [top, center, bottom, x(px)];
-	   * horizontal: [left, center, right, x(px)].
-	   */
-	  transformOrigin: _propTypes.default.shape({
-	    horizontal: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['left', 'center', 'right'])]),
-	    vertical: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.oneOf(['top', 'center', 'bottom'])])
-	  }),
-
-	  /**
-	   * Transition component.
-	   */
-	  TransitionComponent: _propTypes.default.oneOfType([_propTypes.default.string, _propTypes.default.func]),
-
-	  /**
-	   * Set to 'auto' to automatically calculate transition time based on height.
-	   */
-	  transitionDuration: _propTypes.default.oneOfType([_propTypes.default.number, _propTypes.default.shape({
-	    enter: _propTypes.default.number,
-	    exit: _propTypes.default.number
-	  }), _propTypes.default.oneOf(['auto'])]),
-
-	  /**
-	   * Properties applied to the `Transition` element.
-	   */
-	  TransitionProps: _propTypes.default.object
-	};
-	Popover.defaultProps = {
-	  anchorReference: 'anchorEl',
-	  anchorOrigin: {
-	    vertical: 'top',
-	    horizontal: 'left'
-	  },
-	  elevation: 8,
-	  marginThreshold: 16,
-	  transformOrigin: {
-	    vertical: 'top',
-	    horizontal: 'left'
-	  },
-	  TransitionComponent: _Grow.default,
-	  transitionDuration: 'auto'
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiPopover'
-	})(Popover);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(Popover_1);
-	var Popover_2 = Popover_1.styles;
-
-	var Popover$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _Popover.default;
-	  }
-	});
-
-	var _Popover = interopRequireDefault(Popover_1);
-	});
-
-	var MUI_Popover = unwrapExports(Popover$1);
-
-	const styles$2 = theme => ({
-	  popoverPaper: {
-	    padding: theme.spacing.unit * 2
-	  }
-	});
-
-	const Popover$2 = ({
-	  classes,
-	  children,
-	  ...other
-	}) => react.createElement(MUI_Popover, _extends$8({
-	  anchorOrigin: {
-	    vertical: 'bottom',
-	    horizontal: 'center'
-	  },
-	  classes: {
-	    paper: classes.popoverPaper
-	  },
-	  transformOrigin: {
-	    vertical: 'top',
-	    horizontal: 'center'
-	  }
-	}, other), children);
-
-	Popover$2.propTypes = {
-	  classes: propTypes.object.isRequired,
-	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
-	};
-	const enhancedPopover = styles_3(styles$2)(Popover$2);
-
-	class InfoButton extends react_1 {
-	  constructor(...args) {
-	    var _temp;
-
-	    return _temp = super(...args), _defineProperty$2(this, "state", {
-	      open: false
-	    }), _defineProperty$2(this, "handleClickButton", () => {
-	      this.setState({
-	        open: true
-	      });
-	    }), _defineProperty$2(this, "handleClose", () => {
-	      this.setState({
-	        open: false
-	      });
-	    }), _defineProperty$2(this, "anchorEl", null), _temp;
-	  }
-
-	  render() {
-	    const {
-	      children,
-	      popover,
-	      icon
-	    } = this.props;
-	    const {
-	      open
-	    } = this.state;
-	    return react.createElement(react_5, null, icon && react.createElement(IconButton$2, {
-	      buttonRef: node => {
-	        this.anchorEl = node;
-	      },
-	      onClick: this.handleClickButton
-	    }, children), !icon && react.createElement(Button$2, {
-	      buttonRef: node => {
-	        this.anchorEl = node;
-	      },
-	      color: "primary",
-	      onClick: this.handleClickButton,
-	      size: "small"
-	    }, children), react.createElement(enhancedPopover, {
-	      anchorEl: this.anchorEl,
-	      onClose: this.handleClose,
-	      open: open
-	    }, popover));
-	  }
-
-	}
-
-	InfoButton.propTypes = {
-	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  popover: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  icon: propTypes.bool
 	};
 
 	var Input$1 = createCommonjsModule(function (module, exports) {
@@ -43309,7 +43615,7 @@
 
 	var InputAdornment$2 = unwrapExports(InputAdornment$1);
 
-	const styles$3 = ({
+	const styles$4 = ({
 	  palette
 	}) => ({
 	  link: {
@@ -43365,7 +43671,7 @@
 	  to: propTypes.string.isRequired,
 	  overwriteColor: propTypes.bool
 	};
-	const ExternalLinkEnhanced = styles_3(styles$3)(ExternalLink);
+	const ExternalLinkEnhanced = styles_3(styles$4)(ExternalLink);
 
 	var ListItem_1 = createCommonjsModule(function (module, exports) {
 
@@ -45348,325 +45654,6 @@
 
 	unwrapExports(SelectInput_1);
 
-	var setStatic_1 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var setStatic = function setStatic(key, value) {
-	  return function (BaseComponent) {
-	    /* eslint-disable no-param-reassign */
-	    BaseComponent[key] = value;
-	    /* eslint-enable no-param-reassign */
-	    return BaseComponent;
-	  };
-	};
-
-	exports.default = setStatic;
-	});
-
-	unwrapExports(setStatic_1);
-
-	var setDisplayName_1 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-
-
-	var _setStatic2 = _interopRequireDefault(setStatic_1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var setDisplayName = function setDisplayName(displayName) {
-	  return (0, _setStatic2.default)('displayName', displayName);
-	};
-
-	exports.default = setDisplayName;
-	});
-
-	unwrapExports(setDisplayName_1);
-
-	var shouldUpdate_1 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-
-
-	var _classCallCheck3 = _interopRequireDefault(classCallCheck$1);
-
-
-
-	var _possibleConstructorReturn3 = _interopRequireDefault(possibleConstructorReturn$1);
-
-
-
-	var _inherits3 = _interopRequireDefault(inherits$1);
-
-
-
-
-
-	var _setDisplayName2 = _interopRequireDefault(setDisplayName_1);
-
-
-
-	var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var shouldUpdate = function shouldUpdate(test) {
-	  return function (BaseComponent) {
-	    var factory = (0, react.createFactory)(BaseComponent);
-
-	    var ShouldUpdate = function (_Component) {
-	      (0, _inherits3.default)(ShouldUpdate, _Component);
-
-	      function ShouldUpdate() {
-	        (0, _classCallCheck3.default)(this, ShouldUpdate);
-	        return (0, _possibleConstructorReturn3.default)(this, _Component.apply(this, arguments));
-	      }
-
-	      ShouldUpdate.prototype.shouldComponentUpdate = function shouldComponentUpdate(nextProps) {
-	        return test(this.props, nextProps);
-	      };
-
-	      ShouldUpdate.prototype.render = function render() {
-	        return factory(this.props);
-	      };
-
-	      return ShouldUpdate;
-	    }(react.Component);
-
-	    {
-	      return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'shouldUpdate'))(ShouldUpdate);
-	    }
-	    return ShouldUpdate;
-	  };
-	};
-
-	exports.default = shouldUpdate;
-	});
-
-	unwrapExports(shouldUpdate_1);
-
-	var shallowEqual$2 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-
-
-	var _shallowEqual2 = _interopRequireDefault(shallowEqual_1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = _shallowEqual2.default;
-	});
-
-	unwrapExports(shallowEqual$2);
-
-	var pure_1 = createCommonjsModule(function (module, exports) {
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-
-
-	var _shouldUpdate2 = _interopRequireDefault(shouldUpdate_1);
-
-
-
-	var _shallowEqual2 = _interopRequireDefault(shallowEqual$2);
-
-
-
-	var _setDisplayName2 = _interopRequireDefault(setDisplayName_1);
-
-
-
-	var _wrapDisplayName2 = _interopRequireDefault(wrapDisplayName_1);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var pure = function pure(BaseComponent) {
-	  var hoc = (0, _shouldUpdate2.default)(function (props, nextProps) {
-	    return !(0, _shallowEqual2.default)(props, nextProps);
-	  });
-
-	  {
-	    return (0, _setDisplayName2.default)((0, _wrapDisplayName2.default)(BaseComponent, 'pure'))(hoc(BaseComponent));
-	  }
-
-	  return hoc(BaseComponent);
-	};
-
-	exports.default = pure;
-	});
-
-	unwrapExports(pure_1);
-
-	var SvgIcon_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-
-
-	var styles = function styles(theme) {
-	  return {
-	    root: {
-	      userSelect: 'none',
-	      fontSize: 24,
-	      width: '1em',
-	      height: '1em',
-	      display: 'inline-block',
-	      fill: 'currentColor',
-	      flexShrink: 0,
-	      transition: theme.transitions.create('fill', {
-	        duration: theme.transitions.duration.shorter
-	      })
-	    },
-	    colorPrimary: {
-	      color: theme.palette.primary.main
-	    },
-	    colorSecondary: {
-	      color: theme.palette.secondary.main
-	    },
-	    colorAction: {
-	      color: theme.palette.action.active
-	    },
-	    colorError: {
-	      color: theme.palette.error.main
-	    },
-	    colorDisabled: {
-	      color: theme.palette.action.disabled
-	    }
-	  };
-	};
-
-	exports.styles = styles;
-
-	function SvgIcon(props) {
-	  var children = props.children,
-	      classes = props.classes,
-	      classNameProp = props.className,
-	      color = props.color,
-	      nativeColor = props.nativeColor,
-	      titleAccess = props.titleAccess,
-	      viewBox = props.viewBox,
-	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "color", "nativeColor", "titleAccess", "viewBox"]);
-	  var className = (0, _classnames.default)(classes.root, (0, _defineProperty2.default)({}, classes["color".concat((0, helpers.capitalize)(color))], color !== 'inherit'), classNameProp);
-	  return _react.default.createElement("svg", (0, _extends2.default)({
-	    className: className,
-	    focusable: "false",
-	    viewBox: viewBox,
-	    color: nativeColor,
-	    "aria-hidden": titleAccess ? 'false' : 'true'
-	  }, other), titleAccess ? _react.default.createElement("title", null, titleAccess) : null, children);
-	}
-
-	SvgIcon.propTypes = {
-	  /**
-	   * Node passed into the SVG element.
-	   */
-	  children: _propTypes.default.node.isRequired,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * The color of the component. It supports those theme colors that make sense for this component.
-	   * You can use the `nativeColor` property to apply a color attribute to the SVG element.
-	   */
-	  color: _propTypes.default.oneOf(['inherit', 'primary', 'secondary', 'action', 'error', 'disabled']),
-
-	  /**
-	   * Applies a color attribute to the SVG element.
-	   */
-	  nativeColor: _propTypes.default.string,
-
-	  /**
-	   * Provides a human-readable title for the element that contains it.
-	   * https://www.w3.org/TR/SVG-access/#Equivalent
-	   */
-	  titleAccess: _propTypes.default.string,
-
-	  /**
-	   * Allows you to redefine what the coordinates without units mean inside an SVG element.
-	   * For example, if the SVG element is 500 (width) by 200 (height),
-	   * and you pass viewBox="0 0 50 20",
-	   * this means that the coordinates inside the SVG will go from the top left corner (0,0)
-	   * to bottom right (50,20) and each unit will be worth 10px.
-	   */
-	  viewBox: _propTypes.default.string
-	};
-	SvgIcon.defaultProps = {
-	  color: 'inherit',
-	  viewBox: '0 0 24 24'
-	};
-	SvgIcon.muiName = 'SvgIcon';
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiSvgIcon'
-	})(SvgIcon);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(SvgIcon_1);
-	var SvgIcon_2 = SvgIcon_1.styles;
-
-	var SvgIcon$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _SvgIcon.default;
-	  }
-	});
-
-	var _SvgIcon = interopRequireDefault(SvgIcon_1);
-	});
-
-	unwrapExports(SvgIcon$1);
-
 	var ArrowDropDown_1 = createCommonjsModule(function (module, exports) {
 
 
@@ -46664,115 +46651,10 @@
 
 	var TextField$2 = unwrapExports(TextField$1);
 
-	var Toolbar_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = exports.styles = void 0;
-
-	var _extends2 = interopRequireDefault(_extends_1);
-
-	var _defineProperty2 = interopRequireDefault(defineProperty$3);
-
-	var _objectWithoutProperties2 = interopRequireDefault(objectWithoutProperties);
-
-	var _objectSpread2 = interopRequireDefault(objectSpread);
-
-	var _react = interopRequireDefault(react);
-
-	var _propTypes = interopRequireDefault(propTypes);
-
-	var _classnames = interopRequireDefault(classnames);
-
-	var _withStyles = interopRequireDefault(withStyles_1);
-
-	var styles = function styles(theme) {
-	  return {
-	    root: (0, _objectSpread2.default)({}, theme.mixins.toolbar, {
-	      position: 'relative',
-	      display: 'flex',
-	      alignItems: 'center'
-	    }),
-	    gutters: theme.mixins.gutters()
-	  };
-	};
-
-	exports.styles = styles;
-
-	function Toolbar(props) {
-	  var children = props.children,
-	      classes = props.classes,
-	      classNameProp = props.className,
-	      disableGutters = props.disableGutters,
-	      other = (0, _objectWithoutProperties2.default)(props, ["children", "classes", "className", "disableGutters"]);
-	  var className = (0, _classnames.default)(classes.root, (0, _defineProperty2.default)({}, classes.gutters, !disableGutters), classNameProp);
-	  return _react.default.createElement("div", (0, _extends2.default)({
-	    className: className
-	  }, other), children);
-	}
-
-	Toolbar.propTypes = {
-	  /**
-	   * Toolbar children, usually a mixture of `IconButton`, `Button` and `Typography`.
-	   */
-	  children: _propTypes.default.node,
-
-	  /**
-	   * Override or extend the styles applied to the component.
-	   * See [CSS API](#css-api) below for more details.
-	   */
-	  classes: _propTypes.default.object.isRequired,
-
-	  /**
-	   * @ignore
-	   */
-	  className: _propTypes.default.string,
-
-	  /**
-	   * If `true`, disables gutter padding.
-	   */
-	  disableGutters: _propTypes.default.bool
-	};
-	Toolbar.defaultProps = {
-	  disableGutters: false
-	};
-
-	var _default = (0, _withStyles.default)(styles, {
-	  name: 'MuiToolbar'
-	})(Toolbar);
-
-	exports.default = _default;
-	});
-
-	unwrapExports(Toolbar_1);
-	var Toolbar_2 = Toolbar_1.styles;
-
-	var Toolbar$1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	Object.defineProperty(exports, "default", {
-	  enumerable: true,
-	  get: function get() {
-	    return _Toolbar.default;
-	  }
-	});
-
-	var _Toolbar = interopRequireDefault(Toolbar_1);
-	});
-
-	var Toolbar$2 = unwrapExports(Toolbar$1);
-
 	// export { default as Tooltip } from '@material-ui/core/Tooltip';
 	// Issues with positioning
 
-	const styles$4 = {
+	const styles$5 = {
 	  children: {
 	    overflow: 'auto',
 	    height: 'calc(100% - 64px)'
@@ -46823,215 +46705,7 @@
 	  };
 	};
 
-	const enhance = compose$1(styles_3(styles$4), connect(mapStateToProps))(AppLayout);
-
-	var createSvgIcon_1 = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _pure = interopRequireDefault(pure_1);
-
-	var _SvgIcon = interopRequireDefault(SvgIcon$1);
-
-	var SvgIconCustom = typeof commonjsGlobal !== 'undefined' && commonjsGlobal.__MUI_SvgIcon__ || _SvgIcon.default;
-
-	function createSvgIcon(path, displayName) {
-	  var Icon = function Icon(props) {
-	    return _react.default.createElement(SvgIconCustom, props, path);
-	  };
-
-	  Icon.displayName = displayName;
-	  Icon = (0, _pure.default)(Icon);
-	  Icon.muiName = 'SvgIcon';
-	  return Icon;
-	}
-	var _default = createSvgIcon;
-	exports.default = _default;
-	});
-
-	unwrapExports(createSvgIcon_1);
-
-	var Assessment = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"
-	})), 'Assessment');
-
-	exports.default = _default;
-	});
-
-	var AssessmentIcon = unwrapExports(Assessment);
-
-	var Close = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-	})), 'Close');
-
-	exports.default = _default;
-	});
-
-	unwrapExports(Close);
-
-	var Done = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"
-	})), 'Done');
-
-	exports.default = _default;
-	});
-
-	var DoneIcon = unwrapExports(Done);
-
-	var _Error = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"
-	})), 'Error');
-
-	exports.default = _default;
-	});
-
-	var ErrorIcon = unwrapExports(_Error);
-
-	var Help = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"
-	})), 'Help');
-
-	exports.default = _default;
-	});
-
-	var HelpIcon = unwrapExports(Help);
-
-	var Settings = createCommonjsModule(function (module, exports) {
-
-
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.default = void 0;
-
-	var _react = interopRequireDefault(react);
-
-	var _createSvgIcon = interopRequireDefault(createSvgIcon_1);
-
-	var _default = (0, _createSvgIcon.default)(_react.default.createElement("g", null, _react.default.createElement("path", {
-	  d: "M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"
-	})), 'Settings');
-
-	exports.default = _default;
-	});
-
-	var SettingsIcon = unwrapExports(Settings);
-
-	const styles$5 = {
-	  root: {
-	    textAlign: 'center',
-	    '& :last-child': {
-	      paddingBottom: 8
-	    }
-	  },
-	  header: {
-	    padding: '8 16 0 16'
-	  },
-	  content: {
-	    padding: '0 16 0 16'
-	  }
-	};
-
-	const CardLayout = ({
-	  classes,
-	  className,
-	  helperText,
-	  children,
-	  title
-	}) => react.createElement(Card$2, {
-	  className: classnames(classes.root, className)
-	}, react.createElement(CardHeader$2, {
-	  action: helperText && react.createElement(InfoButton, {
-	    icon: true,
-	    popover: react.createElement(Typography$2, null, helperText)
-	  }, react.createElement(HelpIcon, null)),
-	  className: classes.header,
-	  subheader: title
-	}), react.createElement(CardContent$2, {
-	  className: classes.content
-	}, children));
-
-	CardLayout.propTypes = {
-	  helperText: propTypes.string,
-	  classes: propTypes.object.isRequired,
-	  className: propTypes.string,
-	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  title: propTypes.string
-	};
-	const enhance$1 = styles_3(styles$5)(CardLayout);
+	const enhance$1 = compose$1(styles_3(styles$5), connect(mapStateToProps))(AppLayout);
 
 	const styles$6 = {
 	  wrapper: {
@@ -49613,7 +49287,7 @@
 	      miner,
 	      workerStats
 	    } = this.props;
-	    return react.createElement(enhance$1, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, null, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, (workerStats.unpaidBalance || 0).toFixed(10), " ", miner.currency), react.createElement(Typography$2, {
@@ -49655,7 +49329,7 @@
 	      classes,
 	      totalLoad
 	    } = this.props;
-	    return react.createElement(enhance$1, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, null, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, totalLoad.toString(), "%"), react.createElement(Typography$2, {
@@ -49700,7 +49374,7 @@
 	      classes,
 	      totalLoad
 	    } = this.props;
-	    return react.createElement(enhance$1, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, null, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, totalLoad.toString(), "%"), react.createElement(Typography$2, {
@@ -49747,7 +49421,7 @@
 	      classes,
 	      hashRate
 	    } = this.props;
-	    return react.createElement(enhance$1, null, react.createElement(Typography$2, {
+	    return react.createElement(enhance, null, react.createElement(Typography$2, {
 	      className: classes.load,
 	      variant: "display1"
 	    }, hashRate, "H/s"), react.createElement(Typography$2, {
@@ -50101,7 +49775,7 @@
 	      isValidAddress,
 	      selectedMinerIdentifier
 	    } = this.props;
-	    return react.createElement(enhanced$$1, {
+	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Wallet"
 	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can leave the default settings if you want to try out this app."), react.createElement(FormControl$2, {
@@ -50209,7 +49883,7 @@
 	    const {
 	      open
 	    } = this.props;
-	    return react.createElement(enhanced$$1, {
+	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Settings"
 	    }, react.createElement(DialogContentText$2, null, "In this dialog I plan to add settings like ", react.createElement("i", null, "Stop mining when in game"), "."));
@@ -50240,7 +49914,7 @@
 	      miner,
 	      open
 	    } = this.props;
-	    return react.createElement(enhanced$$1, {
+	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Stats"
 	    }, react.createElement(DialogContentText$2, null, "I want to fetch more data from the mining pools dashboard and explain it here.", react.createElement("div", null, react.createElement(ExternalLinkEnhanced, {
@@ -50287,7 +49961,7 @@
 	    const {
 	      open
 	    } = this.props;
-	    return react.createElement(enhanced$$1, {
+	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Support"
 	    }, react.createElement(DialogContentText$2, null, "I want to add a FAQ here."), react.createElement(Discord, null));
@@ -51499,7 +51173,7 @@
 	  persistor: persistor
 	}, react.createElement(styles_1, {
 	  theme: light
-	}, react.createElement(CssBaseline$2, null), react.createElement(enhance, null, react.createElement(MiningPage, null)))));
+	}, react.createElement(CssBaseline$2, null), react.createElement(enhance$1, null, react.createElement(MiningPage, null)))));
 	reactDom.render(App, document.getElementById('root'));
 
 	(async () => {
