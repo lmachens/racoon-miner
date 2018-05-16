@@ -3,7 +3,7 @@
   "type": "WebApp",
   "meta": {
     "name": "Raccoon Miner - DEV",
-    "version": "0.6.1",
+    "version": "0.7.0",
     "minimum-overwolf-version": "0.85.0.0",
     "author": "Leon Machens",
     "icon": "assets/icon.png",
@@ -12,7 +12,9 @@
     "description": "Use your PC to mine crypto"
   },
   "externally_connectable": {
-    "matches": ["http://localhost:35729"]
+    "matches": [
+      "http://localhost:35729"
+    ]
   },
   "permissions": [],
   "data": {
@@ -57,5 +59,5 @@
       ]
     }
   },
-  "version": "0.6.1"
+  "version": "0.7.0"
 }
