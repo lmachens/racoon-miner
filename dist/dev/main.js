@@ -49552,7 +49552,7 @@
 	    }, [ethereum, monero].map(miner => react.createElement(MenuItem$2, {
 	      key: miner.name,
 	      value: miner.identifier
-	    }, miner.name)), react.createElement(MenuItem$2, {
+	    }, miner.name, " (", miner.currency, ")")), react.createElement(MenuItem$2, {
 	      disabled: true,
 	      value: null
 	    }, "More coming soon"))), react.createElement(FormControl$2, {

@@ -54,7 +54,7 @@ class CryptoDialog extends PureComponent {
           >
             {[ethereum, monero].map(miner => (
               <MenuItem key={miner.name} value={miner.identifier}>
-                {miner.name}
+                {miner.name} ({miner.currency})
               </MenuItem>
             ))}
             <MenuItem disabled value={null}>
