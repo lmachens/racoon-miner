@@ -1,17 +1,23 @@
-import { DialogContentText, FullScreenDialog } from '../generic';
+import { Button, DialogContentText, ExternalLink, FullScreenDialog } from '../generic';
 import React, { PureComponent } from 'react';
 
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getMiner } from '../../../api/mining';
 
 class StatsDialog extends PureComponent {
   render() {
-    const { open } = this.props;
+    const { address, miner, open } = this.props;
 
     return (
-      <FullScreenDialog open={open}>
+      <FullScreenDialog open={open} title="Stats">
         <DialogContentText>
-          I want to fetch more data from the mining pools dashboard here and link it.
+          I want to fetch more data from the mining pools dashboard and explain it here.
+          <div>
+            <ExternalLink to={miner.links.stats(address)}>
+              <Button>Open Pool Stats</Button>
+            </ExternalLink>
+          </div>
         </DialogContentText>
       </FullScreenDialog>
     );
@@ -19,12 +25,22 @@ class StatsDialog extends PureComponent {
 }
 
 StatsDialog.propTypes = {
-  open: PropTypes.bool.isRequired
+  open: PropTypes.bool.isRequired,
+  address: PropTypes.string.isRequired,
+  miner: PropTypes.object.isRequired
 };
 
-const mapStateToProps = ({ dialogs: { settingsDialogOpen } }) => {
+const mapStateToProps = ({
+  dialogs: { statsDialogOpen },
+  mining: { miners, selectedMinerIdentifier }
+}) => {
+  const miner = getMiner(selectedMinerIdentifier);
+  const address = miners[selectedMinerIdentifier].address;
+
   return {
-    open: settingsDialogOpen
+    address,
+    miner,
+    open: statsDialogOpen
   };
 };
 

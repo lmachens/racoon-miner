@@ -30,14 +30,14 @@ const styles = {
 
 class FullScreenDialog extends PureComponent {
   render() {
-    const { classes, children, closeDialog, open } = this.props;
+    const { classes, children, closeDialog, open, title } = this.props;
 
     return (
       <Dialog fullScreen onClose={closeDialog} open={open}>
         <AppBar className={classes.appBar}>
           <Toolbar>
             <Typography className={classes.flex} color="inherit" variant="title">
-              Settings
+              {title}
             </Typography>
             <Button color="inherit" onClick={closeDialog}>
               Done
@@ -54,7 +54,8 @@ FullScreenDialog.propTypes = {
   classes: PropTypes.object.isRequired,
   closeDialog: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  title: PropTypes.string.isRequired
 };
 
 const mapDispatchToProps = dispatch => {

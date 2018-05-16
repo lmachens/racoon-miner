@@ -38,7 +38,7 @@ class CryptoDialog extends PureComponent {
     const { open, address, miner, isMining, isValidAddress, selectedMinerIdentifier } = this.props;
 
     return (
-      <FullScreenDialog open={open}>
+      <FullScreenDialog open={open} title="Wallet">
         <DialogContentText>
           Before you can start mining, you have to tell the raccoon what to mine and who gets the
           profit. You can leave the default settings if you want to try out this app.

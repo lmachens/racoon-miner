@@ -625,6 +625,7 @@
 	const CLOSE_DIALOG = 'CLOSE_DIALOG';
 	const OPEN_CRYPTO_DIALOG = 'OPEN_CRYPTO_DIALOG';
 	const OPEN_SETTINGS_DIALOG = 'OPEN_SETTINGS_DIALOG';
+	const OPEN_STATS_DIALOG = 'OPEN_STATS_DIALOG';
 	const OPEN_SUPPORT_DIALOG = 'OPEN_SUPPORT_DIALOG';
 
 	const RECEIVE_HARDWARE_INFO = 'RECEIVE_HARDWARE_INFO';
@@ -661,6 +662,13 @@
 	  return dispatch => {
 	    dispatch({
 	      type: OPEN_SETTINGS_DIALOG
+	    });
+	  };
+	};
+	const openStatsDialog = () => {
+	  return dispatch => {
+	    dispatch({
+	      type: OPEN_STATS_DIALOG
 	    });
 	  };
 	};
@@ -2965,11 +2973,13 @@
 	const closeAllState = {
 	  cryptoDialogOpen: false,
 	  settingsDialogOpen: false,
+	  statsDialogOpen: false,
 	  supportDialogOpen: false
 	};
 	const dialogs = (state = {
 	  cryptoDialogOpen: true,
 	  settingsDialogOpen: false,
+	  statsDialogOpen: false,
 	  supportDialogOpen: false
 	}, {
 	  type
@@ -2987,6 +2997,11 @@
 	    case OPEN_SETTINGS_DIALOG:
 	      return { ...closeAllState,
 	        settingsDialogOpen: true
+	      };
+
+	    case OPEN_STATS_DIALOG:
+	      return { ...closeAllState,
+	        statsDialogOpen: true
 	      };
 
 	    case OPEN_SUPPORT_DIALOG:
@@ -38778,7 +38793,8 @@
 	      classes,
 	      children,
 	      closeDialog: closeDialog$$1,
-	      open
+	      open,
+	      title
 	    } = this.props;
 	    return react.createElement(Dialog$2, {
 	      fullScreen: true,
@@ -38790,7 +38806,7 @@
 	      className: classes.flex,
 	      color: "inherit",
 	      variant: "title"
-	    }, "Settings"), react.createElement(Button$2, {
+	    }, title), react.createElement(Button$2, {
 	      color: "inherit",
 	      onClick: closeDialog$$1
 	    }, "Done"))), react.createElement(DialogContent$2, {
@@ -38804,7 +38820,8 @@
 	  classes: propTypes.object.isRequired,
 	  closeDialog: propTypes.func.isRequired,
 	  open: propTypes.bool.isRequired,
-	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired
+	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
+	  title: propTypes.string.isRequired
 	};
 
 	const mapDispatchToProps = dispatch => {
@@ -49968,50 +49985,33 @@
 	};
 
 	class StatsButton extends react_2 {
-	  constructor(...args) {
-	    var _temp;
-
-	    return _temp = super(...args), _defineProperty$2(this, "handleOpenStats", () => {}), _temp;
-	  }
-
 	  render() {
 	    const {
-	      address,
 	      classes,
-	      miner
+	      openStatsDialog: openStatsDialog$$1
 	    } = this.props;
-	    return react.createElement(ExternalLinkEnhanced, {
-	      to: miner.links.stats(address)
-	    }, react.createElement(enhance$7, {
+	    return react.createElement(enhance$7, {
+	      onClick: openStatsDialog$$1,
 	      title: "Stats"
 	    }, react.createElement(AssessmentIcon, {
 	      className: classes.icon
-	    })));
+	    }));
 	  }
 
 	}
 
 	StatsButton.propTypes = {
-	  address: propTypes.string.isRequired,
 	  classes: propTypes.object.isRequired,
-	  miner: propTypes.object.isRequired
+	  openStatsDialog: propTypes.func.isRequired
 	};
 
-	const mapStateToProps$7 = ({
-	  mining: {
-	    miners,
-	    selectedMinerIdentifier
-	  }
-	}) => {
-	  const miner = getMiner(selectedMinerIdentifier);
-	  const address = miners[selectedMinerIdentifier].address;
+	const mapDispatchToProps$4 = dispatch => {
 	  return {
-	    address,
-	    miner
+	    openStatsDialog: bindActionCreators(openStatsDialog, dispatch)
 	  };
 	};
 
-	const enhance$11 = compose$1(styles_3(styles$16), connect(mapStateToProps$7))(StatsButton);
+	const enhance$11 = compose$1(styles_3(styles$16), connect(null, mapDispatchToProps$4))(StatsButton);
 
 	const styles$17 = {
 	  icon: {
@@ -50041,13 +50041,13 @@
 	  openSupportDialog: propTypes.func.isRequired
 	};
 
-	const mapDispatchToProps$4 = dispatch => {
+	const mapDispatchToProps$5 = dispatch => {
 	  return {
 	    openSupportDialog: bindActionCreators(openSupportDialog, dispatch)
 	  };
 	};
 
-	const enhance$12 = compose$1(styles_3(styles$17), connect(null, mapDispatchToProps$4))(SupportButton);
+	const enhance$12 = compose$1(styles_3(styles$17), connect(null, mapDispatchToProps$5))(SupportButton);
 
 	const styles$18 = {
 	  center: {
@@ -50102,7 +50102,8 @@
 	      selectedMinerIdentifier
 	    } = this.props;
 	    return react.createElement(enhanced$$1, {
-	      open: open
+	      open: open,
+	      title: "Wallet"
 	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can leave the default settings if you want to try out this app."), react.createElement(FormControl$2, {
 	      margin: "normal"
 	    }, react.createElement(InputLabel$2, {
@@ -50171,7 +50172,7 @@
 	  selectMiner: propTypes.func.isRequired
 	};
 
-	const mapStateToProps$8 = ({
+	const mapStateToProps$7 = ({
 	  dialogs: {
 	    cryptoDialogOpen
 	  },
@@ -50194,14 +50195,14 @@
 	  };
 	};
 
-	const mapDispatchToProps$5 = dispatch => {
+	const mapDispatchToProps$6 = dispatch => {
 	  return {
 	    setMiningAddress: bindActionCreators(setMiningAddress, dispatch),
 	    selectMiner: bindActionCreators(selectMiner, dispatch)
 	  };
 	};
 
-	const enhance$14 = connect(mapStateToProps$8, mapDispatchToProps$5)(CryptoDialog);
+	const enhance$14 = connect(mapStateToProps$7, mapDispatchToProps$6)(CryptoDialog);
 
 	class SettingsDialog extends react_2 {
 	  render() {
@@ -50209,7 +50210,8 @@
 	      open
 	    } = this.props;
 	    return react.createElement(enhanced$$1, {
-	      open: open
+	      open: open,
+	      title: "Settings"
 	    }, react.createElement(DialogContentText$2, null, "In this dialog I plan to add settings like ", react.createElement("i", null, "Stop mining when in game"), "."));
 	  }
 
@@ -50219,7 +50221,7 @@
 	  open: propTypes.bool.isRequired
 	};
 
-	const mapStateToProps$9 = ({
+	const mapStateToProps$8 = ({
 	  dialogs: {
 	    settingsDialogOpen
 	  }
@@ -50229,35 +50231,50 @@
 	  };
 	};
 
-	const enhance$15 = connect(mapStateToProps$9)(SettingsDialog);
+	const enhance$15 = connect(mapStateToProps$8)(SettingsDialog);
 
 	class StatsDialog extends react_2 {
 	  render() {
 	    const {
+	      address,
+	      miner,
 	      open
 	    } = this.props;
 	    return react.createElement(enhanced$$1, {
-	      open: open
-	    }, react.createElement(DialogContentText$2, null, "I want to fetch more data from the mining pools dashboard here and link it."));
+	      open: open,
+	      title: "Stats"
+	    }, react.createElement(DialogContentText$2, null, "I want to fetch more data from the mining pools dashboard and explain it here.", react.createElement("div", null, react.createElement(ExternalLinkEnhanced, {
+	      to: miner.links.stats(address)
+	    }, react.createElement(Button$2, null, "Open Pool Stats")))));
 	  }
 
 	}
 
 	StatsDialog.propTypes = {
-	  open: propTypes.bool.isRequired
+	  open: propTypes.bool.isRequired,
+	  address: propTypes.string.isRequired,
+	  miner: propTypes.object.isRequired
 	};
 
-	const mapStateToProps$10 = ({
+	const mapStateToProps$9 = ({
 	  dialogs: {
-	    settingsDialogOpen
+	    statsDialogOpen
+	  },
+	  mining: {
+	    miners,
+	    selectedMinerIdentifier
 	  }
 	}) => {
+	  const miner = getMiner(selectedMinerIdentifier);
+	  const address = miners[selectedMinerIdentifier].address;
 	  return {
-	    open: settingsDialogOpen
+	    address,
+	    miner,
+	    open: statsDialogOpen
 	  };
 	};
 
-	const enhance$16 = connect(mapStateToProps$10)(StatsDialog);
+	const enhance$16 = connect(mapStateToProps$9)(StatsDialog);
 
 	const Discord = () => react.createElement("embed", {
 	  height: "100%",
@@ -50271,8 +50288,9 @@
 	      open
 	    } = this.props;
 	    return react.createElement(enhanced$$1, {
-	      open: open
-	    }, react.createElement(Discord, null));
+	      open: open,
+	      title: "Support"
+	    }, react.createElement(DialogContentText$2, null, "I want to add a FAQ here."), react.createElement(Discord, null));
 	  }
 
 	}
@@ -50281,7 +50299,7 @@
 	  open: propTypes.bool.isRequired
 	};
 
-	const mapStateToProps$11 = ({
+	const mapStateToProps$10 = ({
 	  dialogs: {
 	    supportDialogOpen
 	  }
@@ -50291,7 +50309,7 @@
 	  };
 	};
 
-	const enhance$17 = connect(mapStateToProps$11)(SupportDialog);
+	const enhance$17 = connect(mapStateToProps$10)(SupportDialog);
 
 	class Dialogs extends react_2 {
 	  render() {

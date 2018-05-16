@@ -9,7 +9,7 @@ class SettingsDialog extends PureComponent {
     const { open } = this.props;
 
     return (
-      <FullScreenDialog open={open}>
+      <FullScreenDialog open={open} title="Settings">
         <DialogContentText>
           In this dialog I plan to add settings like <i>Stop mining when in game</i>.
         </DialogContentText>

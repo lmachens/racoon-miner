@@ -2,11 +2,11 @@ import React, { PureComponent } from 'react';
 
 import { ActionButton } from './_ActionButton';
 import { AssessmentIcon } from '../icons';
-import { ExternalLink } from '../generic';
 import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
 import compose from 'recompose/compose';
 import { connect } from 'react-redux';
-import { getMiner } from '../../../api/mining';
+import { openStatsDialog } from '../../../store/actions';
 import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
@@ -17,34 +17,27 @@ const styles = {
 };
 
 class StatsButton extends PureComponent {
-  handleOpenStats = () => {};
-
   render() {
-    const { address, classes, miner } = this.props;
+    const { classes, openStatsDialog } = this.props;
 
     return (
-      <ExternalLink to={miner.links.stats(address)}>
-        <ActionButton title="Stats">
-          <AssessmentIcon className={classes.icon} />
-        </ActionButton>
-      </ExternalLink>
+      <ActionButton onClick={openStatsDialog} title="Stats">
+        <AssessmentIcon className={classes.icon} />
+      </ActionButton>
     );
   }
 }
 
 StatsButton.propTypes = {
-  address: PropTypes.string.isRequired,
   classes: PropTypes.object.isRequired,
-  miner: PropTypes.object.isRequired
+  openStatsDialog: PropTypes.func.isRequired
 };
 
-const mapStateToProps = ({ mining: { miners, selectedMinerIdentifier } }) => {
-  const miner = getMiner(selectedMinerIdentifier);
-  const address = miners[selectedMinerIdentifier].address;
+const mapDispatchToProps = dispatch => {
   return {
-    address,
-    miner
+    openStatsDialog: bindActionCreators(openStatsDialog, dispatch)
   };
 };
-const enhance = compose(withStyles(styles), connect(mapStateToProps))(StatsButton);
+
+const enhance = compose(withStyles(styles), connect(null, mapDispatchToProps))(StatsButton);
 export { enhance as StatsButton };
