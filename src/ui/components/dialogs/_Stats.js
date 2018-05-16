@@ -4,21 +4,21 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-class SettingsDialog extends PureComponent {
+class StatsDialog extends PureComponent {
   render() {
     const { open } = this.props;
 
     return (
       <FullScreenDialog open={open}>
         <DialogContentText>
-          In this dialog I plan to add settings like <i>Stop mining when in game</i>.
+          I want to fetch more data from the mining pools dashboard here and link it.
         </DialogContentText>
       </FullScreenDialog>
     );
   }
 }
 
-SettingsDialog.propTypes = {
+StatsDialog.propTypes = {
   open: PropTypes.bool.isRequired
 };
 
@@ -28,5 +28,5 @@ const mapStateToProps = ({ dialogs: { settingsDialogOpen } }) => {
   };
 };
 
-const enhance = connect(mapStateToProps)(SettingsDialog);
-export { enhance as SettingsDialog };
+const enhance = connect(mapStateToProps)(StatsDialog);
+export { enhance as StatsDialog };
