@@ -2019,6 +2019,12 @@
 	  }
 	};
 
+	const TEST_MODE = {
+	  _id: 'testMode',
+	  message: 'TEST MODE! Please configure your wallet.',
+	  alert: true
+	};
+
 	const callOverwolfWithPromise = (method, ...params) => {
 	  return new Promise((resolve, reject) => {
 	    const handleResult = result => {
@@ -2089,6 +2095,32 @@
 
 	var isNil_1 = isNil;
 
+	const loadDefault = () => {
+	  return dispatch => {
+	    dispatch({
+	      type: SELECT_MINER,
+	      data: MONERO_MINER
+	    });
+	    dispatch({
+	      type: SET_MINING_ADDRESS,
+	      data: {
+	        address: ethereum.developerAddress,
+	        minerIdentifier: ETHEREUM_MINER
+	      }
+	    });
+	    dispatch({
+	      type: SET_MINING_ADDRESS,
+	      data: {
+	        address: monero.developerAddress,
+	        minerIdentifier: MONERO_MINER
+	      }
+	    });
+	    dispatch({
+	      type: SET_NOTIFICATION,
+	      notification: TEST_MODE
+	    });
+	  };
+	};
 	const setMiningAddress = (minerIdentifier, address) => {
 	  return dispatch => {
 	    dispatch({
@@ -2109,6 +2141,9 @@
 	        }
 	      });
 	    }
+	    dispatch({
+	      type: UNSET_NOTIFICATION
+	    });
 	  };
 	};
 	const selectMiner = minerIdentifier => {
@@ -2980,7 +3015,7 @@
 	  supportDialogOpen: false
 	};
 	const dialogs = (state = {
-	  cryptoDialogOpen: true,
+	  cryptoDialogOpen: false,
 	  settingsDialogOpen: false,
 	  statsDialogOpen: false,
 	  supportDialogOpen: false
@@ -3043,20 +3078,24 @@
 	};
 
 	const notifications = (state = {
-	  notification: null
+	  currentNotification: TEST_MODE,
+	  pastNotifications: []
 	}, {
 	  type,
 	  notification
 	}) => {
 	  switch (type) {
 	    case SET_NOTIFICATION:
+	      if (get_1(state, 'currentNotification._id') === notification._id) return state;
 	      return {
-	        notification
+	        currentNotification: notification,
+	        pastNotifications: [state.currentNotification, ...state.pastNotifications]
 	      };
 
 	    case UNSET_NOTIFICATION:
 	      return {
-	        notification: null
+	        currentNotification: null,
+	        pastNotifications: [state.currentNotification, ...state.pastNotifications]
 	      };
 
 	    default:
@@ -43398,30 +43437,30 @@
 	  palette
 	}) => ({
 	  link: {
+	    color: palette.primary.main,
 	    textDecoration: 'none',
 	    '&:focus, &:hover, &:visited, &:link, &:active': {
 	      textDecoration: 'none',
-	      color: 'inherit'
-	    }
-	  },
-	  overwriteColor: {
-	    color: palette.primary.main,
-	    '&:focus, &:hover, &:visited, &:link, &:active': {
 	      color: palette.primary.main
 	    }
 	  }
 	});
 
-	class ExternalLink extends react_1 {
+	class Link extends react_1 {
 	  constructor(...args) {
 	    var _temp;
 
 	    return _temp = super(...args), _defineProperty$2(this, "handleClick", event => {
-	      event.preventDefault();
 	      const {
-	        to
+	        to,
+	        onClick
 	      } = this.props;
-	      overwolf.utils.openUrlInDefaultBrowser(to);
+	      if (onClick) onClick(event);
+
+	      if (to) {
+	        event.preventDefault();
+	        overwolf.utils.openUrlInDefaultBrowser(to);
+	      }
 	    }), _temp;
 	  }
 
@@ -43429,28 +43468,24 @@
 	    const {
 	      children,
 	      classes,
-	      to,
-	      overwriteColor = false
+	      to = '#'
 	    } = this.props;
 	    return react.createElement("a", {
-	      className: classnames(classes.link, {
-	        [classes.overwriteColor]: overwriteColor
-	      }),
+	      className: classes.link,
 	      href: to,
-	      onClick: this.handleClick,
-	      target: "_blank"
+	      onClick: this.handleClick
 	    }, children);
 	  }
 
 	}
 
-	ExternalLink.propTypes = {
+	Link.propTypes = {
 	  classes: propTypes.object.isRequired,
 	  children: propTypes.oneOfType([propTypes.arrayOf(propTypes.node), propTypes.node]).isRequired,
-	  to: propTypes.string.isRequired,
-	  overwriteColor: propTypes.bool
+	  onClick: propTypes.func,
+	  to: propTypes.string
 	};
-	const ExternalLinkEnhanced = styles_3(styles$4)(ExternalLink);
+	const LinkEnhanced = styles_3(styles$4)(Link);
 
 	var ListItem_1 = createCommonjsModule(function (module, exports) {
 
@@ -49561,12 +49596,15 @@
 	      miner,
 	      isMining,
 	      isValidAddress,
-	      selectedMinerIdentifier
+	      selectedMinerIdentifier,
+	      loadDefault: loadDefault$$1
 	    } = this.props;
 	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Wallet"
-	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can leave the default settings if you want to try out this app."), react.createElement(FormControl$2, {
+	    }, react.createElement(DialogContentText$2, null, "Before you can start mining, you have to tell the raccoon what to mine and who gets the profit. You can ", react.createElement(LinkEnhanced, {
+	      onClick: loadDefault$$1
+	    }, "load the default settings"), " if you want to try out this app."), react.createElement(FormControl$2, {
 	      margin: "normal"
 	    }, react.createElement(InputLabel$2, {
 	      htmlFor: "crypto-select"
@@ -49598,8 +49636,7 @@
 	    }, "Coming soon"))), react.createElement(TextField$2, {
 	      disabled: isMining,
 	      fullWidth: true,
-	      helperText: react.createElement(ExternalLinkEnhanced, {
-	        overwriteColor: true,
+	      helperText: react.createElement(LinkEnhanced, {
 	        to: miner.links.wallet
 	      }, "Don't have a wallet address?"),
 	      InputProps: {
@@ -49628,6 +49665,7 @@
 	  minerIdentifier: propTypes.string.isRequired,
 	  isMining: propTypes.bool.isRequired,
 	  isValidAddress: propTypes.bool.isRequired,
+	  loadDefault: propTypes.func.isRequired,
 	  setMiningAddress: propTypes.func.isRequired,
 	  selectedMinerIdentifier: propTypes.string.isRequired,
 	  selectMiner: propTypes.func.isRequired
@@ -49658,6 +49696,7 @@
 
 	const mapDispatchToProps$6 = dispatch => {
 	  return {
+	    loadDefault: bindActionCreators(loadDefault, dispatch),
 	    setMiningAddress: bindActionCreators(setMiningAddress, dispatch),
 	    selectMiner: bindActionCreators(selectMiner, dispatch)
 	  };
@@ -49704,7 +49743,7 @@
 	    return react.createElement(enhanced, {
 	      open: open,
 	      title: "Stats"
-	    }, react.createElement(DialogContentText$2, null, "I want to fetch more data from the mining pools dashboard and explain it here.", react.createElement("div", null, react.createElement(ExternalLinkEnhanced, {
+	    }, react.createElement(DialogContentText$2, null, "I want to fetch more data from the mining pools dashboard and explain it here.", react.createElement("div", null, react.createElement(LinkEnhanced, {
 	      to: miner.links.stats(address)
 	    }, react.createElement(Button$2, null, "Open Pool Stats")))));
 	  }
@@ -49788,25 +49827,33 @@
 	class Notifications extends react_2 {
 	  render() {
 	    const {
-	      classes
+	      classes,
+	      currentNotification
 	    } = this.props;
+	    if (!currentNotification) return null;
+	    const {
+	      message,
+	      alert
+	    } = currentNotification;
 	    return react.createElement("div", {
 	      className: classes.container
-	    }, react.createElement(Typography$2, null, "I want to display alerts and other Notifications here"));
+	    }, react.createElement(Typography$2, {
+	      color: alert ? 'error' : 'inherit'
+	    }, message));
 	  }
 
 	}
 
 	Notifications.propTypes = {
 	  classes: propTypes.object.isRequired,
-	  notifications: propTypes.object
+	  currentNotification: propTypes.object,
+	  pastNotifications: propTypes.array
 	};
 
 	const mapStateToProps$11 = ({
 	  notifications
 	}) => {
-	  return {
-	    notifications
+	  return { ...notifications
 	  };
 	};
 

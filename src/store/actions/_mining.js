@@ -5,14 +5,38 @@ import {
   SET_MINING_ADDRESS,
   SET_MINING_ERROR_MESSAGE,
   SET_MINING_SPEED,
+  SET_NOTIFICATION,
   SET_PROCESS_ID,
   START_MINING,
-  STOP_MINING
+  STOP_MINING,
+  UNSET_NOTIFICATION
 } from '../types';
+import { ETHEREUM_MINER, MONERO_MINER, ethereum, getMiner, monero } from '../../api/mining';
 
-import { getMiner } from '../../api/mining';
+import { TEST_MODE } from '../../api/notifications';
 import { getProcessManagerPlugin } from '../../api/plugins';
 import isNil from 'lodash/isNil';
+
+export const loadDefault = () => {
+  return dispatch => {
+    dispatch({
+      type: SELECT_MINER,
+      data: MONERO_MINER
+    });
+    dispatch({
+      type: SET_MINING_ADDRESS,
+      data: { address: ethereum.developerAddress, minerIdentifier: ETHEREUM_MINER }
+    });
+    dispatch({
+      type: SET_MINING_ADDRESS,
+      data: { address: monero.developerAddress, minerIdentifier: MONERO_MINER }
+    });
+    dispatch({
+      type: SET_NOTIFICATION,
+      notification: TEST_MODE
+    });
+  };
+};
 
 export const setMiningAddress = (minerIdentifier, address) => {
   return dispatch => {
@@ -34,6 +58,9 @@ export const setMiningAddress = (minerIdentifier, address) => {
         }
       });
     }
+    dispatch({
+      type: UNSET_NOTIFICATION
+    });
   };
 };
 

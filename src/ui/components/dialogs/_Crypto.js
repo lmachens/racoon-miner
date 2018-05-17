@@ -1,11 +1,11 @@
 import {
   DialogContentText,
-  ExternalLink,
   FormControl,
   FullScreenDialog,
   InfoButton,
   InputAdornment,
   InputLabel,
+  Link,
   MenuItem,
   Select,
   TextField,
@@ -14,7 +14,7 @@ import {
 import { DoneIcon, ErrorIcon } from '../icons';
 import React, { PureComponent } from 'react';
 import { ethereum, getMiner, monero } from '../../../api/mining';
-import { selectMiner, setMiningAddress } from '../../../store/actions';
+import { loadDefault, selectMiner, setMiningAddress } from '../../../store/actions';
 
 import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
@@ -35,13 +35,22 @@ class CryptoDialog extends PureComponent {
   };
 
   render() {
-    const { open, address, miner, isMining, isValidAddress, selectedMinerIdentifier } = this.props;
+    const {
+      open,
+      address,
+      miner,
+      isMining,
+      isValidAddress,
+      selectedMinerIdentifier,
+      loadDefault
+    } = this.props;
 
     return (
       <FullScreenDialog open={open} title="Wallet">
         <DialogContentText>
           Before you can start mining, you have to tell the raccoon what to mine and who gets the
-          profit. You can leave the default settings if you want to try out this app.
+          profit. You can <Link onClick={loadDefault}>load the default settings</Link> if you want
+          to try out this app.
         </DialogContentText>
         <FormControl margin="normal">
           <InputLabel htmlFor="crypto-select">Currency</InputLabel>
@@ -78,11 +87,7 @@ class CryptoDialog extends PureComponent {
         <TextField
           disabled={isMining}
           fullWidth
-          helperText={
-            <ExternalLink overwriteColor={true} to={miner.links.wallet}>
-              Don&apos;t have a wallet address?
-            </ExternalLink>
-          }
+          helperText={<Link to={miner.links.wallet}>Don&apos;t have a wallet address?</Link>}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -116,6 +121,7 @@ CryptoDialog.propTypes = {
   minerIdentifier: PropTypes.string.isRequired,
   isMining: PropTypes.bool.isRequired,
   isValidAddress: PropTypes.bool.isRequired,
+  loadDefault: PropTypes.func.isRequired,
   setMiningAddress: PropTypes.func.isRequired,
   selectedMinerIdentifier: PropTypes.string.isRequired,
   selectMiner: PropTypes.func.isRequired
@@ -141,6 +147,7 @@ const mapStateToProps = ({
 
 const mapDispatchToProps = dispatch => {
   return {
+    loadDefault: bindActionCreators(loadDefault, dispatch),
     setMiningAddress: bindActionCreators(setMiningAddress, dispatch),
     selectMiner: bindActionCreators(selectMiner, dispatch)
   };

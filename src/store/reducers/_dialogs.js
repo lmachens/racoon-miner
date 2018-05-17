@@ -15,7 +15,7 @@ const closeAllState = {
 
 export const dialogs = (
   state = {
-    cryptoDialogOpen: true,
+    cryptoDialogOpen: false,
     settingsDialogOpen: false,
     statsDialogOpen: false,
     supportDialogOpen: false

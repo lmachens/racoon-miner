@@ -1,4 +1,4 @@
-import { Button, DialogContentText, ExternalLink, FullScreenDialog } from '../generic';
+import { Button, DialogContentText, FullScreenDialog, Link } from '../generic';
 import React, { PureComponent } from 'react';
 
 import PropTypes from 'prop-types';
@@ -14,9 +14,9 @@ class StatsDialog extends PureComponent {
         <DialogContentText>
           I want to fetch more data from the mining pools dashboard and explain it here.
           <div>
-            <ExternalLink to={miner.links.stats(address)}>
+            <Link to={miner.links.stats(address)}>
               <Button>Open Pool Stats</Button>
-            </ExternalLink>
+            </Link>
           </div>
         </DialogContentText>
       </FullScreenDialog>

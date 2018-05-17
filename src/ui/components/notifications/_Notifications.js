@@ -14,11 +14,14 @@ const styles = {
 
 class Notifications extends PureComponent {
   render() {
-    const { classes } = this.props;
+    const { classes, currentNotification } = this.props;
+    if (!currentNotification) return null;
+
+    const { message, alert } = currentNotification;
 
     return (
       <div className={classes.container}>
-        <Typography>I want to display alerts and other Notifications here</Typography>
+        <Typography color={alert ? 'error' : 'inherit'}>{message}</Typography>
       </div>
     );
   }
@@ -26,12 +29,13 @@ class Notifications extends PureComponent {
 
 Notifications.propTypes = {
   classes: PropTypes.object.isRequired,
-  notifications: PropTypes.object
+  currentNotification: PropTypes.object,
+  pastNotifications: PropTypes.array
 };
 
 const mapStateToProps = ({ notifications }) => {
   return {
-    notifications
+    ...notifications
   };
 };
 
