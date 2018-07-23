@@ -1,14 +1,14 @@
 import { getSimpleIoPlugin } from '../plugins';
 
 export const CUDA_ISSUE_CONFIG = `
-"gpu_threads_conf" : [
-  { "index" : 0,
-    "threads" : 15, "blocks" : 60,
-    "bfactor" : 10, "bsleep" :  100,
-    "affine_to_cpu" : false, "sync_mode" : 3,
-  },
-
-],
+"gpu_threads_conf" : [\n
+  { "index" : 0,\n
+    "threads" : 15, "blocks" : 60,\n
+    "bfactor" : 10, "bsleep" :  100,\n
+    "affine_to_cpu" : false, "sync_mode" : 3,\n
+  },\n
+  \n
+],\n
 `;
 
 const writeConfig = ({ fileName, content }) => {
@@ -24,14 +24,14 @@ const writeConfig = ({ fileName, content }) => {
 
 export const writeAMDConfig = content => {
   return writeConfig({
-    fileName: '/plugins/xmr-stak/amd.txt',
+    fileName: '/raccoon-miner/amd.txt',
     content
   });
 };
 
 export const writeNvidiaConfig = content => {
   return writeConfig({
-    fileName: '/plugins/xmr-stak/nvidia.txt',
+    fileName: '/raccoon-miner/nvidia.txt',
     content
   });
 };

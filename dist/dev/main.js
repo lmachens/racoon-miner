@@ -1231,8 +1231,7 @@
 	  parser: generateParser({
 	    [CONNECTION_FAILED_REGEX]: /Could not resolve host/,
 	    [CONNECTING]: /not-connected/,
-	    [CUDA_ERROR]: /logged in/ ///\[CUDA\] Error/
-	    // SOCKET ERROR
+	    [CUDA_ERROR]: /\[CUDA\] Error/ // SOCKET ERROR
 
 	  }),
 	  path: 'xmr-stak/xmr-stak.exe',
@@ -1241,7 +1240,7 @@
 	    cores,
 	    gpus,
 	    worker = 'raccoon'
-	  }) => `--cpu cpus/cpu${cores}.txt ${gpus ? `` : '--noAMD --noNVIDIA'} --config config.txt --noUAC --httpd ${httpPort} --url "${pool}" --user "${address}.${worker}" --currency cryptonight_v7 --pass x --rigid "" --use-nicehash`,
+	  }) => `--cpu cpus/cpu${cores}.txt ${gpus ? `` : '--noAMD --noNVIDIA'} --nvidia %localappdata%/raccoon-miner/amd.txt --nvidia %localappdata%/raccoon-miner/nvidia.txt --config config.txt --noUAC --httpd ${httpPort} --url "${pool}" --user "${address}.${worker}" --currency cryptonight_v7 --pass x --rigid "" --use-nicehash`,
 	  environmentVariables: () => JSON.stringify({
 	    XMRSTAK_NOWAIT: true
 	  })
@@ -1326,14 +1325,14 @@
 	};
 
 	const CUDA_ISSUE_CONFIG = `
-"gpu_threads_conf" : [
-  { "index" : 0,
-    "threads" : 15, "blocks" : 60,
-    "bfactor" : 10, "bsleep" :  100,
-    "affine_to_cpu" : false, "sync_mode" : 3,
-  },
-
-],
+"gpu_threads_conf" : [\n
+  { "index" : 0,\n
+    "threads" : 15, "blocks" : 60,\n
+    "bfactor" : 10, "bsleep" :  100,\n
+    "affine_to_cpu" : false, "sync_mode" : 3,\n
+  },\n
+  \n
+],\n
 `;
 
 	const writeConfig = ({
@@ -1351,7 +1350,7 @@
 	};
 	const writeNvidiaConfig = content => {
 	  return writeConfig({
-	    fileName: '/plugins/xmr-stak/nvidia.txt',
+	    fileName: '/raccoon-miner/nvidia.txt',
 	    content
 	  });
 	};
