@@ -2327,7 +2327,9 @@
 	    } = getState();
 	    dispatch({
 	      type: SELECT_MINER,
-	      data: CRYPTO_NIGHT_V7
+	      data: {
+	        minerIdentifier: CRYPTO_NIGHT_V7
+	      }
 	    });
 	    dispatch({
 	      type: SET_MINING_ADDRESS,
@@ -2408,7 +2410,9 @@
 	  return dispatch => {
 	    dispatch({
 	      type: SELECT_MINER,
-	      data: minerIdentifier
+	      data: {
+	        minerIdentifier
+	      }
 	    });
 	    dispatch(trackWorkerStats());
 	  };
@@ -3634,8 +3638,18 @@
 	  address: developerAddress,
 	  workerName: 'raccoon'
 	};
+	const selectedMinerIdentifier = (state = CRYPTO_NIGHT_V7, {
+	  type,
+	  data
+	}) => {
+	  switch (type) {
+	    case SELECT_MINER:
+	      return data.minerIdentifier;
+	  }
+
+	  return state;
+	};
 	const mining = (state = {
-	  selectedMinerIdentifier: CRYPTO_NIGHT_V7,
 	  miners: {
 	    [CRYPTO_NIGHT_V7]: { ...defaultMinerProps
 	    },
@@ -3662,10 +3676,6 @@
 
 	    case SET_MINING_ADDRESS:
 	      set_1(newState, `miners.${data.minerIdentifier}.address`, data.address);
-	      break;
-
-	    case SELECT_MINER:
-	      set_1(newState, `selectedMinerIdentifier`, data);
 	      break;
 
 	    case RECEIVE_MINING_METRICS:
@@ -53569,6 +53579,7 @@
 	Popper.Utils = (typeof window !== 'undefined' ? window : global).PopperUtils;
 	Popper.placements = placements;
 	Popper.Defaults = Defaults;
+	//# sourceMappingURL=popper.js.map
 
 	var popper = /*#__PURE__*/Object.freeze({
 		default: Popper
@@ -63946,9 +63957,7 @@
 	    settingsDialogTab
 	  },
 	  settings,
-	  mining: {
-	    selectedMinerIdentifier
-	  },
+	  selectedMinerIdentifier,
 	  activeMiners,
 	  profitability
 	}) => {
@@ -64275,9 +64284,9 @@
 	  dialogs: {
 	    logsDialogOpen
 	  },
+	  selectedMinerIdentifier,
 	  mining: {
-	    miners,
-	    selectedMinerIdentifier
+	    miners
 	  }
 	}) => {
 	  const {
@@ -64406,9 +64415,9 @@
 	  dialogs: {
 	    cryptoDialogOpen
 	  },
+	  selectedMinerIdentifier,
 	  mining: {
-	    miners,
-	    selectedMinerIdentifier
+	    miners
 	  },
 	  activeMiners
 	}) => {
@@ -66676,6 +66685,7 @@
 	  logs,
 	  mining,
 	  activeMiners,
+	  selectedMinerIdentifier,
 	  notifications,
 	  price,
 	  profitability,
@@ -67164,9 +67174,7 @@
 	};
 
 	const mapStateToProps$7 = ({
-	  mining: {
-	    selectedMinerIdentifier
-	  },
+	  selectedMinerIdentifier,
 	  activeMiners,
 	  profitability,
 	  price,
@@ -67433,9 +67441,7 @@
 	};
 
 	const mapStateToProps$9 = ({
-	  mining: {
-	    selectedMinerIdentifier
-	  },
+	  selectedMinerIdentifier,
 	  activeMiners
 	}) => {
 	  return {
@@ -67716,9 +67722,7 @@
 	};
 
 	const mapStateToProps$b = ({
-	  mining: {
-	    selectedMinerIdentifier
-	  },
+	  selectedMinerIdentifier,
 	  activeMiners,
 	  hardwareInfo,
 	  price,

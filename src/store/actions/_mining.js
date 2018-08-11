@@ -42,7 +42,9 @@ export const loadDefault = () => {
     } = getState();
     dispatch({
       type: SELECT_MINER,
-      data: CRYPTO_NIGHT_V7
+      data: {
+        minerIdentifier: CRYPTO_NIGHT_V7
+      }
     });
     dispatch({
       type: SET_MINING_ADDRESS,
@@ -112,7 +114,9 @@ export const selectMiner = minerIdentifier => {
   return dispatch => {
     dispatch({
       type: SELECT_MINER,
-      data: minerIdentifier
+      data: {
+        minerIdentifier
+      }
     });
     dispatch(trackWorkerStats());
   };

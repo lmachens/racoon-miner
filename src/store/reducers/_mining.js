@@ -25,9 +25,16 @@ const defaultMinerProps = {
   workerName: 'raccoon'
 };
 
+export const selectedMinerIdentifier = (state = CRYPTO_NIGHT_V7, { type, data }) => {
+  switch (type) {
+    case SELECT_MINER:
+      return data.minerIdentifier;
+  }
+  return state;
+};
+
 export const mining = (
   state = {
-    selectedMinerIdentifier: CRYPTO_NIGHT_V7,
     miners: {
       [CRYPTO_NIGHT_V7]: {
         ...defaultMinerProps
@@ -52,9 +59,6 @@ export const mining = (
       break;
     case SET_MINING_ADDRESS:
       set(newState, `miners.${data.minerIdentifier}.address`, data.address);
-      break;
-    case SELECT_MINER:
-      set(newState, `selectedMinerIdentifier`, data);
       break;
     case RECEIVE_MINING_METRICS:
       set(newState, `miners.metrics`, data.metrics);

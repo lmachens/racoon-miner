@@ -31,7 +31,9 @@ class Logs extends PureComponent {
     if (logs.length === 0) return 'No logs available';
     return (
       <code className={classes.logs}>
-        {logs.split('\n').map((text, line) => <span key={line}>{text}</span>)}
+        {logs.split('\n').map((text, line) => (
+          <span key={line}>{text}</span>
+        ))}
         <span
           ref={value => {
             this.lastItem = value;
@@ -81,7 +83,8 @@ LogsDialog.propTypes = {
 
 const mapStateToProps = ({
   dialogs: { logsDialogOpen },
-  mining: { miners, selectedMinerIdentifier }
+  selectedMinerIdentifier,
+  mining: { miners }
 }) => {
   const { address } = miners[selectedMinerIdentifier];
   const statsLink = statsUrl(address);

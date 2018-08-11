@@ -1,4 +1,4 @@
-import { activeMiners, mining } from './_mining';
+import { activeMiners, mining, selectedMinerIdentifier } from './_mining';
 
 import { combineReducers } from 'redux';
 import { dialogs } from './_dialogs';
@@ -18,6 +18,7 @@ const reducers = combineReducers({
   logs,
   mining,
   activeMiners,
+  selectedMinerIdentifier,
   notifications,
   price,
   profitability,
