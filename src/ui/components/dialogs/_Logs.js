@@ -81,11 +81,7 @@ LogsDialog.propTypes = {
   statsLink: PropTypes.string.isRequired
 };
 
-const mapStateToProps = ({
-  dialogs: { logsDialogOpen },
-  selectedMinerIdentifier,
-  mining: { miners }
-}) => {
+const mapStateToProps = ({ dialogs: { logsDialogOpen }, selectedMinerIdentifier, miners }) => {
   const { address } = miners[selectedMinerIdentifier];
   const statsLink = statsUrl(address);
   return {
