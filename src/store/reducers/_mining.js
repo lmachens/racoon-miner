@@ -1,7 +1,6 @@
 import {
   CONNECTING_POOL,
   CONTINUE_MINING,
-  RECEIVE_MINING_METRICS,
   RECEIVE_WORKER_STATS,
   SELECT_MINER,
   SET_CORES,
@@ -70,29 +69,20 @@ export const workerStats = (
   return state;
 };
 
-export const mining = (
-  state = {
-    metrics: {},
-    cores: 1,
-    gpus: 1
-  },
-  { type, data }
-) => {
-  const newState = { ...state };
+export const cores = (state = 1, { type, data }) => {
   switch (type) {
-    case RECEIVE_MINING_METRICS:
-      set(newState, `miners.metrics`, data.metrics);
-      break;
     case SET_CORES:
-      set(newState, `cores`, data.cores);
-      break;
-    case SET_GPUS:
-      set(newState, `gpus`, data.gpus);
-      break;
-    default:
-      return state;
+      return data.cores;
   }
-  return newState;
+  return state;
+};
+
+export const gpus = (state = 1, { type, data }) => {
+  switch (type) {
+    case SET_GPUS:
+      return data.gpus;
+  }
+  return state;
 };
 
 const defaultActiveMinersProps = {
